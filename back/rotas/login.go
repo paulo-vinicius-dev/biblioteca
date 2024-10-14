@@ -1,10 +1,12 @@
 package rotas
 
-import "net/http"
-import "fmt"
-import "biblioteca/sessao"
-import "io"
-import "encoding/json"
+import ( 
+	"net/http"
+	"fmt"
+	"biblioteca/sessao"
+	"io"
+	"encoding/json"
+)
 
 
 // isso definitivamente não deveria estar aqui é só um hack temporário para avançar mais rápido
@@ -22,7 +24,7 @@ type RespostaLogin struct {
 
 // isso também não deveria estar aqui
 func ValidarLogin(requisicaoLogin RequisicaoLogin) (bool, int) {
-	status := sessao.VerificaSeIdDaSessaoEValido(requisicaoLogin.Id)
+	status := sessao.VerificaSeIdDaSessaoEValido(requisicaoLogin.Id, requisicaoLogin.Login)
 	return  status == sessao.VALIDO || (requisicaoLogin.Login == "admin" && requisicaoLogin.Senha == "123"), status
 }
 
@@ -53,10 +55,17 @@ func Login(resposta http.ResponseWriter, requisicao *http.Request) {
 	var respostaLogin RespostaLogin
 	respostaLogin.IdSessao = requisicaoLogin.Id
 
+	//Se tentar logar com uma sessão de outro usuario vamos dar um erro
+	if statusDoIdDaSessao == sessao.SESSAO_INVALIDA {
+		resposta.WriteHeader(http.StatusBadRequest);
+		fmt.Fprintf(resposta, "A o id da sessão fornecido não bate com a sessão do login do usuário")
+		return  
+	}
+
 	//Se o login tiver invalido ou expirado criamos outra sessao
-	if statusDoIdDaSessao != sessao.VALIDO && loginAceito {
+	if (statusDoIdDaSessao == sessao.INVALIDO ) && loginAceito {
 		for i := 0; i < 3; i++ {
-			novaSessao, criadoComSucesso := sessao.CriarNovaSessao()
+			novaSessao, criadoComSucesso := sessao.CriarNovaSessao(requisicaoLogin.Login)
 			if !criadoComSucesso {
 				continue
 			}

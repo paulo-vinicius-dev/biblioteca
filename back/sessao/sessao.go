@@ -50,6 +50,7 @@ func VerificaSeIdDaSessaoEValido(idDaSessao uint64) int {
 func CriarNovaSessao() (uint64, bool) { // o bool e para dizer se foi possível criar ou não a sessão
 	novaSessao := rand.Uint64()
 	if VerificaSeIdDaSessaoEValido(novaSessao) == INVALIDO  && novaSessao != 0 {
+		_sessao[novaSessao] = time.Now()
 		return novaSessao, true
 	}
 	return 0, false

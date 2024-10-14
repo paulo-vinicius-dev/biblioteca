@@ -51,6 +51,7 @@ func Login(resposta http.ResponseWriter, requisicao *http.Request) {
 
 
 	var respostaLogin RespostaLogin
+	respostaLogin.IdSessao = requisicaoLogin.Id
 
 	//Se o login tiver invalido ou expirado criamos outra sessao
 	if statusDoIdDaSessao != sessao.VALIDO && loginAceito {

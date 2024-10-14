@@ -1,8 +1,10 @@
 package main
 
-import "fmt"
-
+import "net/http"
+import "biblioteca/rotas"
 
 func main() {
-	fmt.Println("Olá, mundo!")
+
+	http.HandleFunc("/login", rotas.Login)
+	http.ListenAndServe(":9090", nil)
 }

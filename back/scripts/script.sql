@@ -1,3 +1,7 @@
+-- Criação do scheme caso não exista! :)
+--CREATE SCHEMA biblioteca;
+--SET search_path TO biblioteca;
+
 DROP TABLE IF EXISTS datelhe_emprestimo;
 DROP TABLE IF EXISTS emprestimo;
 DROP TABLE IF EXISTS usuario;

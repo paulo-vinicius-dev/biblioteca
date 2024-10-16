@@ -3,7 +3,7 @@ package rotas
 import ( 
 	"net/http"
 	"fmt"
-	"biblioteca/sessao"
+	"biblioteca/servicos/sessao"
 	"io"
 	"encoding/json"
 	"biblioteca/banco/login"

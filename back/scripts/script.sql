@@ -5,7 +5,6 @@
 DROP TABLE IF EXISTS datelhe_emprestimo;
 DROP TABLE IF EXISTS emprestimo;
 DROP TABLE IF EXISTS usuario;
-DROP TABLE IF EXISTS tipo_usuario;
 DROP TABLE IF EXISTS exemplar_livro;
 DROP TABLE IF EXISTS livro_categoria;
 DROP TABLE IF EXISTS categoria;
@@ -89,14 +88,7 @@ CREATE TABLE IF NOT EXISTS exemplar_livro (
 	FOREIGN KEY(id_livro) REFERENCES livro(id_livro) 
 );
 
-CREATE TABLE IF NOT EXISTS tipo_usuario (
-	id_tipo_usuario SMALLSERIAL NOT NULL,
-	descricao varchar(255) NOT NULL UNIQUE,
-	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	data_atualizacao TIMESTAMP,
-	permissoes SMALLINT NOT NULL DEFAULT 0,
-	PRIMARY KEY(id_tipo_usuario)
-);
+
 
 CREATE TABLE IF NOT EXISTS usuario (
 	id_usuario SERIAL NOT NULL,
@@ -108,9 +100,8 @@ CREATE TABLE IF NOT EXISTS usuario (
 	senha VARCHAR(255) NOT NULL,
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
-	id_tipo_usuario SMALLINT NOT NULL,
-	PRIMARY KEY(id_usuario),
-	FOREIGN KEY(id_tipo_usuario) REFERENCES tipo_usuario(id_tipo_usuario)
+	permissoes BIGINT NOT NULL,
+	PRIMARY KEY(id_usuario)
 );
 
 CREATE TABLE IF NOT EXISTS emprestimo (
@@ -186,17 +177,18 @@ INSERT INTO exemplar_livro (id_livro, cativo, status, estado) VALUES
 (2, TRUE, 1, 2),   -- Exemplar de Harry Potter
 (3, FALSE, 2, 3);  -- Exemplar de A Game of Thrones
 
--- Tabela tipo_usuario
-INSERT INTO tipo_usuario (descricao, permissoes) VALUES
-('Administrador', 1),
-('Bibliotecário', 2),
-('Usuário Comum', 0);
+
+-- CriarUsuario = 0b1
+-- LerUsuario = 0b10
+-- AtualizarUsuario = 0b100
+-- DeletarUsuario = 0b1000
+
 
 -- Tabela usuario
-INSERT INTO usuario (login, nome, email, telefone, data_nascimento, senha, id_tipo_usuario) VALUES
-('admin', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'senhaAdmin', 1),
-('biblio', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', 'senhaBiblio', 2),
-('joao', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'senhaJoao', 3);
+INSERT INTO usuario (login, nome, email, telefone, data_nascimento, senha, permissoes) VALUES
+('admin', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'senhaAdmin', 0b1111),
+('biblio', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', 'senhaBiblio', 0b0010),
+('joao', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'senhaJoao', 0b0000);
 
 -- Tabela emprestimo
 INSERT INTO emprestimo (id_exemplar_livro, id_livro, id_usuario, data_emprestimo, data_prevista_devolucao, observacao) VALUES
@@ -207,3 +199,4 @@ INSERT INTO emprestimo (id_exemplar_livro, id_livro, id_usuario, data_emprestimo
 INSERT INTO detalhe_emprestimo (id_usuario, id_emprestimo, acao, detalhe) VALUES
 (3, 1, 1, 'Empréstimo realizado'),
 (3, 2, 2, 'Renovação solicitada');
+

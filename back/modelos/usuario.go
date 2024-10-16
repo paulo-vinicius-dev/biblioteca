@@ -1,3 +1,5 @@
+package modelos
+
 import "time"
 
 type Usuario struct {

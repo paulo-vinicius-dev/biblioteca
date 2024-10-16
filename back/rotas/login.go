@@ -6,7 +6,7 @@ import (
 	"biblioteca/servicos/sessao"
 	"io"
 	"encoding/json"
-	"biblioteca/banco/login"
+	"biblioteca/banco"
 	"crypto/sha256"
 )
 
@@ -33,7 +33,7 @@ func ValidarLogin(requisicaoLogin RequisicaoLogin) (bool, int) {
 		return true, status
 	}
 
-	login, senha, achou := login.PegarLoginESenhaDoBanco(requisicaoLogin.Login)		
+	login, senha, achou := banco.PegarLoginESenhaDoBanco(requisicaoLogin.Login)		
 
 	if(!achou) {
 		return false, sessao.INVALIDO

@@ -6,6 +6,8 @@ import (
 	"biblioteca/sessao"
 	"io"
 	"encoding/json"
+	"biblioteca/banco/login"
+	"crypto/sha256"
 )
 
 
@@ -25,7 +27,25 @@ type RespostaLogin struct {
 // isso também não deveria estar aqui
 func ValidarLogin(requisicaoLogin RequisicaoLogin) (bool, int) {
 	status := sessao.VerificaSeIdDaSessaoEValido(requisicaoLogin.Id, requisicaoLogin.Login)
-	return  status == sessao.VALIDO || (requisicaoLogin.Login == "admin" && requisicaoLogin.Senha == "123"), status
+
+	// evita uma ida ao BD
+	if (status == sessao.VALIDO) {
+		return true, status
+	}
+
+	login, senha, achou := login.PegarLoginESenhaDoBanco(requisicaoLogin.Login)		
+
+	if(!achou) {
+		return false, sessao.INVALIDO
+	}
+
+	
+	hash := sha256.New()
+	hash.Write([]byte(requisicaoLogin.Senha))
+
+	shaDaSenhaDaRequisicao := fmt.Sprintf("%x", hash.Sum(nil))
+
+	return  requisicaoLogin.Login == login && shaDaSenhaDaRequisicao == senha, status
 }
 
 func Login(resposta http.ResponseWriter, requisicao *http.Request) {

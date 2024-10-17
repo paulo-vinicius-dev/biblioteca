@@ -1,8 +1,9 @@
 package banco
 
 import (
-	"log"
 	"context"
+	"log"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -10,7 +11,7 @@ var dbpool *pgxpool.Pool
 
 func Inicializar() {
 	var erro error
-	dbpool, erro = pgxpool.New(context.Background(), "postgres://postgres@localhost:5432/postgres")
+	dbpool, erro = pgxpool.New(context.Background(), "postgres://postgres:2907@localhost:5432/postgres?options=-c%20search_path%3Dbiblioteca")
 	if erro != nil {
 		log.Fatal("Não foi Possível se conectar no banco de dados")
 	}

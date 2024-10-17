@@ -1,12 +1,15 @@
 package main
 
-import "net/http"
-import "biblioteca/rotas"
-import "biblioteca/banco"
+import (
+	"biblioteca/banco"
+	"biblioteca/rotas"
+	"net/http"
+)
 
 func main() {
 	banco.Inicializar()
 	defer banco.Finalizar()
 	http.HandleFunc("/login", rotas.Login)
+	http.HandleFunc("/autor", rotas.AutorHandler)
 	http.ListenAndServe(":9090", nil)
 }

@@ -1,0 +1,5 @@
+package usuario
+
+func criarUsuario() {
+
+}

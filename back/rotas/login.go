@@ -57,7 +57,7 @@ func Login(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	corpoDaRequisicao, erro := io.ReadAll(requisicao.Body)
 	if len(corpoDaRequisicao) == 0 || erro != nil {
-		resposta.WriteHeader(http.StatusBadRequest);
+		resposta.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(resposta, "A requisição ao login foi mal feita")
 		return 
 	}

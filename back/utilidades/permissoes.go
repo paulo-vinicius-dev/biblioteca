@@ -6,5 +6,5 @@ const (
 	PermissaoAtualizarUsuario = 0b100
 	PermissaoDeletarUsuario = 0b1000
 
-	PermissaoCrudUsuario = DeletarUsuario | AtualizarUsuario | LerUsuario | CriarUsuario
+	PermissaoCrudUsuario = PermissaoDeletarUsuario | PermissaoAtualizarUsuario | PermssaoLerUsuario | PermissaoCriarUsuario
 )

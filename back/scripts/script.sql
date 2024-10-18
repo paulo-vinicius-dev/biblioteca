@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS exemplar_livro (
 CREATE TABLE IF NOT EXISTS usuario (
 	id_usuario SERIAL NOT NULL,
 	login VARCHAR(255) NOT NULL UNIQUE,
+	cpf VARCHAR(12),
 	nome VARCHAR(255) NOT NULL,
 	email VARCHAR(255) NOT NULL UNIQUE,
 	telefone VARCHAR(11),
@@ -185,10 +186,10 @@ INSERT INTO exemplar_livro (id_livro, cativo, status, estado) VALUES
 
 
 -- Tabela usuario
-INSERT INTO usuario (login, nome, email, telefone, data_nascimento, senha, permissoes) VALUES
-('admin', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'senhaAdmin', 0b1111),
-('biblio', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', 'senhaBiblio', 0b0010),
-('joao', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'senhaJoao', 0b0000);
+INSERT INTO usuario (login, cpf, nome, email, telefone, data_nascimento, senha, permissoes) VALUES
+('admin','21747274046', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'senhaAdmin', 0b1111),
+('biblio','76784092066', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', 'senhaBiblio', 0b0010),
+('joao','26843511040', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'senhaJoao', 0b0000);
 
 -- Tabela emprestimo
 INSERT INTO emprestimo (id_exemplar_livro, id_livro, id_usuario, data_emprestimo, data_prevista_devolucao, observacao) VALUES

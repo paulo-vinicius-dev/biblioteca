@@ -9,8 +9,8 @@ import (
 	"net/http"
 )
 
-// AutorHandler gerencia a rota de autor
-func AutorHandler(resposta http.ResponseWriter, requisicao *http.Request) {
+// Autor gerencia a rota de autor
+func Autor(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	body, err := io.ReadAll(requisicao.Body)
 	if err != nil {

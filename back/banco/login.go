@@ -1,14 +1,13 @@
-package login
+package banco
 
-import (
-	"biblioteca/banco"
+import	(
 	"context"
 	"database/sql"
 	"log"
 )
 
-func PegarLoginESenhaDoBanco(loginDoUsuario string) (string, string, bool) {
-	conexao := banco.PegarConexao()
+func PegarLoginESenhaDoBanco(loginDoUsuario string) (string, string, bool){
+	conexao := PegarConexao()
 	var login, senha string
 	erro := conexao.QueryRow(context.Background(), "select login, senha from usuario where login = $1", loginDoUsuario).Scan(&login, &senha)
 

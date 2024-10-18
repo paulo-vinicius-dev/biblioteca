@@ -10,6 +10,6 @@ func main() {
 	banco.Inicializar()
 	defer banco.Finalizar()
 	http.HandleFunc("/login", rotas.Login)
-	http.HandleFunc("/autor", rotas.AutorHandler)
+	http.HandleFunc("/autor", rotas.Autor)
 	http.ListenAndServe(":9090", nil)
 }

@@ -1,7 +1,6 @@
 package banco
 
 import (
-	"biblioteca/banco"
 	"biblioteca/modelos"
 	"context"
 	"fmt"
@@ -9,7 +8,7 @@ import (
 
 // VisualizarAutores realizar o SELECT no banco de dados, pegar todos os registros da tabela de autor
 func VisualizarAutores() ([]modelos.Autor, error) {
-	conexao := banco.PegarConexao()
+	conexao := PegarConexao()
 
 	var autores []modelos.Autor
 
@@ -34,7 +33,7 @@ func VisualizarAutores() ([]modelos.Autor, error) {
 
 // InserirAutor realizar o INSERT no banco de dados, pegando como base os parametros da Struct Autor
 func InserirAutor(a modelos.Autor) error {
-	conexao := banco.PegarConexao()
+	conexao := PegarConexao()
 
 	if _, err := conexao.Exec(context.Background(), `
 		INSERT INTO autor (nome, data_nascimento, nacionalidade, sexo)
@@ -52,7 +51,7 @@ func InserirAutor(a modelos.Autor) error {
 
 // AtualizarAutor realizar o UPDATE no banco de dados, pegando como base os parametros da Struct Autor
 func AtualizarAutor(a modelos.Autor) error {
-	conexao := banco.PegarConexao()
+	conexao := PegarConexao()
 
 	if _, err := conexao.Exec(context.Background(), `
 		UPDATE autor
@@ -76,7 +75,7 @@ func AtualizarAutor(a modelos.Autor) error {
 
 // ExcluirAutor realizar o DELETE no banco de dados, pegando como base os parametros da Struct Autor
 func ExcluirAutor(a modelos.Autor) error {
-	conexao := banco.PegarConexao()
+	conexao := PegarConexao()
 
 	if _, err := conexao.Exec(context.Background(), `
 		DELETE FROM autor

@@ -1,7 +1,7 @@
 package rotas
 
 import (
-	"biblioteca/banco/login"
+	"biblioteca/banco"
 	"biblioteca/servicos/sessao"
 	"crypto/sha256"
 	"encoding/json"
@@ -32,7 +32,7 @@ func ValidarLogin(requisicaoLogin RequisicaoLogin) (bool, int) {
 		return true, status
 	}
 
-	login, senha, achou := login.PegarLoginESenhaDoBanco(requisicaoLogin.Login)
+	login, senha, achou := banco.PegarLoginESenhaDoBanco(requisicaoLogin.Login)
 
 	if !achou {
 		return false, sessao.INVALIDO

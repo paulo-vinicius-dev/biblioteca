@@ -1,7 +1,7 @@
 package servicos
 
 import (
-	banco "biblioteca/banco/autor"
+	"biblioteca/banco"
 	"biblioteca/modelos"
 	"fmt"
 	"net/http"

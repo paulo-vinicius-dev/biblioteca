@@ -1,10 +1,10 @@
 package utilidades
 
 const (
-	PermissaoCriarUsuario = 0b1
-	PermssaoLerUsuario = 0b10
+	PermissaoCriarUsuario     = 0b1
+	PermssaoLerUsuario        = 0b10
 	PermissaoAtualizarUsuario = 0b100
-	PermissaoDeletarUsuario = 0b1000
+	PermissaoDeletarUsuario   = 0b1000
 
 	PermissaoCrudUsuario = PermissaoDeletarUsuario | PermissaoAtualizarUsuario | PermssaoLerUsuario | PermissaoCriarUsuario
 )

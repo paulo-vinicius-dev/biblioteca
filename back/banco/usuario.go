@@ -46,6 +46,7 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroDeCadastroDoUsuario {
 		case strings.Contains(stringDoErro, "cpf"):
 			return ErroDeCadastroDoUsuarioCpfDuplicado
 		default:
+			fmt.Println(stringDoErro)
 			return ErroDeCadastroDoUsuarioErroDesconhecido
 		}
 

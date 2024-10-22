@@ -39,12 +39,14 @@ func erroDeCadastroDoUsuarioDoBancoParaErroDeServicoDoUsuario(erro banco.ErroDeC
 // Para criar o usuário é preciso forncer todos os dados do novoUsuario
 // mas do usuario criador só precisamos fornecer o sessão
 
-func CriarUsuario(idDaSessao uint64, usuarioCriador, novoUsuario modelos.Usuario) ErroDeServicoDoUsuario {
-	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, usuarioCriador.Login) != sessao.VALIDO {
+func CriarUsuario(idDaSessao uint64, loginUsuarioCriador string, novoUsuario modelos.Usuario) ErroDeServicoDoUsuario {
+	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginUsuarioCriador) != sessao.VALIDO {
 		return ErroDeServicoDoUsuarioSessaoInvalida
 	}
 
-	if usuarioCriador.Permissao&utilidades.PermissaoCriarUsuario != utilidades.PermissaoCriarUsuario {
+	permissaoDoUsuarioCriador := sessao.PegarSessaoAtual()[idDaSessao].Permissao
+
+	if permissaoDoUsuarioCriador&utilidades.PermissaoCriarUsuario != utilidades.PermissaoCriarUsuario {
 		return ErroDeServicoDoUsuarioSemPermisao
 	}
 
@@ -67,7 +69,6 @@ func CriarUsuario(idDaSessao uint64, usuarioCriador, novoUsuario modelos.Usuario
 
 }
 
-// deve remover depois de ter o get usuario
 func PegarPermissao(login string) uint64 {
 	return banco.PegarPermissao(login)
 }

@@ -44,11 +44,6 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		return
 	}
 
-	usuarioRequerente := modelos.Usuario{
-		Login:     requisicaoUsuario.LoginDoUsuarioRequerente,
-		Permissao: servicoUsuario.PegarPermissao(requisicaoUsuario.LoginDoUsuarioRequerente),
-	}
-
 	switch requisicao.Method {
 	case "POST":
 		if len(requisicaoUsuario.Logins) < 1 ||
@@ -72,7 +67,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		novoUsuario.DataDeNascimento = requisicaoUsuario.DatasDeNascimento[0]
 		novoUsuario.Permissao = requisicaoUsuario.PermissoesDosUsuarios[0]
 		fmt.Println("CPF:", novoUsuario.Cpf)
-		switch servicoUsuario.CriarUsuario(requisicaoUsuario.IdDaSessao, usuarioRequerente, novoUsuario) {
+		switch servicoUsuario.CriarUsuario(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, novoUsuario) {
 		case servicoUsuario.ErroDeServicoDoUsuarioLoginDuplicado:
 			resposta.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(resposta, "Login duplicado")

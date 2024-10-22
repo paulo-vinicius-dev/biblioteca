@@ -1,6 +1,7 @@
 package sessao
 
 import (
+	"biblioteca/banco"
 	"math/rand"
 	"time"
 )
@@ -8,6 +9,7 @@ import (
 type Sessao map[uint64]struct {
 	TempoDaSessao time.Time
 	Login         string
+	Permissao     uint64
 }
 
 var _sessao Sessao
@@ -60,10 +62,15 @@ func CriarNovaSessao(login string) (uint64, bool) { // o bool e para dizer se fo
 		novaSessao := _sessao[idDaSessaoNova]
 		novaSessao.Login = login
 		novaSessao.TempoDaSessao = time.Now()
+		novaSessao.Permissao = pegarPermissao(novaSessao.Login)
 		_sessao[idDaSessaoNova] = novaSessao
 
 		//fmt.Println(_sessao)
 		return idDaSessaoNova, true
 	}
 	return 0, false
+}
+
+func pegarPermissao(login string) uint64 {
+	return banco.PegarPermissao(login)
 }

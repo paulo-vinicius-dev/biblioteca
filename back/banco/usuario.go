@@ -6,7 +6,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"strings"
 )
 
 type ErroDeCadastroDoUsuario int
@@ -16,6 +15,7 @@ const (
 	ErroDeCadastroDoUsuarioNenhum = iota
 	ErroDeCadastroDoUsuarioLoginDuplicado
 	ErroDeCadastroDoUsuarioCpfDuplicado
+	ErroDeCadastroDoUsuarioEmailDuplicado
 	ErroDeCadastroDoUsuarioErroDesconhecido
 )
 
@@ -24,8 +24,26 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroDeCadastroDoUsuario {
 	hash := sha256.New()
 	hash.Write([]byte(novoUsuario.Senha))
 
+	if emailDuplicado, erro := emailDuplicado(novoUsuario.Email); erro {
+		return ErroDeCadastroDoUsuarioErroDesconhecido
+	} else if emailDuplicado {
+		return ErroDeCadastroDoUsuarioEmailDuplicado
+	}
+
+	if loginDuplicado, erro := loginDuplicado(novoUsuario.Login); erro {
+		return ErroDeCadastroDoUsuarioErroDesconhecido
+	} else if loginDuplicado {
+		return ErroDeCadastroDoUsuarioLoginDuplicado
+	}
+
+	if cpfDuplicado, erro := cpfDuplicado(novoUsuario.Cpf); erro {
+		return ErroDeCadastroDoUsuarioErroDesconhecido
+	} else if cpfDuplicado {
+		return ErroDeCadastroDoUsuarioCpfDuplicado
+	}
+
 	senhaCriptogrfada := fmt.Sprintf("%x", hash.Sum(nil))
-	resultadoDoBanco, erro := conexao.Exec(
+	_, erroQuery := conexao.Exec(
 		context.Background(),
 		"insert into usuario(login,cpf, nome, email, telefone, data_nascimento, data_criacao, senha, permissoes) values ($1, $2, $3, $4, $5, $6, CURRENT_DATE, $7, $8)",
 		novoUsuario.Login,
@@ -38,18 +56,8 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroDeCadastroDoUsuario {
 		novoUsuario.Permissao,
 	)
 
-	if erro != nil {
-		stringDoErro := resultadoDoBanco.String()
-		switch {
-		case strings.Contains(stringDoErro, "login"):
-			return ErroDeCadastroDoUsuarioLoginDuplicado
-		case strings.Contains(stringDoErro, "cpf"):
-			return ErroDeCadastroDoUsuarioCpfDuplicado
-		default:
-			fmt.Println(stringDoErro)
-			return ErroDeCadastroDoUsuarioErroDesconhecido
-		}
-
+	if erroQuery != nil {
+		return ErroDeCadastroDoUsuarioErroDesconhecido
 	}
 
 	return ErroDeCadastroDoUsuarioNenhum
@@ -62,5 +70,35 @@ func PegarPermissao(loginDoUsuario string) uint64 {
 		return permissao
 	} else {
 		return 0
+	}
+}
+
+func cpfDuplicado(cpf string) (bool, bool) {
+	conexao := PegarConexao()
+	qtdCpfs := 0
+	if conexao.QueryRow(context.Background(), "select count(cpf) from usuario u where cpf = $1", cpf).Scan(&qtdCpfs) == nil {
+		return qtdCpfs > 0, false
+	} else {
+		return false, true
+	}
+}
+
+func emailDuplicado(email string) (bool, bool) {
+	conexao := PegarConexao()
+	qtdEmail := 0
+	if conexao.QueryRow(context.Background(), "select count(email) from usuario u where email = $1", email).Scan(&qtdEmail) == nil {
+		return qtdEmail > 0, false
+	} else {
+		return false, true
+	}
+}
+
+func loginDuplicado(login string) (bool, bool) {
+	conexao := PegarConexao()
+	qtdLogin := 0
+	if conexao.QueryRow(context.Background(), "select count(login) from usuario u where login = $1", login).Scan(&qtdLogin) == nil {
+		return qtdLogin > 0, false
+	} else {
+		return false, true
 	}
 }

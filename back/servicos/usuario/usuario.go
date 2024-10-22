@@ -15,6 +15,7 @@ const (
 	ErroDeServicoDoUsuarioNenhum = iota
 	ErroDeServicoDoUsuarioLoginDuplicado
 	ErroDeServicoDoUsuarioCpfDuplicado
+	ErroDeServicoDoUsuarioEmailDuplicado
 	ErroDeServicoDoUsuarioErroDesconhecido
 	ErroDeServicoDoUsuarioTelefoneInvalido
 	ErroDeServicoDoUsuarioSemPermisao
@@ -31,6 +32,8 @@ func erroDeCadastroDoUsuarioDoBancoParaErroDeServicoDoUsuario(erro banco.ErroDeC
 		return ErroDeServicoDoUsuarioCpfDuplicado
 	case banco.ErroDeCadastroDoUsuarioErroDesconhecido:
 		return ErroDeServicoDoUsuarioErroDesconhecido
+	case banco.ErroDeCadastroDoUsuarioEmailDuplicado:
+		return ErroDeServicoDoUsuarioEmailDuplicado
 	default:
 		return ErroDeServicoDoUsuarioNenhum
 	}
@@ -53,11 +56,11 @@ func CriarUsuario(idDaSessao uint64, loginUsuarioCriador string, novoUsuario mod
 	fmt.Println("E valido?", utilidades.ValidarCpf(novoUsuario.Cpf))
 	fmt.Println("E numerico?", utilidades.ValidarCpf(novoUsuario.Cpf))
 
-	if !utilidades.StringENumerica(novoUsuario.Cpf) && !utilidades.ValidarCpf(novoUsuario.Cpf) {
+	if !utilidades.StringENumerica(novoUsuario.Cpf) || !utilidades.ValidarCpf(novoUsuario.Cpf) {
 		return ErroDeServicoDoUsuarioCpfInvalido
 	}
 
-	if !utilidades.StringENumerica(novoUsuario.Telefone) && len(novoUsuario.Telefone) != 11 {
+	if !utilidades.StringENumerica(novoUsuario.Telefone) || len(novoUsuario.Telefone) != 11 {
 		return ErroDeServicoDoUsuarioTelefoneInvalido
 	}
 

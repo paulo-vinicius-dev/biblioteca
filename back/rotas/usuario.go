@@ -76,6 +76,10 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 			resposta.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(resposta, "Cpf duplicado")
 			return
+		case servicoUsuario.ErroDeServicoDoUsuarioEmailDuplicado:
+			resposta.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(resposta, "Email duplicado")
+			return
 		case servicoUsuario.ErroDeServicoDoUsuarioErroDesconhecido:
 			resposta.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(resposta, "Erro desconhecido provavelmente por conta do sql")

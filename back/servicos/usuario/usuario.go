@@ -5,7 +5,6 @@ import (
 	"biblioteca/modelos"
 	"biblioteca/servicos/sessao"
 	"biblioteca/utilidades"
-	"fmt"
 	"time"
 )
 
@@ -22,6 +21,7 @@ const (
 	ErroDeServicoDoUsuarioSessaoInvalida
 	ErroDeServicoDoUsuarioCpfInvalido
 	ErroDeServicoDoUsuarioDataDeNascimentoInvalida
+	ErroDeServicoDoUsuarioEmailInvalido
 )
 
 func erroDeCadastroDoUsuarioDoBancoParaErroDeServicoDoUsuario(erro banco.ErroDeCadastroDoUsuario) ErroDeServicoDoUsuario {
@@ -53,9 +53,6 @@ func CriarUsuario(idDaSessao uint64, loginUsuarioCriador string, novoUsuario mod
 		return ErroDeServicoDoUsuarioSemPermisao
 	}
 
-	fmt.Println("E valido?", utilidades.ValidarCpf(novoUsuario.Cpf))
-	fmt.Println("E numerico?", utilidades.ValidarCpf(novoUsuario.Cpf))
-
 	if !utilidades.StringENumerica(novoUsuario.Cpf) || !utilidades.ValidarCpf(novoUsuario.Cpf) {
 		return ErroDeServicoDoUsuarioCpfInvalido
 	}
@@ -68,8 +65,16 @@ func CriarUsuario(idDaSessao uint64, loginUsuarioCriador string, novoUsuario mod
 		return ErroDeServicoDoUsuarioDataDeNascimentoInvalida
 	}
 
+	if !utilidades.ValidarEmail(novoUsuario.Email) {
+		return ErroDeServicoDoUsuarioEmailInvalido
+	}
+
 	return erroDeCadastroDoUsuarioDoBancoParaErroDeServicoDoUsuario(banco.CriarUsuario(novoUsuario))
 
+}
+
+func PegarIdUsuario(login string) int {
+	return banco.PegarIdUsuario(login)
 }
 
 func PegarPermissao(login string) uint64 {

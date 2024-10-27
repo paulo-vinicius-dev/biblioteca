@@ -73,6 +73,16 @@ func PegarPermissao(loginDoUsuario string) uint64 {
 	}
 }
 
+func PegarIdUsuario(login string) int {
+	conexao := PegarConexao()
+	var id int
+	if conexao.QueryRow(context.Background(), "select id_usuario from usuario where login = $1",  login).Scan(&id) == nil {
+		return id
+	} else {
+		return 0
+	}
+}
+
 func cpfDuplicado(cpf string) (bool, bool) {
 	conexao := PegarConexao()
 	qtdCpfs := 0

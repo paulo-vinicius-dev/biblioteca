@@ -12,15 +12,15 @@ import (
 type requisicaoUsuario struct {
 	IdDaSessao               uint64
 	LoginDoUsuarioRequerente string
-	Ids                      []int
-	Logins                   []string
-	Cpfs                     []string
-	Senhas                   []string
-	Nomes                    []string
-	Emails                   []string
-	Telefones                []string
-	DatasDeNascimento        []string
-	PermissoesDosUsuarios    []uint64
+	Id                       int
+	Login                    string
+	Cpf                      string
+	Senha                    string
+	Nome                     string
+	Email                    string
+	Telefone                 string
+	DataDeNascimento         string
+	PermissoesDoUsuario     uint64
 }
 
 type respostaUsuario struct {
@@ -46,26 +46,26 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	switch requisicao.Method {
 	case "POST":
-		if len(requisicaoUsuario.Logins) < 1 ||
-			len(requisicaoUsuario.Cpfs) < 1 ||
-			len(requisicaoUsuario.Nomes) < 1 ||
-			len(requisicaoUsuario.Emails) < 1 ||
-			len(requisicaoUsuario.Telefones) < 1 ||
-			len(requisicaoUsuario.DatasDeNascimento) < 1 ||
-			len(requisicaoUsuario.PermissoesDosUsuarios) < 1 {
+		if len(requisicaoUsuario.Login) < 1 ||
+			len(requisicaoUsuario.Cpf) < 1 ||
+			len(requisicaoUsuario.Nome) < 1 ||
+			len(requisicaoUsuario.Email) < 1 ||
+			len(requisicaoUsuario.Telefone) < 1 ||
+			len(requisicaoUsuario.Senha) < 1 ||
+			len(requisicaoUsuario.DataDeNascimento) < 1 {
 			resposta.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(resposta, "Algum campo necessário para o cadastro não foi fornecido")
 			return
 		}
 
 		var novoUsuario modelos.Usuario
-		novoUsuario.Login = requisicaoUsuario.Logins[0]
-		novoUsuario.Cpf = requisicaoUsuario.Cpfs[0]
-		novoUsuario.Nome = requisicaoUsuario.Nomes[0]
-		novoUsuario.Email = requisicaoUsuario.Emails[0]
-		novoUsuario.Telefone = requisicaoUsuario.Telefones[0]
-		novoUsuario.DataDeNascimento = requisicaoUsuario.DatasDeNascimento[0]
-		novoUsuario.Permissao = requisicaoUsuario.PermissoesDosUsuarios[0]
+		novoUsuario.Login = requisicaoUsuario.Login
+		novoUsuario.Cpf = requisicaoUsuario.Cpf
+		novoUsuario.Nome = requisicaoUsuario.Nome
+		novoUsuario.Email = requisicaoUsuario.Email
+		novoUsuario.Telefone = requisicaoUsuario.Telefone
+		novoUsuario.DataDeNascimento = requisicaoUsuario.DataDeNascimento
+		novoUsuario.Permissao = requisicaoUsuario.PermissoesDoUsuario
 		fmt.Println("CPF:", novoUsuario.Cpf)
 		switch servicoUsuario.CriarUsuario(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, novoUsuario) {
 		case servicoUsuario.ErroDeServicoDoUsuarioLoginDuplicado:
@@ -79,6 +79,10 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		case servicoUsuario.ErroDeServicoDoUsuarioEmailDuplicado:
 			resposta.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(resposta, "Email duplicado")
+			return
+		case servicoUsuario.ErroDeServicoDoUsuarioEmailInvalido:
+			resposta.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(resposta, "Email inválido")
 			return
 		case servicoUsuario.ErroDeServicoDoUsuarioErroDesconhecido:
 			resposta.WriteHeader(http.StatusBadRequest)
@@ -107,6 +111,8 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 			return
 
 		}
+
+		novoUsuario.IdDoUsuario = servicoUsuario.PegarIdUsuario(novoUsuario.Login)
 
 		respostaUsuario := respostaUsuario{
 			[]modelos.Usuario{

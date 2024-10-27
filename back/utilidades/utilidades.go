@@ -1,6 +1,9 @@
 package utilidades
 
 import "unicode"
+import "regexp"
+
+const emailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 
 func calcularDigitosVerificadores(cpf string, primeiroDigito bool) int {
 	somaDigitos := 0
@@ -44,6 +47,15 @@ func ValidarCpf(cpf string) bool {
 	return primeiroDigitoVerificadorFornecido == calcularDigitosVerificadores(cpf, true) && segundoDigitoVerificadorFornecido == calcularDigitosVerificadores(cpf, false)
 
 }
+
+func ValidarEmail(email string) bool {
+	deuMatch, erro := regexp.MatchString(emailRegex, email)
+	if erro != nil {
+		return true
+	}
+	return deuMatch
+}
+
 
 func StringENumerica(s string) bool {
 	for _, c := range s {

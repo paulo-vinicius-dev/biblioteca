@@ -1,6 +1,7 @@
+import 'package:biblioteca/models/modelo_menu.dart';
+import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:sistema_biblioteca/Modelos/modelo_menu.dart';
-import 'package:sistema_biblioteca/theme.dart';
+
 
 class MenuNavegacao extends StatefulWidget {
   const MenuNavegacao({super.key});

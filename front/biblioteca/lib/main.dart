@@ -1,5 +1,6 @@
 import 'package:biblioteca/screens/home.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 
@@ -15,7 +16,7 @@ class Myapp extends StatelessWidget {
     return MaterialApp(
       theme:ThemeData(
         primarySwatch: Colors.red,
-        fontFamily: 'Roboto'
+        fontFamily: "Nunito"
       ),
       home: const PaginaIncial(),
     );

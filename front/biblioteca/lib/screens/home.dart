@@ -15,7 +15,7 @@ class PaginaIncial extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          Container(color: Colors.white,),
+          Container(color: Color.fromARGB(200, 245, 246, 250),),
           MenuNavegacao(),
         ],
       ),

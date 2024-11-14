@@ -1,7 +1,7 @@
-import 'package:biblioteca/models/modelo_menu.dart';
-import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
-
+import 'package:biblioteca/models/modelo_menu.dart'; 
+import 'package:biblioteca/utils/theme.dart';
+import 'package:google_fonts/google_fonts.dart'; 
 
 class MenuNavegacao extends StatefulWidget {
   const MenuNavegacao({super.key});
@@ -10,203 +10,168 @@ class MenuNavegacao extends StatefulWidget {
   _MenuNavegacaoState createState() => _MenuNavegacaoState();
 }
 
-class _MenuNavegacaoState extends State<MenuNavegacao> with SingleTickerProviderStateMixin {
-  double maxwidth = 225.0;
-  double minwidth = 70.0;
-  bool menuAtivado = false;
-  late AnimationController _animationController;
+class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateMixin {
+  late AnimationController _menuAnimationController;
   late Animation<double> _widthAnimation;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _fadeAnimation;
+  late Animation<double> _labelFadeAnimation;
+  final _animationDuration = const Duration(milliseconds: 300);
+  bool menuAtivado = false;
+  int _expandedIndex = -1;
 
-  final Map<int, bool> _isHovered = {};
-
-  int _selectedIndex = -1; 
-  int _expandedIndex = -1; 
+  List<ExpansionTileController> _controllers = [];
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 255),
-    );
+    _controllers = List.generate(menuitens.length, (index) => ExpansionTileController());
+    _menuAnimationController = AnimationController(vsync: this, duration: _animationDuration);
 
-    _widthAnimation = Tween<double>(begin: minwidth, end: maxwidth).animate(_animationController);
+    _widthAnimation = Tween<double>(begin: 70, end: 260).animate(CurvedAnimation(
+      parent: _menuAnimationController,
+      curve: Curves.easeInOut,
+    ));
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(-0.4, 0), end: const Offset(0, 0))
-        .animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+    _labelFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _menuAnimationController,
+      curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
+    ));
 
-    _fadeAnimation = Tween<double>(begin: -10, end: 1)
-        .animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+  }
+  void _handleExpansion(int index, bool isExpanded){
+    if(isExpanded){
+      setState(() {
+        for(int i = 0; i<_controllers.length;i++){
+          if( i != index){
+            _controllers[i].collapse();
+          }
+        }
+        _expandedIndex = index;
+      });
+    }else{
+      setState(() {
+        _expandedIndex = -1;
+      });
+    }
+  }
+  @override
+
+  void dispose() {
+    _menuAnimationController.dispose();
+    super.dispose();
   }
 
-  void toggleMenu() {
+  void onIconPressed() {
+    if (menuAtivado) {
+      _menuAnimationController.reverse();
+    } else {
+      _menuAnimationController.forward();
+    }
+
     setState(() {
       menuAtivado = !menuAtivado;
     });
-    if (menuAtivado) {
-      _animationController.forward();
-    } else {
-      _animationController.reverse();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _widthAnimation,
+      animation: _menuAnimationController,
       builder: (context, child) {
-        return Material(
-          elevation: 8.0,
-          child: Container(
-            width: _widthAnimation.value,
-            color: drawerBackgroundColor,
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: menuAtivado ? MainAxisAlignment.end : MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.menu),
-                      onPressed: toggleMenu,
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      _buildListTile(0, Icons.home, 'Início'),
-                      _buildListTile(1, Icons.search, 'Pesquisa Exemplar'),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: menuitens.length,
-                        itemBuilder: (context, index) {
-                          int expansionTileIndex = 1000 + index; 
-                          return ExpansionTile(
-                            tilePadding: const EdgeInsets.fromLTRB(22, 4, 5, 4),
-                            leading: Icon(menuitens[index].icon),
-                            backgroundColor: _selectedIndex == expansionTileIndex
-                                ? const Color.fromRGBO(233, 235, 238, 75)
-                                : Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(11),
-                            ),
-                            iconColor: selectedColor,
-                            textColor: selectedColor,
-                            collapsedTextColor: Colors.black87,
-                            onExpansionChanged: (isExpanded) {
-                              setState(() {
-                                if (isExpanded) {
-                                  _expandedIndex = index;
-                                } else {
-                                  _expandedIndex = -1;
-                                }
-                                _selectedIndex = isExpanded ? expansionTileIndex : -1;
-                              });
-                            },
-                            initiallyExpanded: _expandedIndex == index,
-                            title: menuAtivado
-                                ? SlideTransition(
-                                    position: _slideAnimation,
-                                    child: FadeTransition(
-                                      opacity: _fadeAnimation,
-                                      child: Text(
-                                        menuitens[index].title,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w400
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
-                            showTrailingIcon: menuAtivado,
-                            
-                            children: menuAtivado
-                                ? [
-                                    for (String item in menuSubItens[index])
-                                      ListTile(
-                                        contentPadding: const EdgeInsets.only(left: 60),
-                                        title: Text(
-                                          item,
-                                          style: const TextStyle(fontSize: 12.3),
-
-                                          
-                                        ),
-                                      ),
-                                  ]
-                                : [],
-                          );
-                        },
-                      ),
-                      _buildListTile(100, Icons.settings, 'Configurações'),
-                      _buildListTile(101, Icons.exit_to_app, 'Sair'),
-                    ],
+        return Container(
+          width: _widthAnimation.value,
+          color: drawerBackgroundColor,
+          child: Column(
+            children: <Widget>[
+              Row(
+                
+                mainAxisAlignment: menuAtivado ? MainAxisAlignment.end : MainAxisAlignment.center,
+                children: [
+                  /*Visibility(
+                    visible: menuAtivado,
+                      replacement: const SizedBox.shrink(),
+                      child: SizedBox(
+                      child: Image.asset('assets/imagens/logo.png'),
+                      width: 150,
+                      height: 60,
+                      )
+                  ),*/
+                  IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: onIconPressed,
                   ),
+                ],
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: menuitens.length,
+                  itemBuilder: (context, index) {
+                    bool isSelected = _expandedIndex == index;
+                    final itemMenu = menuitens[index];
+                    
+
+                    return ExpansionTile(
+                          controller: _controllers[index],
+                          tilePadding: const EdgeInsets.fromLTRB(22, 4, 5, 4),
+                          leading: Icon(
+                            itemMenu.icon,
+                            color: isSelected ? selectedColor : Colors.black87,
+                          ),
+                          backgroundColor: isSelected
+                              ? const Color.fromRGBO(233, 235, 238, 75)
+                              : Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(11),
+                          ),
+                          iconColor: isSelected ? selectedColor : Colors.black87,
+                          textColor: isSelected ? selectedColor : Colors.black87,
+                          showTrailingIcon: menuAtivado,
+                          collapsedTextColor: Colors.black87,
+                          onExpansionChanged: (isExpanded) {
+                            _handleExpansion(index, isExpanded);
+                          },
+                          initiallyExpanded: _expandedIndex == index,
+                          title: FadeTransition(
+                            opacity: _labelFadeAnimation,
+                            child: Visibility(
+                              visible: menuAtivado,
+                              replacement: const SizedBox.shrink(),
+                              child: Text(
+                                itemMenu.title,
+                                style: GoogleFonts.roboto(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w400,
+                                  color: isSelected ? selectedColor : Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                          trailing: itemMenu.submenus.isEmpty
+                              ? const SizedBox.shrink()
+                              : Icon(
+                                  isSelected ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                                  color: isSelected ? selectedColor : Colors.black87,
+                                ),
+                          children: itemMenu.submenus.isNotEmpty && menuAtivado
+                              ? itemMenu.submenus.map((submenu) {
+                                  return ListTile(
+                                    contentPadding: const EdgeInsets.only(left: 66),
+                                    
+                                    title: Text(
+                                      submenu,
+                                      style: GoogleFonts.roboto(fontSize: 12.5),
+                                    ),
+                                  );
+                                }).toList()
+                              : [],
+                        );
+                      
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
     );
-  }
-
-  Widget _buildListTile(int index, IconData icon, String title, {bool isSubItem = false}) {
-    return MouseRegion(
-      onEnter: (_) {
-        setState(() {
-          _isHovered[index] = true;
-        });
-      },
-      onExit: (_) {
-        setState(() {
-          _isHovered[index] = false;
-        });
-      },
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            _selectedIndex = index;
-            _expandedIndex = -1; 
-          });
-        },
-        child: Container(
-          color: _selectedIndex == index
-              ? const Color.fromRGBO(233, 235, 238, 75) 
-              : _isHovered[index] == true
-                  ? const Color.fromRGBO(233, 235, 238, 50) 
-                  : Colors.transparent,
-          child: ListTile(
-            contentPadding: isSubItem ? const EdgeInsets.only(left: 50) : const EdgeInsets.fromLTRB(22, 2.5, 5, 2.5),
-            leading: Icon(icon, color: Colors.black87),
-            title: menuAtivado
-                ? SlideTransition(
-                    position: _slideAnimation,
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: isSubItem ? 12 : 13,
-                        ),
-                      ),
-                    ),
-                  )
-                : null,
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 }

@@ -1,6 +1,6 @@
 import 'package:biblioteca/screens/home.dart';
+import 'package:biblioteca/screens/login.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 
 
@@ -15,10 +15,10 @@ class Myapp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme:ThemeData(
-        primarySwatch: Colors.red,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0x262A4F)),
         fontFamily: "Nunito"
       ),
-      home: const PaginaIncial(),
+      home: LoginPage()
     );
   }
 }

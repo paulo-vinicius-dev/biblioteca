@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:biblioteca/models/modelo_menu.dart'; 
-import 'package:biblioteca/utils/theme.dart'; 
+import 'package:biblioteca/utils/theme.dart';
+import 'package:google_fonts/google_fonts.dart'; 
 
 class MenuNavegacao extends StatefulWidget {
   const MenuNavegacao({super.key});
@@ -8,7 +9,7 @@ class MenuNavegacao extends StatefulWidget {
   @override
   _MenuNavegacaoState createState() => _MenuNavegacaoState();
 }
-//teste
+
 class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateMixin {
   late AnimationController _menuAnimationController;
   late Animation<double> _widthAnimation;
@@ -128,8 +129,8 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                               replacement: const SizedBox.shrink(),
                               child: Text(
                                 itemMenu.title,
-                                style: TextStyle(
-                                  fontSize: 13,
+                                style: GoogleFonts.roboto(
+                                  fontSize: 13.5,
                                   fontWeight: FontWeight.w400,
                                   color: isSelected ? selectedColor : Colors.black87,
                                 ),
@@ -142,13 +143,14 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                                   isSelected ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
                                   color: isSelected ? selectedColor : Colors.black87,
                                 ),
-                          children: itemMenu.submenus.isNotEmpty
+                          children: itemMenu.submenus.isNotEmpty && menuAtivado
                               ? itemMenu.submenus.map((submenu) {
                                   return ListTile(
-                                    contentPadding: const EdgeInsets.only(left: 60),
+                                    contentPadding: const EdgeInsets.only(left: 66),
+                                    
                                     title: Text(
                                       submenu,
-                                      style: const TextStyle(fontSize: 12.3),
+                                      style: GoogleFonts.roboto(fontSize: 12.5),
                                     ),
                                   );
                                 }).toList()

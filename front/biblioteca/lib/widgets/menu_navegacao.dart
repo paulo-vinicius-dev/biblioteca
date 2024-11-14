@@ -8,7 +8,7 @@ class MenuNavegacao extends StatefulWidget {
   @override
   _MenuNavegacaoState createState() => _MenuNavegacaoState();
 }
-
+//teste
 class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateMixin {
   late AnimationController _menuAnimationController;
   late Animation<double> _widthAnimation;

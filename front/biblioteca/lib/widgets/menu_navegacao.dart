@@ -14,14 +14,16 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
   late AnimationController _menuAnimationController;
   late Animation<double> _widthAnimation;
   late Animation<double> _labelFadeAnimation;
-  final List<AnimationController> _destinationControllers = [];
   final _animationDuration = const Duration(milliseconds: 300);
   bool menuAtivado = false;
-  int _expandedIndex = -1; 
+  int _expandedIndex = -1;
+
+  List<ExpansionTileController> _controllers = [];
 
   @override
   void initState() {
     super.initState();
+    _controllers = List.generate(menuitens.length, (index) => ExpansionTileController());
     _menuAnimationController = AnimationController(vsync: this, duration: _animationDuration);
 
     _widthAnimation = Tween<double>(begin: 70, end: 260).animate(CurvedAnimation(
@@ -34,18 +36,27 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
       curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
     ));
 
-    
-    for (var i = 0; i < menuitens.length; i++) {
-      _destinationControllers.add(AnimationController(vsync: this, duration: _animationDuration));
+  }
+  void _handleExpansion(int index, bool isExpanded){
+    if(isExpanded){
+      setState(() {
+        for(int i = 0; i<_controllers.length;i++){
+          if( i != index){
+            _controllers[i].collapse();
+          }
+        }
+        _expandedIndex = index;
+      });
+    }else{
+      setState(() {
+        _expandedIndex = -1;
+      });
     }
   }
-
   @override
+
   void dispose() {
     _menuAnimationController.dispose();
-    for (var controller in _destinationControllers) {
-      controller.dispose();
-    }
     super.dispose();
   }
 
@@ -72,8 +83,18 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
           child: Column(
             children: <Widget>[
               Row(
+                
                 mainAxisAlignment: menuAtivado ? MainAxisAlignment.end : MainAxisAlignment.center,
                 children: [
+                  /*Visibility(
+                    visible: menuAtivado,
+                      replacement: const SizedBox.shrink(),
+                      child: SizedBox(
+                      child: Image.asset('assets/imagens/logo.png'),
+                      width: 150,
+                      height: 60,
+                      )
+                  ),*/
                   IconButton(
                     icon: const Icon(Icons.menu),
                     onPressed: onIconPressed,
@@ -86,12 +107,10 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                   itemBuilder: (context, index) {
                     bool isSelected = _expandedIndex == index;
                     final itemMenu = menuitens[index];
-                    final itemController = _destinationControllers[index];
+                    
 
-                    return AnimatedBuilder(
-                      animation: itemController,
-                      builder: (context, child) {
-                        return ExpansionTile(
+                    return ExpansionTile(
+                          controller: _controllers[index],
                           tilePadding: const EdgeInsets.fromLTRB(22, 4, 5, 4),
                           leading: Icon(
                             itemMenu.icon,
@@ -108,18 +127,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                           showTrailingIcon: menuAtivado,
                           collapsedTextColor: Colors.black87,
                           onExpansionChanged: (isExpanded) {
-                            setState(() {
-                              if (isExpanded) {
-                                for (var controller in _destinationControllers) {
-                                  controller.reverse();
-                                }
-                                itemController.forward();
-                                _expandedIndex = index;
-                              } else if (_expandedIndex == index) {
-                                itemController.reverse();
-                                _expandedIndex = -1;
-                              }
-                            });
+                            _handleExpansion(index, isExpanded);
                           },
                           initiallyExpanded: _expandedIndex == index,
                           title: FadeTransition(
@@ -156,8 +164,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                                 }).toList()
                               : [],
                         );
-                      },
-                    );
+                      
                   },
                 ),
               ),

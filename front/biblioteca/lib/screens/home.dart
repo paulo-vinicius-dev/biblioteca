@@ -1,6 +1,6 @@
+import 'package:biblioteca/widgets/menu_navegacao.dart';
+import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:biblioteca/Menu/menu_navegacao.dart';
-import 'package:biblioteca/theme.dart';
 
 class PaginaIncial extends StatelessWidget {
   const PaginaIncial({super.key});
@@ -16,7 +16,7 @@ class PaginaIncial extends StatelessWidget {
       body: Stack(
         children: [
           Container(color: Color.fromARGB(200, 245, 246, 250),),
-          const MenuNavegacao(),
+          MenuNavegacao(),
         ],
       ),
 

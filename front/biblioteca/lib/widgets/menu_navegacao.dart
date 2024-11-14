@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:biblioteca/Modelos/modelo_menu.dart'; // Certifique-se de que o caminho está correto
-import 'package:biblioteca/theme.dart'; // Certifique-se de que o caminho está correto
+import 'package:biblioteca/models/modelo_menu.dart'; 
+import 'package:biblioteca/utils/theme.dart'; 
 
 class MenuNavegacao extends StatefulWidget {
   const MenuNavegacao({super.key});
@@ -16,7 +16,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
   final List<AnimationController> _destinationControllers = [];
   final _animationDuration = const Duration(milliseconds: 300);
   bool menuAtivado = false;
-  int _expandedIndex = -1; // Variável para manter o índice do item expandido
+  int _expandedIndex = -1; 
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
       curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
     ));
 
-    // Criar controladores de animação para cada item do menu
+    
     for (var i = 0; i < menuitens.length; i++) {
       _destinationControllers.add(AnimationController(vsync: this, duration: _animationDuration));
     }

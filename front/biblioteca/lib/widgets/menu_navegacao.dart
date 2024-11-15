@@ -86,15 +86,15 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                 
                 mainAxisAlignment: menuAtivado ? MainAxisAlignment.end : MainAxisAlignment.center,
                 children: [
-                  /*Visibility(
-                    visible: menuAtivado,
-                      replacement: const SizedBox.shrink(),
-                      child: SizedBox(
-                      child: Image.asset('assets/imagens/logo.png'),
-                      width: 150,
-                      height: 60,
-                      )
-                  ),*/
+                  // Visibility(
+                  //   visible: menuAtivado,
+                  //     replacement: const SizedBox.shrink(),
+                  //     child: SizedBox(
+                  //     child: Image.asset('assets/images/logo.png'),
+                  //     width: 150,
+                  //     height: 60,
+                  //     )
+                  // ),
                   IconButton(
                     icon: const Icon(Icons.menu),
                     onPressed: onIconPressed,
@@ -114,7 +114,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                           tilePadding: const EdgeInsets.fromLTRB(22, 4, 5, 4),
                           leading: Icon(
                             itemMenu.icon,
-                            color: isSelected ? selectedColor : Colors.black87,
+                            color: isSelected ? selectedColor(context) : Colors.black87,
                           ),
                           backgroundColor: isSelected
                               ? const Color.fromRGBO(233, 235, 238, 75)
@@ -122,8 +122,8 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(11),
                           ),
-                          iconColor: isSelected ? selectedColor : Colors.black87,
-                          textColor: isSelected ? selectedColor : Colors.black87,
+                          iconColor: isSelected ? selectedColor(context) : Colors.black87,
+                          textColor: isSelected ? selectedColor(context) : Colors.black87,
                           showTrailingIcon: menuAtivado,
                           collapsedTextColor: Colors.black87,
                           onExpansionChanged: (isExpanded) {
@@ -140,7 +140,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                                 style: GoogleFonts.roboto(
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.w400,
-                                  color: isSelected ? selectedColor : Colors.black87,
+                                  color: isSelected ? selectedColor(context) : Colors.black87,
                                 ),
                               ),
                             ),
@@ -149,7 +149,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                               ? const SizedBox.shrink()
                               : Icon(
                                   isSelected ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
-                                  color: isSelected ? selectedColor : Colors.black87,
+                                  color: isSelected ? selectedColor(context) : Colors.black87,
                                 ),
                           children: itemMenu.submenus.isNotEmpty && menuAtivado
                               ? itemMenu.submenus.map((submenu) {

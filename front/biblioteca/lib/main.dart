@@ -15,10 +15,11 @@ class Myapp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme:ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0x262A4F)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF262A4F)),
+        scaffoldBackgroundColor: const Color(0xFFF0F0F0),
         fontFamily: "Nunito"
       ),
-      home: LoginPage()
+      home: const TelaLogin()
     );
   }
 }

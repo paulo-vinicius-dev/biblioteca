@@ -11,6 +11,7 @@ class PaginaIncial extends StatelessWidget {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: drawerBackgroundColor,
+        leading: null,
 
       ),
       body: Stack(

@@ -1,5 +1,8 @@
+import 'package:biblioteca/data/dummy_users.dart';
+import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class FormLogin extends StatefulWidget {
   const FormLogin({super.key});
@@ -25,6 +28,38 @@ class _FormLoginState extends State<FormLogin> {
       return 'Preencha esse campo';
     }
     return null;
+  }
+
+  Future<void> doLogin(String user, String password) async {
+    // var url = Uri();
+
+    // var response = await http.post(url, body: {
+    //   'usuario': user,
+    //   'senha': password,
+    // });
+    List<User> users = dummyUsers;
+
+    for (var u in users) {
+      if (/*response.statusCode == 200*/ u.user == user &&
+          u.password == password) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const PaginaIncial()),
+            (Route<dynamic> route) => false);
+      }
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Usuário ou senha incorretos',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),),
+        backgroundColor: Theme.of(context).colorScheme.error,
+      ),
+    );
   }
 
   @override
@@ -60,16 +95,17 @@ class _FormLoginState extends State<FormLogin> {
           TextFormField(
             controller: _passwordController,
             decoration: InputDecoration(
-                labelText: 'Senha',
-                border: const OutlineInputBorder(),
-                prefixIcon:   const Icon(Icons.lock),
-                suffixIcon: IconButton(
-                    onPressed: () {
-                      tooglePassword();
-                    },
-                    icon: Icon(_visiblePassword
-                        ? Icons.visibility
-                        : Icons.visibility_off))),
+              labelText: 'Senha',
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.lock),
+              suffixIcon: IconButton(
+                onPressed: () {
+                  tooglePassword();
+                },
+                icon: Icon(
+                    _visiblePassword ? Icons.visibility : Icons.visibility_off),
+              ),
+            ),
             obscureText: _visiblePassword,
             validator: (pass) => isNotNull(pass),
           ),
@@ -78,12 +114,10 @@ class _FormLoginState extends State<FormLogin> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                _formLoginKey.currentState!.validate();
-                // Navigator.pushAndRemoveUntil(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => const PaginaIncial()),
-                //     (Route<dynamic> route) => false);
+                if(_formLoginKey.currentState!.validate()){
+
+                doLogin(_userController.text, _passwordController.text);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,

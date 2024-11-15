@@ -1,9 +1,7 @@
 import 'package:biblioteca/data/dummy_users.dart';
-import 'package:biblioteca/screens/pagina_inicial.dart';
-import 'package:biblioteca/screens/redefinir_senha.dart';
-import 'package:biblioteca/utils/routes.dart';
+import 'package:biblioteca/utils/rotas.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
 
 class FormLogin extends StatefulWidget {
   const FormLogin({super.key});
@@ -44,7 +42,7 @@ class _FormLoginState extends State<FormLogin> {
       if (/*response.statusCode == 200*/ u.user == user &&
           u.password == password) {
         Navigator.pushNamedAndRemoveUntil(
-            context, Routes.home, (Route<dynamic> route) => false);
+            context, Rotas.home, (Route<dynamic> route) => false);
         userFound = true;
       }
     }
@@ -138,7 +136,7 @@ class _FormLoginState extends State<FormLogin> {
           const SizedBox(height: 20),
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, Routes.redefinirSenha);
+              Navigator.pushNamed(context, Rotas.redefinirSenha);
             },
             child: Text(
               'Esqueceu sua senha?',

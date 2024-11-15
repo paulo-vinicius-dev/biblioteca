@@ -1,6 +1,7 @@
 import 'package:biblioteca/data/dummy_users.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
+import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -38,28 +39,30 @@ class _FormLoginState extends State<FormLogin> {
     //   'senha': password,
     // });
     List<User> users = dummyUsers;
-
+    bool userFound = false;
     for (var u in users) {
       if (/*response.statusCode == 200*/ u.user == user &&
           u.password == password) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const PaginaIncial()),
-            (Route<dynamic> route) => false);
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.home, (Route<dynamic> route) => false);
+        userFound = true;
       }
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Usuário ou senha incorretos',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),),
-        backgroundColor: Theme.of(context).colorScheme.error,
-      ),
-    );
+    if (!userFound) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Usuário ou senha incorretos',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   @override
@@ -114,9 +117,8 @@ class _FormLoginState extends State<FormLogin> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                if(_formLoginKey.currentState!.validate()){
-
-                doLogin(_userController.text, _passwordController.text);
+                if (_formLoginKey.currentState!.validate()) {
+                  doLogin(_userController.text, _passwordController.text);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -136,10 +138,7 @@ class _FormLoginState extends State<FormLogin> {
           const SizedBox(height: 20),
           TextButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TelaRedefinirSenha()),
-              );
+              Navigator.pushNamed(context, Routes.redefinirSenha);
             },
             child: Text(
               'Esqueceu sua senha?',

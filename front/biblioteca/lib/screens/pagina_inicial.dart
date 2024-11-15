@@ -2,8 +2,8 @@ import 'package:biblioteca/widgets/menu_navegacao.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
 
-class PaginaIncial extends StatelessWidget {
-  const PaginaIncial({super.key});
+class TelaPaginaIncial extends StatelessWidget {
+  const TelaPaginaIncial({super.key});
 
   @override
   Widget build(BuildContext context) {

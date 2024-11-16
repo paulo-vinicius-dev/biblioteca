@@ -10,17 +10,18 @@ import (
 )
 
 type requisicaoUsuario struct {
-	IdDaSessao               uint64
-	LoginDoUsuarioRequerente string
-	Id                       int
-	Login                    string
-	Cpf                      string
-	Senha                    string
-	Nome                     string
-	Email                    string
-	Telefone                 string
-	DataDeNascimento         string
-	PermissoesDoUsuario     uint64
+	IdDaSessao               uint64 `validate:"required"`
+	LoginDoUsuarioRequerente string `validate:"required"`
+	Id                       int	`validate:"optional"`
+	Login                    string `validate:"optional"`
+	Cpf                      string `validate:"optional"`
+	Senha                    string `validate:"optional"`
+	Nome                     string `validate:"optional"`
+	Email                    string `validate:"optional"`
+	Telefone                 string `validate:"optional"`
+	DataDeNascimento         string `validate:"optional"`
+	PermissoesDoUsuario      uint64 `validate:"optional"`
+	TextoDeBusca             string `validate:"optional"` // usado somente quando se procura um usuário
 }
 
 type respostaUsuario struct {
@@ -44,6 +45,12 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		return
 	}
 
+	if requisicaoUsuario.LoginDoUsuarioRequerente == "" {
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "A requisição para a rota de criação foi mal feita")
+		return
+	}
+
 	switch requisicao.Method {
 	case "POST":
 		if len(requisicaoUsuario.Login) < 1 ||
@@ -60,6 +67,8 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 
 		var novoUsuario modelos.Usuario
 		novoUsuario.Login = requisicaoUsuario.Login
+		resposta.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(resposta, "Houve um erro interno enquanto se fazia a busca! Provavelmente é um bug na api!")
 		novoUsuario.Cpf = requisicaoUsuario.Cpf
 		novoUsuario.Nome = requisicaoUsuario.Nome
 		novoUsuario.Email = requisicaoUsuario.Email
@@ -125,6 +134,25 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		fmt.Fprintf(resposta, "%s", respostaUsuarioJson)
 
 		return
+
+
+	case "GET":
+		usuariosEncontrados, erro := servicoUsuario.BuscarUsuarios(requisicaoUsuario.IdDaSessao,requisicaoUsuario.LoginDoUsuarioRequerente,  requisicaoUsuario.TextoDeBusca)
+		if erro == servicoUsuario.ErroDeServicoDoUsuarioSemPermisao {
+			resposta.WriteHeader(http.StatusForbidden)
+			fmt.Fprintf(resposta, "Este usuário não tem permissão para essa operação")
+			return
+		} else if erro == servicoUsuario.ErroDeServicoDoUsuarioFalhaNaBusca {
+			resposta.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(resposta, "Houve um erro interno enquanto se fazia a busca! Provavelmente é um bug na api!") // mudar para um assert
+			return
+		}
+		respostaUsuario := respostaUsuario{
+			usuariosEncontrados,
+		}
+		respostaUsuarioJson, _ := json.Marshal(&respostaUsuario)
+
+		fmt.Fprintf(resposta, "%s", respostaUsuarioJson)
 
 	}
 

@@ -6,11 +6,15 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
+	pgx "github.com/jackc/pgx/v5"
+
 )
 
 type ErroDeCadastroDoUsuario int
 
-// Erros
+type ErroDeBuscaDeUsuario int
+
+// Erros no cadastro do usuário
 const (
 	ErroDeCadastroDoUsuarioNenhum = iota
 	ErroDeCadastroDoUsuarioLoginDuplicado
@@ -18,6 +22,13 @@ const (
 	ErroDeCadastroDoUsuarioEmailDuplicado
 	ErroDeCadastroDoUsuarioErroDesconhecido
 )
+
+// Erros na busca do usuário
+const (
+	ErroDeBuscaDeUsuarioFalhaNaBusca = iota
+	ErroDeBuscaDeUsuarioNenhum
+)
+
 
 func CriarUsuario(novoUsuario modelos.Usuario) ErroDeCadastroDoUsuario {
 	conexao := PegarConexao()
@@ -61,6 +72,45 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroDeCadastroDoUsuario {
 	}
 
 	return ErroDeCadastroDoUsuarioNenhum
+}
+
+func PesquisarUsuario(busca string) ([]modelos.Usuario,ErroDeBuscaDeUsuario)  {
+	conexao := PegarConexao()
+	busca = "%" + busca + "%" // isso está sujeitio a sql injection por favor olhar depois
+	textoQuery := "select id_usuario, login, cpf, nome, email, telefone, to_char(data_nascimento, 'yyyy-mm-dd'), permissoes from usuario where login like $1 or nome like $1 or email like $1 or cpf like $1"
+	linhas, erro := conexao.Query(context.Background(), textoQuery, busca)
+	if erro != nil {
+		return nil, ErroDeBuscaDeUsuarioFalhaNaBusca
+	}
+	var usuarioTemporario modelos.Usuario
+	usuariosEncontrados := make([]modelos.Usuario, 0)
+	_, erro = pgx.ForEachRow(linhas,[]any{&usuarioTemporario.IdDoUsuario,&usuarioTemporario.Login,&usuarioTemporario.Cpf,&usuarioTemporario.Nome,&usuarioTemporario.Email,&usuarioTemporario.Telefone,&usuarioTemporario.DataDeNascimento,&usuarioTemporario.Permissao}, func () error {
+		usuariosEncontrados = append(usuariosEncontrados, usuarioTemporario)
+		return nil
+	})
+	if erro != nil {
+		return nil, ErroDeBuscaDeUsuarioFalhaNaBusca
+	}
+	return usuariosEncontrados, ErroDeBuscaDeUsuarioNenhum
+}
+
+func PesquisarUsuarioPeloLogin(login string) (modelos.Usuario, ErroDeBuscaDeUsuario) {
+	conexao := PegarConexao()
+	var usuario modelos.Usuario
+	textoQuery := "select id_usuario, login, cpf, nome, email, telefone, to_char(data_nascimento, 'yyyy-mm-dd'), permissoes from usuario where login = $1"
+	if erro := conexao.QueryRow(context.Background(), textoQuery,  login).Scan(
+		&usuario.IdDoUsuario,
+		&usuario.Login,
+		&usuario.Cpf,
+		&usuario.Nome,
+		&usuario.Email,
+		&usuario.Telefone,
+		&usuario.DataDeNascimento,
+		&usuario.Permissao); erro == nil {
+		return usuario, ErroDeBuscaDeUsuarioNenhum
+	} else {
+		return usuario, ErroDeBuscaDeUsuarioFalhaNaBusca
+	}
 }
 
 func PegarPermissao(loginDoUsuario string) uint64 {

@@ -14,6 +14,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
   late AnimationController _menuAnimationController;
   late Animation<double> _widthAnimation;
   late Animation<double> _labelFadeAnimation;
+  late Animation<double> _logoFadeAnimation;
   final _animationDuration = const Duration(milliseconds: 300);
   bool menuAtivado = false;
   int _expandedIndex = -1;
@@ -36,6 +37,10 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
       curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
     ));
 
+    _logoFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _menuAnimationController, 
+      curve: const Interval(0.7, 1.0, curve: Curves.easeInOut)
+    ));
   }
   void _handleExpansion(int index, bool isExpanded){
     if(isExpanded){
@@ -84,17 +89,23 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
             children: <Widget>[
               Row(
                 
-                mainAxisAlignment: menuAtivado ? MainAxisAlignment.end : MainAxisAlignment.center,
+                mainAxisAlignment: menuAtivado ? MainAxisAlignment.spaceBetween : MainAxisAlignment.center,
                 children: [
-                  // Visibility(
-                  //   visible: menuAtivado,
-                  //     replacement: const SizedBox.shrink(),
-                  //     child: SizedBox(
-                  //     child: Image.asset('assets/images/logo.png'),
-                  //     width: 150,
-                  //     height: 60,
-                  //     )
-                  // ),
+                  
+                  if(menuAtivado)
+                    Expanded(
+                      child: FadeTransition(
+                        opacity: _logoFadeAnimation,
+                        child: Transform.translate(
+                          offset: Offset(-15, 0),
+                          child: Container(
+                            child:Image.asset('assets/images/logo.png'),
+                            width: 190,
+                            height:  85,
+                          ),
+                        ),
+                      )
+                    ),
                   IconButton(
                     icon: const Icon(Icons.menu),
                     onPressed: onIconPressed,
@@ -108,7 +119,6 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                     bool isSelected = _expandedIndex == index;
                     final itemMenu = menuitens[index];
                     
-
                     return ExpansionTile(
                           controller: _controllers[index],
                           tilePadding: const EdgeInsets.fromLTRB(22, 4, 5, 4),

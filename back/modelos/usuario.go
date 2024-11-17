@@ -10,4 +10,5 @@ type Usuario struct {
 	Telefone         string
 	DataDeNascimento string
 	Permissao        uint64
+	Ativo            bool
 }

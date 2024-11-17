@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS usuario (
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
 	permissoes BIGINT NOT NULL,
+	ativo BOOLEAN NOT NULL DEFAULT TRUE,
 	PRIMARY KEY(id_usuario)
 );
 

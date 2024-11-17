@@ -1,4 +1,5 @@
 import 'package:biblioteca/data/menu_itens.dart';
+import 'package:biblioteca/utils/assets.dart';
 import 'package:flutter/material.dart'; 
 import 'package:biblioteca/utils/theme.dart';
 import 'package:google_fonts/google_fonts.dart'; 
@@ -90,9 +91,9 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                     visible: menuAtivado,
                       replacement: const SizedBox.shrink(),
                       child: SizedBox(
-                      child: Image.asset('assets/images/logo.png'),
                       width: 150,
                       height: 60,
+                      child: Image.asset(AppAssets.logo),
                       )
                   ),
                   IconButton(

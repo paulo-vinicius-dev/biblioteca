@@ -24,7 +24,7 @@ class Myapp extends StatelessWidget {
       initialRoute: AppRoutes.login,
       routes: {
         AppRoutes.login: (ctx) => const TelaLogin(),
-        AppRoutes.home: (ctx) => TelaPaginaIncial(),
+        AppRoutes.home: (ctx) => const TelaPaginaIncial(),
         AppRoutes.redefinirSenha: (ctx) => const TelaRedefinirSenha(),
       },
     );

@@ -22,6 +22,7 @@ const (
 	ErroDeServicoDoUsuarioCpfInvalido
 	ErroDeServicoDoUsuarioDataDeNascimentoInvalida
 	ErroDeServicoDoUsuarioEmailInvalido
+	ErroDeServicoDoUsuarioFalhaNaBusca
 )
 
 func erroDeCadastroDoUsuarioDoBancoParaErroDeServicoDoUsuario(erro banco.ErroDeCadastroDoUsuario) ErroDeServicoDoUsuario {
@@ -38,6 +39,7 @@ func erroDeCadastroDoUsuarioDoBancoParaErroDeServicoDoUsuario(erro banco.ErroDeC
 		return ErroDeServicoDoUsuarioNenhum
 	}
 }
+
 
 // Para criar o usuário é preciso forncer todos os dados do novoUsuario
 // mas do usuario criador só precisamos fornecer o sessão
@@ -72,6 +74,34 @@ func CriarUsuario(idDaSessao uint64, loginUsuarioCriador string, novoUsuario mod
 	return erroDeCadastroDoUsuarioDoBancoParaErroDeServicoDoUsuario(banco.CriarUsuario(novoUsuario))
 
 }
+
+func BuscarUsuarios(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca string) ([]modelos.Usuario, ErroDeServicoDoUsuario){
+	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioBuscador) != sessao.VALIDO {
+		return nil, ErroDeServicoDoUsuarioSessaoInvalida
+	}
+
+	permissaoDoUsuarioBuscador := sessao.PegarSessaoAtual()[idDaSessao].Permissao
+
+	if(textoDaBusca == "") {
+		usuarioBuscador, erro := banco.PesquisarUsuarioPeloLogin(loginDoUsuarioBuscador)
+		if erro == banco.ErroDeBuscaDeUsuarioFalhaNaBusca {
+			return nil, ErroDeServicoDoUsuarioFalhaNaBusca
+		}
+		return []modelos.Usuario{usuarioBuscador}, ErroDeServicoDoUsuarioNenhum
+	}
+
+
+	if permissaoDoUsuarioBuscador&utilidades.PermssaoLerUsuario != utilidades.PermssaoLerUsuario {
+		return nil, ErroDeServicoDoUsuarioSemPermisao
+	}
+
+	usuarioEncontrados, erro := banco.PesquisarUsuario(textoDaBusca)
+	if erro == banco.ErroDeBuscaDeUsuarioFalhaNaBusca {
+		return nil, ErroDeServicoDoUsuarioFalhaNaBusca
+	}
+	return usuarioEncontrados, ErroDeServicoDoUsuarioNenhum
+}
+
 
 func PegarIdUsuario(login string) int {
 	return banco.PegarIdUsuario(login)

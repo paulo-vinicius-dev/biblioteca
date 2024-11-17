@@ -1,5 +1,5 @@
 import 'package:biblioteca/data/dummy_users.dart';
-import 'package:biblioteca/utils/rotas.dart';
+import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 //import 'package:http/http.dart' as http;
 
@@ -42,7 +42,7 @@ class _FormLoginState extends State<FormLogin> {
       if (/*response.statusCode == 200*/ u.user == user &&
           u.password == password) {
         Navigator.pushNamedAndRemoveUntil(
-            context, Rotas.home, (Route<dynamic> route) => false);
+            context, AppRoutes.home, (Route<dynamic> route) => false);
         userFound = true;
       }
     }
@@ -73,7 +73,7 @@ class _FormLoginState extends State<FormLogin> {
         children: <Widget>[
           Image.asset(
             'assets/images/logo.png',
-            fit: BoxFit.scaleDown,
+            scale: 1.5,
           ),
           const SizedBox(
             height: 20,
@@ -82,8 +82,10 @@ class _FormLoginState extends State<FormLogin> {
           const SizedBox(
             height: 30,
           ),
+          // ----############################## Usuário Começa aqui
           TextFormField(
             controller: _userController,
+            autofocus: true,
             decoration: const InputDecoration(
               labelText: 'Usuário',
               border: OutlineInputBorder(),
@@ -92,7 +94,7 @@ class _FormLoginState extends State<FormLogin> {
             validator: (user) => isNotNull(user),
           ),
           const SizedBox(height: 20),
-          // ---- Senha Começa aqui #########
+          // ----############################## Senha Começa aqui
           TextFormField(
             controller: _passwordController,
             decoration: InputDecoration(
@@ -113,6 +115,7 @@ class _FormLoginState extends State<FormLogin> {
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
+            //############################## Botão entrar começa aqui
             child: ElevatedButton(
               onPressed: () {
                 if (_formLoginKey.currentState!.validate()) {
@@ -120,27 +123,28 @@ class _FormLoginState extends State<FormLogin> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
+                overlayColor: Theme.of(context).colorScheme.onPrimary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Entrar',
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 18),
               ),
             ),
           ),
           const SizedBox(height: 20),
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, Rotas.redefinirSenha);
+              Navigator.pushNamed(context, AppRoutes.redefinirSenha);
             },
             child: Text(
               'Esqueceu sua senha?',
-              style: TextStyle(color: Theme.of(context).primaryColor),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
           ),
         ],

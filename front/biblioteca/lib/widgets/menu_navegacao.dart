@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:biblioteca/models/modelo_menu.dart'; 
+import 'package:biblioteca/data/menu_itens.dart';
+import 'package:flutter/material.dart'; 
 import 'package:biblioteca/utils/theme.dart';
 import 'package:google_fonts/google_fonts.dart'; 
 
@@ -7,7 +7,7 @@ class MenuNavegacao extends StatefulWidget {
   const MenuNavegacao({super.key});
 
   @override
-  _MenuNavegacaoState createState() => _MenuNavegacaoState();
+  State<MenuNavegacao> createState() => _MenuNavegacaoState();
 }
 
 class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateMixin {
@@ -79,22 +79,22 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
       builder: (context, child) {
         return Container(
           width: _widthAnimation.value,
-          color: drawerBackgroundColor,
+          color: AppTheme.drawerBackgroundColor,
           child: Column(
             children: <Widget>[
               Row(
                 
                 mainAxisAlignment: menuAtivado ? MainAxisAlignment.end : MainAxisAlignment.center,
                 children: [
-                  // Visibility(
-                  //   visible: menuAtivado,
-                  //     replacement: const SizedBox.shrink(),
-                  //     child: SizedBox(
-                  //     child: Image.asset('assets/images/logo.png'),
-                  //     width: 150,
-                  //     height: 60,
-                  //     )
-                  // ),
+                  Visibility(
+                    visible: menuAtivado,
+                      replacement: const SizedBox.shrink(),
+                      child: SizedBox(
+                      child: Image.asset('assets/images/logo.png'),
+                      width: 150,
+                      height: 60,
+                      )
+                  ),
                   IconButton(
                     icon: const Icon(Icons.menu),
                     onPressed: onIconPressed,
@@ -114,7 +114,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                           tilePadding: const EdgeInsets.fromLTRB(22, 4, 5, 4),
                           leading: Icon(
                             itemMenu.icon,
-                            color: isSelected ? selectedColor(context) : Colors.black87,
+                            color: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
                           ),
                           backgroundColor: isSelected
                               ? const Color.fromRGBO(233, 235, 238, 75)
@@ -122,8 +122,8 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(11),
                           ),
-                          iconColor: isSelected ? selectedColor(context) : Colors.black87,
-                          textColor: isSelected ? selectedColor(context) : Colors.black87,
+                          iconColor: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
+                          textColor: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
                           showTrailingIcon: menuAtivado,
                           collapsedTextColor: Colors.black87,
                           onExpansionChanged: (isExpanded) {
@@ -140,7 +140,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                                 style: GoogleFonts.roboto(
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.w400,
-                                  color: isSelected ? selectedColor(context) : Colors.black87,
+                                  color: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
                                 ),
                               ),
                             ),
@@ -149,7 +149,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                               ? const SizedBox.shrink()
                               : Icon(
                                   isSelected ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
-                                  color: isSelected ? selectedColor(context) : Colors.black87,
+                                  color: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
                                 ),
                           children: itemMenu.submenus.isNotEmpty && menuAtivado
                               ? itemMenu.submenus.map((submenu) {

@@ -10,17 +10,17 @@ class TelaPaginaIncial extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: drawerBackgroundColor,
+        backgroundColor: AppTheme.drawerBackgroundColor,
         leading: null,
-
       ),
       body: Stack(
         children: [
-          Container(color: Color.fromARGB(200, 245, 246, 250),),
-          MenuNavegacao(),
+          Container(
+            color: const Color.fromARGB(200, 245, 246, 250),
+          ),
+          const MenuNavegacao(),
         ],
       ),
-
     );
   }
 }

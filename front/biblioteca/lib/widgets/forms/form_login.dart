@@ -1,7 +1,11 @@
-import 'package:biblioteca/data/dummy_users.dart';
-import 'package:biblioteca/utils/rotas.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+
+import 'package:biblioteca/utils/assets.dart';
+import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
-//import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 
 class FormLogin extends StatefulWidget {
   const FormLogin({super.key});
@@ -29,38 +33,42 @@ class _FormLoginState extends State<FormLogin> {
     return null;
   }
 
-  Future<void> doLogin(String user, String password) async {
-    // var url = Uri();
-
-    // var response = await http.post(url, body: {
-    //   'usuario': user,
-    //   'senha': password,
-    // });
-    List<User> users = dummyUsers;
-    bool userFound = false;
-    for (var u in users) {
-      if (/*response.statusCode == 200*/ u.user == user &&
-          u.password == password) {
-        Navigator.pushNamedAndRemoveUntil(
-            context, Rotas.home, (Route<dynamic> route) => false);
-        userFound = true;
-      }
-    }
-    if (!userFound) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'Usuário ou senha incorretos',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
+  void showError(error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          error,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
           ),
-          backgroundColor: Theme.of(context).colorScheme.error,
         ),
-      );
-    }
+        backgroundColor: Theme.of(context).colorScheme.error.withOpacity(0.8),
+      ),
+    );
+  }
+
+  doLogin(String user, String password) async {
+    var url = Uri.http('localhost:9090', '/login');
+
+    http
+        .post(url,
+            body: jsonEncode({
+              'Login': user,
+              'Senha': password,
+            }))
+        .then((response) {
+      var responseLogin = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && responseLogin['Aceito']) {
+        Navigator.pushReplacementNamed(context, AppRoutes.home);
+      } else if (response.statusCode == 200 && !responseLogin['Aceito']) {
+        showError('Usuário ou senha incorretos');
+      }
+    }).catchError((err) {
+      showError('Ops! Ocorreu um erro ao tentar realizar o Login');
+    });
   }
 
   @override
@@ -72,8 +80,8 @@ class _FormLoginState extends State<FormLogin> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Image.asset(
-            'assets/images/logo.png',
-            fit: BoxFit.scaleDown,
+            AppAssets.logo,
+            scale: 1.5,
           ),
           const SizedBox(
             height: 20,
@@ -82,8 +90,10 @@ class _FormLoginState extends State<FormLogin> {
           const SizedBox(
             height: 30,
           ),
+          // ----############################## Usuário Começa aqui
           TextFormField(
             controller: _userController,
+            autofocus: true,
             decoration: const InputDecoration(
               labelText: 'Usuário',
               border: OutlineInputBorder(),
@@ -92,7 +102,7 @@ class _FormLoginState extends State<FormLogin> {
             validator: (user) => isNotNull(user),
           ),
           const SizedBox(height: 20),
-          // ---- Senha Começa aqui #########
+          // ----############################## Senha Começa aqui
           TextFormField(
             controller: _passwordController,
             decoration: InputDecoration(
@@ -113,6 +123,7 @@ class _FormLoginState extends State<FormLogin> {
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
+            //############################## Botão entrar começa aqui
             child: ElevatedButton(
               onPressed: () {
                 if (_formLoginKey.currentState!.validate()) {
@@ -120,27 +131,32 @@ class _FormLoginState extends State<FormLogin> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
+                overlayColor: Theme.of(context).colorScheme.onPrimary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Entrar',
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontSize: 18),
               ),
             ),
           ),
           const SizedBox(height: 20),
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, Rotas.redefinirSenha);
+              Navigator.pushNamed(context, AppRoutes.redefinirSenha);
             },
             child: Text(
               'Esqueceu sua senha?',
-              style: TextStyle(color: Theme.of(context).primaryColor),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
           ),
         ],

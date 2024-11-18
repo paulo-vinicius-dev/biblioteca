@@ -2,10 +2,14 @@ import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
-import 'package:biblioteca/utils/rotas.dart';
+import 'package:biblioteca/screens/user_table_page.dart';
+import 'package:biblioteca/utils/routes.dart';
+import 'package:biblioteca/utils/theme.dart';
+import 'package:biblioteca/widgets/forms/form_usuario.dart';
 import 'package:flutter/material.dart';
 
-void main(){
+
+void main() {
   runApp(const Myapp());
 }
 
@@ -15,25 +19,29 @@ class Myapp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme:ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF262A4F)),
-        scaffoldBackgroundColor: const Color(0xFFF0F0F0),
-        fontFamily: "Nunito"
-      ),
-      initialRoute: Rotas.login,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+          colorScheme: AppTheme.colorScheme,
+          scaffoldBackgroundColor: AppTheme.scaffoldBackgroundColor,
+          fontFamily: "Nunito"),
+      //initialRoute: AppRoutes.login,
+      home: TelaPaginaIncial(),
       routes: {
-        Rotas.login: (ctx) => const TelaLogin(),
-        Rotas.home: (ctx) => const TelaPaginaIncial(),
-        Rotas.redefinirSenha: (ctx) => TelaRedefinirSenha(),
-        Rotas.usuarios: (context) => const Usuarios(),
-        Rotas.pesquisarLivro: (context) => const PesquisarLivro(),
-        Rotas.emprestimo: (context) => const Emprestimo(),
-        Rotas.devolucao: (context) => const Devolucao(),
-        Rotas.autores: (context) => const Autores(),
-        Rotas.livros: (context) => const Livros(),
-        Rotas.relatorios: (context) => const Relatorios(),
-        Rotas.nadaConsta: (context) => const NadaConsta(),
-        Rotas.configuracoes: (context) => const Configuracoes(),
+        //AppRoutes.login: (ctx) => const TelaLogin(),
+        AppRoutes.home: (ctx) => const TelaPaginaIncial(),
+        AppRoutes.redefinirSenha: (ctx) => const TelaRedefinirSenha(),
+        AppRoutes.usuarios: (ctx) => const UserTablePage(),
+        
+        //paginas temporarias para teste
+        AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
+        AppRoutes.emprestimo: (context) => const Emprestimo(),
+        AppRoutes.devolucao: (context) => const Devolucao(),
+        AppRoutes.autores: (context) => const Autores(),
+        AppRoutes.livros: (context) => const Livros(),
+        AppRoutes.relatorios: (context) => const Relatorios(),
+        AppRoutes.nadaConsta: (context) => const NadaConsta(),
+        AppRoutes.configuracoes: (context) => const Configuracoes(),
       },
     );
   }

@@ -1,4 +1,5 @@
 import 'package:biblioteca/screens/telas_testes.dart';
+import 'package:biblioteca/screens/user_table_page.dart';
 import 'package:biblioteca/widgets/menu_navegacao.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: drawerBackgroundColor,
+        backgroundColor: AppTheme.drawerBackgroundColor,
         leading: null,
       ),
       body: Row(
@@ -62,7 +63,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                     page = const NadaConsta();
                     break;
                   case '/usuarios':
-                    page = const Usuarios();
+                    page = const UserTablePage();
                     break;
                   case '/configuracoes':
                     page = const Configuracoes();

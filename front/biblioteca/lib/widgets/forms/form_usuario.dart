@@ -26,8 +26,7 @@ class _FormUsuarioState extends State<FormUsuario> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
+    return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -172,8 +171,7 @@ class _FormUsuarioState extends State<FormUsuario> {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.outline,
+                          backgroundColor: Colors.grey,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -223,7 +221,7 @@ class _FormUsuarioState extends State<FormUsuario> {
             ],
           ),
         ),
-      ),
+
     );
   }
 }

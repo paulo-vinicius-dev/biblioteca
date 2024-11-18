@@ -10,5 +10,6 @@ class AppRoutes {
   static const relatorios = '/relatorios';
   static const nadaConsta = '/nada_consta';
   static const usuarios = '/usuarios';
+  static const novoUsuario = '/novo_usuario';
   static const configuracoes = '/configuracoes';
 }

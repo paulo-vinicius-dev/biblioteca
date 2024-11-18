@@ -2,13 +2,46 @@ package banco
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
-
+	"strings"
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// constantes de erros
+
+const (
+	ErroNenhum = iota
+	ErroLoginDuplicado
+	ErroCpfDuplicado
+	ErroEmailDuplicado
+	ErroUsuarioInexistente
+)
+
+
+
 var dbpool *pgxpool.Pool
+
+func ErroSemLinhasRetornadas(e error) bool {
+	stringDoErro := fmt.Sprint(e)
+	return strings.Contains(stringDoErro, "no rows")
+}
+
+// talvez vá ser util
+func ErroDeConexao(e error) bool {
+	stringDoErro := fmt.Sprint(e)
+
+
+	return strings.Contains(stringDoErro, pgerrcode.ConnectionException) ||
+	       strings.Contains(stringDoErro, pgerrcode.ConnectionDoesNotExist) ||
+	       strings.Contains(stringDoErro, pgerrcode.ConnectionFailure) ||
+	       strings.Contains(stringDoErro, pgerrcode.SQLClientUnableToEstablishSQLConnection) ||
+	       strings.Contains(stringDoErro, pgerrcode.SQLServerRejectedEstablishmentOfSQLConnection) ||
+	       strings.Contains(stringDoErro, pgerrcode.TransactionResolutionUnknown) ||
+	       strings.Contains(stringDoErro, pgerrcode.ProtocolViolation)
+}
 
 func Inicializar() {
 	var erro error

@@ -1,8 +1,10 @@
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
+import 'package:biblioteca/screens/user_table_page.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
+import 'package:biblioteca/widgets/forms/form_usuario.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -21,11 +23,13 @@ class Myapp extends StatelessWidget {
           colorScheme: AppTheme.colorScheme,
           scaffoldBackgroundColor: AppTheme.scaffoldBackgroundColor,
           fontFamily: "Nunito"),
-      initialRoute: AppRoutes.login,
+      //initialRoute: AppRoutes.home,
+      home: FormUsuario(),
       routes: {
-        AppRoutes.login: (ctx) => const TelaLogin(),
+        // AppRoutes.login: (ctx) => const TelaLogin(),
         AppRoutes.home: (ctx) => const TelaPaginaIncial(),
         AppRoutes.redefinirSenha: (ctx) => const TelaRedefinirSenha(),
+        AppRoutes.usuarios: (ctx) => const UserTablePage(),
       },
     );
   }

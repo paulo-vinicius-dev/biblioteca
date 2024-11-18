@@ -1,6 +1,7 @@
+import 'package:biblioteca/tabela/user_data.dart';
+import 'package:biblioteca/tabela/user_model.dart';
 import 'package:flutter/material.dart';
-import '../models/user_model.dart';
-import '../data/user_data.dart';
+
 
 class UserTablePage extends StatefulWidget {
   const UserTablePage({super.key});
@@ -38,6 +39,7 @@ class UserTablePageState extends State<UserTablePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            
             Padding(
               padding: const EdgeInsets.all(2.0),
               child: Row(
@@ -65,14 +67,14 @@ class UserTablePageState extends State<UserTablePage> {
             Table(
               border: TableBorder.all(),
               columnWidths: const {
-                0: FixedColumnWidth(250), // Largura fixa para a coluna "Nome"
+                0: FixedColumnWidth(150), // Largura fixa para a coluna "Nome"
                 1: FixedColumnWidth(
-                    150), // Largura fixa para a coluna "Matricula"
+                    130), // Largura fixa para a coluna "Matricula"
                 2: FixedColumnWidth(
-                    200), // Largura fixa para a coluna "Data de Nascimento"
+                    180), // Largura fixa para a coluna "Data de Nascimento"
                 3: FixedColumnWidth(
                     150), // Largura fixa para a coluna "Tipo de Usuario"
-                4: FixedColumnWidth(240), // Largura fixa para a coluna "Opções"
+                4: FixedColumnWidth(280), // Largura fixa para a coluna "Opções"
               },
               children: [
                 // Cabeçalho da tabela

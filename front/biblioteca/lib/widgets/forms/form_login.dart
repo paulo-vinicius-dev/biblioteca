@@ -66,9 +66,8 @@ class _FormLoginState extends State<FormLogin> {
       } else if (response.statusCode == 200 && !responseLogin['Aceito']) {
         showError('Usuário ou senha incorretos');
       }
-    }).catchError((err){
-        showError('Ops! Ocorreu um erro ao tentar realizar o Login');
-
+    }).catchError((err) {
+      showError('Ops! Ocorreu um erro ao tentar realizar o Login');
     });
   }
 

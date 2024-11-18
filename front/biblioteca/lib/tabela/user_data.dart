@@ -1,4 +1,4 @@
-import '../models/user_model.dart';
+import 'package:biblioteca/tabela/user_model.dart';
 
 List<User> users = List.generate(
   20,

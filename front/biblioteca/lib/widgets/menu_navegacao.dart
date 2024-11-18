@@ -2,10 +2,12 @@ import 'package:biblioteca/data/menu_itens.dart';
 import 'package:biblioteca/utils/assets.dart';
 import 'package:flutter/material.dart'; 
 import 'package:biblioteca/utils/theme.dart';
-import 'package:google_fonts/google_fonts.dart'; 
+import 'package:google_fonts/google_fonts.dart';
 
 class MenuNavegacao extends StatefulWidget {
-  const MenuNavegacao({super.key});
+  final ValueChanged<String> onPageSelected;
+  
+  const MenuNavegacao({super.key, required this.onPageSelected});
 
   @override
   State<MenuNavegacao> createState() => _MenuNavegacaoState();
@@ -15,10 +17,10 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
   late AnimationController _menuAnimationController;
   late Animation<double> _widthAnimation;
   late Animation<double> _labelFadeAnimation;
+  late Animation<double> _logoFadeAnimation;
   final _animationDuration = const Duration(milliseconds: 300);
   bool menuAtivado = false;
   int _expandedIndex = -1;
-
   List<ExpansionTileController> _controllers = [];
 
   @override
@@ -37,7 +39,12 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
       curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
     ));
 
+    _logoFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _menuAnimationController, 
+      curve: const Interval(0.7, 1.0, curve: Curves.easeInOut)
+    ));
   }
+  
   void _handleExpansion(int index, bool isExpanded){
     if(isExpanded){
       setState(() {
@@ -54,8 +61,8 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
       });
     }
   }
+  
   @override
-
   void dispose() {
     _menuAnimationController.dispose();
     super.dispose();
@@ -73,6 +80,12 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
     });
   }
 
+  void _navigateToPage(String? routeName) {
+    if(routeName != null){
+      widget.onPageSelected(routeName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -84,24 +97,28 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
           child: Column(
             children: <Widget>[
               Row(
-                
-                mainAxisAlignment: menuAtivado ? MainAxisAlignment.end : MainAxisAlignment.center,
+                mainAxisAlignment: menuAtivado ? MainAxisAlignment.spaceBetween : MainAxisAlignment.center,
                 children: [
-                  Visibility(
-                    visible: menuAtivado,
-                      replacement: const SizedBox.shrink(),
-                      child: SizedBox(
-                      width: 150,
-                      height: 60,
-                      child: Image.asset(AppAssets.logo),
+                  if(menuAtivado)
+                    Expanded(
+                      child: FadeTransition(
+                        opacity: _logoFadeAnimation,
+                        child: Transform.translate(
+                          offset: Offset(-13, 0),
+                          child: Container(
+                            child: Image.asset(AppAssets.logo),
+                            width: 190,
+                            height:  80,
+                          ),
+                        ),
                       )
-                  ),
+                    ),
                   IconButton(
                     icon: const Icon(Icons.menu),
                     onPressed: onIconPressed,
                   ),
                 ],
-              ),
+              ), 
               Expanded(
                 child: ListView.builder(
                   itemCount: menuitens.length,
@@ -109,63 +126,72 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                     bool isSelected = _expandedIndex == index;
                     final itemMenu = menuitens[index];
                     
-
-                    return ExpansionTile(
-                          controller: _controllers[index],
-                          tilePadding: const EdgeInsets.fromLTRB(22, 4, 5, 4),
-                          leading: Icon(
-                            itemMenu.icon,
-                            color: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
-                          ),
-                          backgroundColor: isSelected
-                              ? const Color.fromRGBO(233, 235, 238, 75)
-                              : Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(11),
-                          ),
-                          iconColor: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
-                          textColor: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
-                          showTrailingIcon: menuAtivado,
-                          collapsedTextColor: Colors.black87,
-                          onExpansionChanged: (isExpanded) {
-                            _handleExpansion(index, isExpanded);
-                          },
-                          initiallyExpanded: _expandedIndex == index,
-                          title: FadeTransition(
-                            opacity: _labelFadeAnimation,
-                            child: Visibility(
-                              visible: menuAtivado,
-                              replacement: const SizedBox.shrink(),
-                              child: Text(
-                                itemMenu.title,
-                                style: GoogleFonts.roboto(
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.w400,
-                                  color: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
-                                ),
+                    return GestureDetector(
+                      onTap: () {
+                        if (itemMenu.submenus.isEmpty) {
+                           _navigateToPage(itemMenu.route);
+                        } else {
+                          _handleExpansion(index, !_controllers[index].isExpanded);
+                        }
+                      },
+                      child: ExpansionTile(
+                        controller: _controllers[index],
+                        tilePadding: const EdgeInsets.fromLTRB(22, 4, 5, 4),
+                        leading: Icon(
+                          itemMenu.icon,
+                          color: isSelected ? AppTheme.selectedColor(context): Colors.black87,
+                        ),
+                        backgroundColor: isSelected
+                          ? const Color.fromRGBO(233, 235, 238, 75)
+                          : Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        iconColor: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
+                        textColor: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
+                        showTrailingIcon: menuAtivado,
+                        collapsedTextColor: Colors.black87,
+                        onExpansionChanged: (isExpanded) {
+                          _handleExpansion(index, isExpanded);
+                        },
+                        initiallyExpanded: _expandedIndex == index,
+                        title: FadeTransition(
+                          opacity: _labelFadeAnimation,
+                          child: Visibility(
+                            visible: menuAtivado,
+                            replacement: const SizedBox.shrink(),
+                            child: Text(
+                              itemMenu.title,
+                              style: GoogleFonts.roboto(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w400,
+                                color: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
                               ),
                             ),
                           ),
-                          trailing: itemMenu.submenus.isEmpty
-                              ? const SizedBox.shrink()
-                              : Icon(
-                                  isSelected ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
-                                  color: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
+                        ),
+                        trailing: itemMenu.submenus.isEmpty
+                          ? const SizedBox.shrink()
+                          : Icon(
+                              isSelected ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                              color: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
+                            ),
+                        children: itemMenu.submenus.isNotEmpty && menuAtivado
+                          ? itemMenu.submenus.map((submenu) {
+                              return ListTile(
+                                contentPadding: const EdgeInsets.only(left: 66),
+                                title: Text(
+                                  submenu.title,
+                                  style: GoogleFonts.roboto(fontSize: 12.5),
                                 ),
-                          children: itemMenu.submenus.isNotEmpty && menuAtivado
-                              ? itemMenu.submenus.map((submenu) {
-                                  return ListTile(
-                                    contentPadding: const EdgeInsets.only(left: 66),
-                                    
-                                    title: Text(
-                                      submenu,
-                                      style: GoogleFonts.roboto(fontSize: 12.5),
-                                    ),
-                                  );
-                                }).toList()
-                              : [],
-                        );
-                      
+                                onTap: () {
+                                  _navigateToPage(submenu.route);
+                                },
+                              );
+                            }).toList()
+                          : [],
+                      ),
+                    );
                   },
                 ),
               ),

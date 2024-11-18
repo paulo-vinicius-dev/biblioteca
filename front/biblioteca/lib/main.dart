@@ -1,11 +1,13 @@
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
+import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/screens/user_table_page.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:biblioteca/widgets/forms/form_usuario.dart';
 import 'package:flutter/material.dart';
+
 
 void main() {
   runApp(const Myapp());
@@ -23,13 +25,23 @@ class Myapp extends StatelessWidget {
           colorScheme: AppTheme.colorScheme,
           scaffoldBackgroundColor: AppTheme.scaffoldBackgroundColor,
           fontFamily: "Nunito"),
-      //initialRoute: AppRoutes.home,
-      home: FormUsuario(),
+      //initialRoute: AppRoutes.login,
+      home: TelaPaginaIncial(),
       routes: {
-        // AppRoutes.login: (ctx) => const TelaLogin(),
+        //AppRoutes.login: (ctx) => const TelaLogin(),
         AppRoutes.home: (ctx) => const TelaPaginaIncial(),
         AppRoutes.redefinirSenha: (ctx) => const TelaRedefinirSenha(),
         AppRoutes.usuarios: (ctx) => const UserTablePage(),
+        
+        //paginas temporarias para teste
+        AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
+        AppRoutes.emprestimo: (context) => const Emprestimo(),
+        AppRoutes.devolucao: (context) => const Devolucao(),
+        AppRoutes.autores: (context) => const Autores(),
+        AppRoutes.livros: (context) => const Livros(),
+        AppRoutes.relatorios: (context) => const Relatorios(),
+        AppRoutes.nadaConsta: (context) => const NadaConsta(),
+        AppRoutes.configuracoes: (context) => const Configuracoes(),
       },
     );
   }

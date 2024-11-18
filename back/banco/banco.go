@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -20,8 +21,6 @@ const (
 	ErroUsuarioInexistente
 )
 
-
-
 var dbpool *pgxpool.Pool
 
 func ErroSemLinhasRetornadas(e error) bool {
@@ -33,14 +32,13 @@ func ErroSemLinhasRetornadas(e error) bool {
 func ErroDeConexao(e error) bool {
 	stringDoErro := fmt.Sprint(e)
 
-
 	return strings.Contains(stringDoErro, pgerrcode.ConnectionException) ||
-	       strings.Contains(stringDoErro, pgerrcode.ConnectionDoesNotExist) ||
-	       strings.Contains(stringDoErro, pgerrcode.ConnectionFailure) ||
-	       strings.Contains(stringDoErro, pgerrcode.SQLClientUnableToEstablishSQLConnection) ||
-	       strings.Contains(stringDoErro, pgerrcode.SQLServerRejectedEstablishmentOfSQLConnection) ||
-	       strings.Contains(stringDoErro, pgerrcode.TransactionResolutionUnknown) ||
-	       strings.Contains(stringDoErro, pgerrcode.ProtocolViolation)
+		strings.Contains(stringDoErro, pgerrcode.ConnectionDoesNotExist) ||
+		strings.Contains(stringDoErro, pgerrcode.ConnectionFailure) ||
+		strings.Contains(stringDoErro, pgerrcode.SQLClientUnableToEstablishSQLConnection) ||
+		strings.Contains(stringDoErro, pgerrcode.SQLServerRejectedEstablishmentOfSQLConnection) ||
+		strings.Contains(stringDoErro, pgerrcode.TransactionResolutionUnknown) ||
+		strings.Contains(stringDoErro, pgerrcode.ProtocolViolation)
 }
 
 func Inicializar() {

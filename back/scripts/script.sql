@@ -1,8 +1,10 @@
 -- Criação do scheme caso não exista! :)
---CREATE SCHEMA biblioteca;
---SET search_path TO biblioteca;
+-- Há duas formas de usar o banco de dados criando um schema ou um banco separado, escolha o que mais for fácil para você
+--CREATE SCHEMA biblioteca; -- CASO QUEIRA USAR UM SCHEMA (MAIS FÁCIL, só que pode causar erros caso você possua outros schemas no mesmo banco com tabelas com o mesmo nome das utilizadas nesse script)
+--CREATE DATABASE biblioteca; -- CASO QUEIRA USAR UM DATASE (RECOMENDADO, mas é necessário adicionar o banco o dbeaver)
+--SET search_path TO biblioteca; -- Usado somente se você escolher criar um schema
 
-DROP TABLE IF EXISTS datelhe_emprestimo;
+DROP TABLE IF EXISTS detalhe_emprestimo;
 DROP TABLE IF EXISTS emprestimo;
 DROP TABLE IF EXISTS usuario;
 DROP TABLE IF EXISTS exemplar_livro;
@@ -26,7 +28,7 @@ CREATE TABLE IF NOT EXISTS pais (
 CREATE TABLE IF NOT EXISTS autor(
 	id_autor SERIAL NOT NULL,
 	nome VARCHAR(255) NOT NULL UNIQUE,
-	data_nascimento DATE,
+	ano_nascimento SMALLINT ,
 	nacionalidade SMALLINT,
 	sexo CHAR,
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -144,10 +146,10 @@ INSERT INTO pais (id_pais, nome, sigla) VALUES
 (3, 'Reino Unido', 'UK');
 
 -- Tabela autor
-INSERT INTO autor (nome, data_nascimento, nacionalidade, sexo) VALUES
-('Machado de Assis', '1839-06-21', 1, 'M'),
-('J.K. Rowling', '1965-07-31', 3, 'F'),
-('George R. R. Martin', '1948-09-20', 2, 'M');
+INSERT INTO autor (nome, ano_nascimento, nacionalidade, sexo) VALUES
+('Machado de Assis', '1839', 1, 'M'),
+('J.K. Rowling', '1965', 3, 'F'),
+('George R. R. Martin', '1948', 2, 'M');
 
 -- Tabela livro
 INSERT INTO livro (isbn, titulo, ano_publicacao, editora, pais) VALUES

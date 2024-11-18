@@ -4,30 +4,45 @@ import (
 	"biblioteca/modelos"
 	"context"
 	"fmt"
+	"strings"
 )
 
 // VisualizarAutores realizar o SELECT no banco de dados, pegar todos os registros da tabela de autor
-func VisualizarAutores() ([]modelos.Autor, error) {
+func VisualizarAutores() ([]modelos.AutorResposta, error) {
 	conexao := PegarConexao()
 
-	var autores []modelos.Autor
+	var autores []modelos.AutorResposta
 
 	linhas, err := conexao.Query(context.Background(),
-		`SELECT id_autor,
-			nome,
-			data_nascimento,
-			nacionalidade,
-			sexo,
-			data_criacao,
-			data_atualizacao
-		FROM autores`,
-		nil,
+		`SELECT 
+			a.id_autor AS id,
+			a.nome AS nome,
+			a.ano_nascimento AS ano_nascimento,
+			p.nome AS nacionalidade,
+			a.nacionalidade AS nacionalidade_codigo,
+			CASE	 
+				WHEN a.sexo = 'M' THEN  'masculino'
+				WHEN a.sexo = 'F' THEN 'feminino'
+			END AS sexo,
+			a.sexo AS sexo_codigo
+		FROM autor a
+		left join pais p on a.nacionalidade = p.id_pais`,
 	)
 	if err != nil {
+		fmt.Println("Erro ao tentar executar a query")
 		return autores, err
 	}
+	defer linhas.Close()
 
-	fmt.Println(linhas)
+	for linhas.Next() {
+		var autor modelos.AutorResposta
+		if err := linhas.Scan(&autor.ID, &autor.Nome, &autor.AnoNascimento, &autor.Nacionalidade, &autor.NacionalidadeCodigo, &autor.Sexo, &autor.SexoCodigo); err != nil && !strings.Contains(err.Error(), "cannot scan NULL") {
+			fmt.Println("Erro ao tentar scannear o resultado da query")
+			return autores, err
+		}
+		autores = append(autores, autor)
+	}
+
 	return autores, nil
 }
 
@@ -35,14 +50,35 @@ func VisualizarAutores() ([]modelos.Autor, error) {
 func InserirAutor(a modelos.Autor) error {
 	conexao := PegarConexao()
 
-	if _, err := conexao.Exec(context.Background(), `
-		INSERT INTO autor (nome, data_nascimento, nacionalidade, sexo)
-		VALUES ($1, $2, $3, $4)`,
+	var parametroAnoNascimento interface{}
+	if a.AnoNascimento == 0 {
+		parametroAnoNascimento = nil
+	} else {
+		parametroAnoNascimento = a.AnoNascimento
+	}
+
+	var parametroNacionalidade interface{}
+	if a.Nacionalidade == 0 {
+		parametroNacionalidade = nil
+	} else {
+		parametroNacionalidade = a.Nacionalidade
+	}
+
+	var parametroSexo interface{}
+	if a.Sexo == "" {
+		parametroSexo = nil
+	} else {
+		parametroSexo = a.Sexo
+	}
+
+	if _, err := conexao.Exec(context.Background(),
+		"INSERT INTO autor (nome, ano_nascimento, nacionalidade, sexo) VALUES ($1, $2, $3, $4)",
 		a.Nome,
-		a.DataNascimento.Format("2006-01-02"),
-		a.Nacionalidade,
-		a.Sexo,
+		parametroAnoNascimento,
+		parametroNacionalidade,
+		parametroSexo,
 	); err != nil {
+		fmt.Println(a.Nome, a.AnoNascimento, a.Nacionalidade, a.Sexo)
 		return err
 	}
 
@@ -53,18 +89,39 @@ func InserirAutor(a modelos.Autor) error {
 func AtualizarAutor(a modelos.Autor) error {
 	conexao := PegarConexao()
 
+	var parametroAnoNascimento interface{}
+	if a.AnoNascimento == 0 {
+		parametroAnoNascimento = nil
+	} else {
+		parametroAnoNascimento = a.AnoNascimento
+	}
+
+	var parametroNacionalidade interface{}
+	if a.Nacionalidade == 0 {
+		parametroNacionalidade = nil
+	} else {
+		parametroNacionalidade = a.Nacionalidade
+	}
+
+	var parametroSexo interface{}
+	if a.Sexo == "" {
+		parametroSexo = nil
+	} else {
+		parametroSexo = a.Sexo
+	}
+
 	if _, err := conexao.Exec(context.Background(), `
 		UPDATE autor
 		SET nome = $1,
-			data_nascimento = $2,
+			ano_nascimento = $2,
 			nacionalidade = $3,
 			sexo = $4,
 			data_atualizacao = CURRENT_TIMESTAMP
 		WHERE id_autor = $5`,
 		a.Nome,
-		a.DataNascimento.Format("2006-01-02"),
-		a.Nacionalidade,
-		a.Sexo,
+		parametroAnoNascimento,
+		parametroNacionalidade,
+		parametroSexo,
 		a.ID,
 	); err != nil {
 		return err

@@ -1,10 +1,10 @@
 package banco
 
-import	(
+import (
 	"context"
 )
 
-func PegarLoginESenhaDoBanco(loginDoUsuario string) (string, string, bool){
+func PegarLoginESenhaDoBanco(loginDoUsuario string) (string, string, bool) {
 	conexao := PegarConexao()
 	var login, senha string
 	erro := conexao.QueryRow(context.Background(), "select login, senha from usuario where login = $1 and ativo = true", loginDoUsuario).Scan(&login, &senha)
@@ -18,5 +18,4 @@ func PegarLoginESenhaDoBanco(loginDoUsuario string) (string, string, bool){
 	}
 
 	panic("Erro inesperado no login. Provelmente é um bug!")
-
 }

@@ -24,7 +24,7 @@ class Myapp extends StatelessWidget {
           scaffoldBackgroundColor: AppTheme.scaffoldBackgroundColor,
           fontFamily: "Nunito"),
       //initialRoute: AppRoutes.home,
-      home: FormUsuario(),
+      home: const FormUsuario(),
       routes: {
         // AppRoutes.login: (ctx) => const TelaLogin(),
         AppRoutes.home: (ctx) => const TelaPaginaIncial(),

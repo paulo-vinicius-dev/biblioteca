@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+const List<String> usuarios = <String>['Aluno', 'Funcionário'];
 
 class FormUsuario extends StatefulWidget {
   const FormUsuario({super.key});
@@ -10,8 +13,10 @@ class FormUsuario extends StatefulWidget {
 class _FormUsuarioState extends State<FormUsuario> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
-  DateTime? _selectedDate;
+  final TextEditingController _userTypeController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   final DateTime _today = DateTime.now();
+  DateTime? _selectedDate = DateTime.now();
 
   @override
   void dispose() {
@@ -57,17 +62,16 @@ class _FormUsuarioState extends State<FormUsuario> {
                   return null;
                 },
               ),
-
               const SizedBox(height: 16.0),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  //#################################### Aqui começa o campo data
                   TextFormField(
                     readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: _selectedDate == null
-                          ? "Selecione uma data"
-                          : "Data: ${_selectedDate!.toLocal()}".split(' ')[0],
+                    controller: _dateController,
+                    decoration: const InputDecoration(
+                      labelText: "Data de Nascimento",
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.calendar_today),
                     ),
@@ -78,9 +82,12 @@ class _FormUsuarioState extends State<FormUsuario> {
                         firstDate: DateTime(1900),
                         lastDate: _today,
                       );
-                      if (pickedDate != null && pickedDate != _selectedDate) {
+                      if (pickedDate != null) {
                         setState(() {
                           _selectedDate = pickedDate;
+                          _dateController.text = DateFormat('d/M/y')
+                              .format(pickedDate)
+                              .toString();
                         });
                       }
                     },
@@ -141,29 +148,75 @@ class _FormUsuarioState extends State<FormUsuario> {
                     },
                   ),
                   const SizedBox(height: 20.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text("Cadastro realizado com sucesso!"),
-                              backgroundColor: Colors.green),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "Cadastrar",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          fontSize: 18,
+                  DropdownMenu(
+                    controller: _userTypeController,
+                    width: double.infinity,
+                    label: const Text('Selecione o tipo do usuário'),
+                    requestFocusOnTap: true,
+                    dropdownMenuEntries: usuarios
+                        .map(
+                          (e) => DropdownMenuEntry(
+                            value: 1,
+                            label: e,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(height: 20.0),
+                  //####################################### Aqui começam os botões
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.outline,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Cancelar",
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onInverseSurface,
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      const SizedBox(
+                        width: 16.0,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text("Cadastro realizado com sucesso!"),
+                                  backgroundColor: Colors.green),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Salvar",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

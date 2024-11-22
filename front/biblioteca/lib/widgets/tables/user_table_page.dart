@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:convert';
 
-import 'package:biblioteca/tabela/user_data.dart';
-import 'package:biblioteca/tabela/user_model.dart';
+import 'package:biblioteca/tem_tabela/user_data.dart';
+import 'package:biblioteca/tem_tabela/user_model.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

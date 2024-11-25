@@ -147,9 +147,9 @@ func PesquisarUsuarioPeloLogin(login string) (modelos.Usuario, bool) {
 		&usuario.DataDeNascimento,
 		&usuario.Permissao,
 		&usuario.Ativo); erro == nil {
-		return usuario, true
-	} else {
 		return usuario, false
+	} else {
+		return usuario, true
 	}
 }
 

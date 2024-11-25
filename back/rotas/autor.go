@@ -19,15 +19,29 @@ func Autor(resposta http.ResponseWriter, requisicao *http.Request) {
 	}
 
 	var autor modelos.Autor
-	err = json.Unmarshal(body, &autor)
-	if err != nil {
-		http.Error(resposta, "Erro ao processar JSON", http.StatusBadRequest)
-		return
-	}
 
 	switch requisicao.Method {
 	case http.MethodGet:
+
+		autores, httpCode, err := servicos.ValidarVisualizarAutores()
+		if err != nil {
+			http.Error(resposta, fmt.Sprintf("Erro ao tentar usar o servico: %v", err), httpCode)
+		}
+		fmt.Println(autores)
+
+		resposta.Header().Set("Content-Type", "application/json")
+		resposta.WriteHeader(httpCode)
+
+		json.NewEncoder(resposta).Encode(autores)
+
 	case http.MethodPost:
+
+		err = json.Unmarshal(body, &autor)
+		if err != nil {
+			http.Error(resposta, "Erro ao processar JSON", http.StatusBadRequest)
+			return
+		}
+
 		httpCode, err := servicos.ValidarCriacaoAutor(autor)
 		if err != nil {
 			http.Error(resposta, fmt.Sprintf("Erro: %v", err), httpCode)
@@ -36,6 +50,13 @@ func Autor(resposta http.ResponseWriter, requisicao *http.Request) {
 		resposta.WriteHeader(httpCode)
 		fmt.Fprint(resposta, "Autor inserido com sucesso")
 	case http.MethodPut:
+
+		err = json.Unmarshal(body, &autor)
+		if err != nil {
+			http.Error(resposta, "Erro ao processar JSON", http.StatusBadRequest)
+			return
+		}
+
 		httpCode, err := servicos.ValidarAtualizacaoAutor(autor)
 		if err != nil {
 			http.Error(resposta, fmt.Sprintf("Erro: %v", err), httpCode)
@@ -44,6 +65,13 @@ func Autor(resposta http.ResponseWriter, requisicao *http.Request) {
 		resposta.WriteHeader(httpCode)
 		fmt.Fprint(resposta, "Autor atualizado com sucesso")
 	case http.MethodDelete:
+
+		err = json.Unmarshal(body, &autor)
+		if err != nil {
+			http.Error(resposta, "Erro ao processar JSON", http.StatusBadRequest)
+			return
+		}
+
 		httpCode, err := servicos.ValidarExcluicaoAutor(autor)
 		if err != nil {
 			http.Error(resposta, fmt.Sprintf("Erro: %v", err), httpCode)

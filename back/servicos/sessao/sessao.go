@@ -3,6 +3,7 @@ package sessao
 import (
 	"biblioteca/banco"
 	"math/rand"
+	"math"
 	"time"
 )
 
@@ -56,7 +57,7 @@ func VerificaSeIdDaSessaoEValido(idDaSessao uint64, loginDoUsuario string) int {
 
 // OBS: o id zero vai ser reservado para quando o front não tenha um id
 func CriarNovaSessao(login string) (uint64, bool) { // o bool e para dizer se foi possível criar ou não a sessão
-	idDaSessaoNova := rand.Uint64()
+	idDaSessaoNova := uint64(rand.Int63n(math.MaxUint32))
 	if VerificaSeIdDaSessaoEValido(idDaSessaoNova, login) == INVALIDO && idDaSessaoNova != 0 {
 
 		novaSessao := _sessao[idDaSessaoNova]

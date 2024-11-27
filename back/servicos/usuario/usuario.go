@@ -83,8 +83,9 @@ func BuscarUsuarios(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBus
 
 
 	if textoDaBusca == "" {
-		usuarioBuscador, achou := banco.PesquisarUsuarioPeloLogin(loginDoUsuarioBuscador)
-		if !achou {
+		println(loginDoUsuarioBuscador);
+		usuarioBuscador, erro := banco.PesquisarUsuarioPeloLogin(loginDoUsuarioBuscador)
+		if erro {
 			return []modelos.Usuario{}, ErroDeServicoDoUsuarioNenhum
 		}
 		return []modelos.Usuario{usuarioBuscador}, ErroDeServicoDoUsuarioNenhum

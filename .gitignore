@@ -48,5 +48,5 @@ app.*.map.json
 ## gitignore do back-end
 back/build/*
 back/*.exe
-back/.env
+*/.env
 

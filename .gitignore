@@ -1,7 +1,4 @@
-build/*
-*.exe
-/.env
-
+## começo do gitignore do front-end
 # Miscellaneous
 *.class
 *.log
@@ -12,7 +9,7 @@ build/*
 .buildlog/
 .history
 .svn/
-migrate_working_dir/
+/fron/biblioteca/migrate_working_dir/
 
 # IntelliJ related
 *.iml
@@ -28,12 +25,12 @@ migrate_working_dir/
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
+/fron/biblioteca/.dart_tool/
+/fron/biblioteca/.flutter-plugins
+/fron/biblioteca/.flutter-plugins-dependencies
+/fron/biblioteca/.pub-cache/
+/fron/biblioteca/.pub/
+/fron/biblioteca/build/
 
 # Symbolication related
 app.*.symbols
@@ -42,6 +39,14 @@ app.*.symbols
 app.*.map.json
 
 # Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+/fron/biblioteca/android/app/debug
+/fron/biblioteca/android/app/profile
+/fron/biblioteca/android/app/release
+
+## Fim do gitignore do front-end
+
+## gitignore do back-end
+back/build/*
+/*.exe
+**/.env
+

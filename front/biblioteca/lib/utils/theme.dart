@@ -14,4 +14,17 @@ class AppTheme {
   static ColorScheme colorScheme = ColorScheme.fromSeed(
     seedColor: const Color(0xff262A4F),
   );
+
+  static ButtonStyle btnPrimary(context) => ElevatedButton.styleFrom(
+        overlayColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      );
+
+  static TextStyle btnPrimaryText(context) =>
+      TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 18);
+      
 }

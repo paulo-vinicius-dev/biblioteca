@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:biblioteca/utils/assets.dart';
 import 'package:biblioteca/utils/routes.dart';
+import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -67,7 +68,7 @@ class _FormLoginState extends State<FormLogin> {
         showError('Usuário ou senha incorretos');
       }
     }).catchError((err) {
-      showError('Ops! Ocorreu um erro ao tentar realizar o Login');
+      showError("Ops! Ocorreu um erro ao tentar realizar o Login");
     });
   }
 
@@ -90,7 +91,6 @@ class _FormLoginState extends State<FormLogin> {
           const SizedBox(
             height: 30,
           ),
-          // ----############################## Usuário Começa aqui
           TextFormField(
             controller: _userController,
             autofocus: true,
@@ -102,7 +102,6 @@ class _FormLoginState extends State<FormLogin> {
             validator: (user) => isNotNull(user),
           ),
           const SizedBox(height: 20),
-          // ----############################## Senha Começa aqui
           TextFormField(
             controller: _passwordController,
             decoration: InputDecoration(
@@ -114,36 +113,25 @@ class _FormLoginState extends State<FormLogin> {
                   tooglePassword();
                 },
                 icon: Icon(
-                    _visiblePassword ? Icons.visibility : Icons.visibility_off),
+                    _visiblePassword ? Icons.visibility_off : Icons.visibility),
               ),
             ),
-            obscureText: _visiblePassword,
+            obscureText: !_visiblePassword,
             validator: (pass) => isNotNull(pass),
           ),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
-            //############################## Botão entrar começa aqui
             child: ElevatedButton(
               onPressed: () {
                 if (_formLoginKey.currentState!.validate()) {
                   doLogin(_userController.text, _passwordController.text);
                 }
               },
-              style: ElevatedButton.styleFrom(
-                overlayColor: Theme.of(context).colorScheme.onPrimary,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
+              style: AppTheme.btnPrimary(context),
               child: Text(
                 'Entrar',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 18),
+                style: AppTheme.btnPrimaryText(context),
               ),
             ),
           ),

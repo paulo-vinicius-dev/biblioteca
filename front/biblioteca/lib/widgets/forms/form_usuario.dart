@@ -31,7 +31,6 @@ class _FormUsuarioState extends State<FormUsuario> {
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
                 decoration: const InputDecoration(

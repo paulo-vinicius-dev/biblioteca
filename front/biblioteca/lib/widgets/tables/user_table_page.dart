@@ -42,21 +42,21 @@ class UserTablePageState extends State<UserTablePage> {
     //Pegar usuarios
     var url = Uri.http('localhost:9090', '/usuario');
 
-    http
-        .post(url,
-            body: jsonEncode({
-              "IdDaSessao": 6070095939566893115,
-              "LoginDoUsuarioRequerente": "admin",
-              "TextoDeBusca": "a"
-            }))
-        .then((response) {
-      var responseLogin = jsonDecode(response.body);
-
-      if (response.statusCode == 200 && responseLogin['Aceito']) {
-      } else if (response.statusCode == 200 && !responseLogin['Aceito']) {}
-    }).catchError((err) {
-      print('Ops! Ocorreu um erro ao tentar realizar o Login');
-    });
+    // http
+    //     .post(url,
+    //         body: jsonEncode({
+    //           "IdDaSessao": 6070095939566893115,
+    //           "LoginDoUsuarioRequerente": "admin",
+    //           "TextoDeBusca": "a"
+    //         }))
+    //     .then((response) {
+    //   var responseLogin = jsonDecode(response.body);
+    //
+    //   if (response.statusCode == 200 && responseLogin['Aceito']) {
+    //   } else if (response.statusCode == 200 && !responseLogin['Aceito']) {}
+    // }).catchError((err) {
+    //   print('Ops! Ocorreu um erro ao tentar realizar o Login');
+    // });
 
     return SingleChildScrollView(
       child: Column(

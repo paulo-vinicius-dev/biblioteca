@@ -33,7 +33,7 @@ class Myapp extends StatelessWidget {
           scaffoldBackgroundColor: AppTheme.scaffoldBackgroundColor,
           fontFamily: "Nunito"),
       // initialRoute: AppRoutes.login,
-      home: TelaPaginaIncial(),
+      home: const TelaPaginaIncial(),
       routes: {
         // AppRoutes.login: (ctx) => const TelaLogin(),
         AppRoutes.home: (ctx) => const TelaPaginaIncial(),

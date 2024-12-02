@@ -7,6 +7,9 @@
 DROP TABLE IF EXISTS detalhe_emprestimo;
 DROP TABLE IF EXISTS emprestimo;
 DROP TABLE IF EXISTS usuario;
+DROP TABLE IF EXISTS turma;
+DROP TABLE IF EXISTS serie;
+DROP TABLE IF EXISTS turno;
 DROP TABLE IF EXISTS exemplar_livro;
 DROP TABLE IF EXISTS livro_categoria;
 DROP TABLE IF EXISTS categoria;
@@ -14,6 +17,35 @@ DROP TABLE IF EXISTS livro_autor;
 DROP TABLE IF EXISTS livro;
 DROP TABLE IF EXISTS autor;
 DROP TABLE IF EXISTS pais;
+
+CREATE TABLE IF NOT EXISTS turno(
+	id_turno SERIAL NOT NULL,
+	descricao VARCHAR(255) NOT NULL UNIQUE,
+	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	data_atualizacao TIMESTAMP,
+	PRIMARY KEY(id_turno)
+);
+
+CREATE TABLE IF NOT EXISTS serie(
+	id_serie SERIAL NOT NULL,
+	descricao VARCHAR(255) NOT NULL UNIQUE,
+	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	data_atualizacao TIMESTAMP,
+	PRIMARY KEY(id_serie)
+);
+
+CREATE TABLE IF NOT EXISTS turma(
+	id_turma SERIAL NOT NULL,
+	descricao VARCHAR(255) NOT NULL,
+	serie INT NOT NULL,
+	turno INT NOT NULL,
+	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	data_atualizacao TIMESTAMP,
+	PRIMARY KEY(id_turma),
+	UNIQUE(descricao, serie, turno),
+	FOREIGN KEY(serie) REFERENCES serie(id_serie),
+	FOREIGN KEY(turno) REFERENCES turno(id_turno)
+);
 
 
 CREATE TABLE IF NOT EXISTS pais (
@@ -36,6 +68,7 @@ CREATE TABLE IF NOT EXISTS autor(
 	PRIMARY KEY(id_autor),
 	FOREIGN KEY(nacionalidade) REFERENCES pais(id_pais) 
 );
+
 
 CREATE TABLE IF NOT EXISTS livro(
 	id_livro SERIAL NOT NULL,
@@ -90,8 +123,6 @@ CREATE TABLE IF NOT EXISTS exemplar_livro (
 	FOREIGN KEY(id_livro) REFERENCES livro(id_livro) 
 );
 
-
-
 CREATE TABLE IF NOT EXISTS usuario (
 	id_usuario SERIAL NOT NULL,
 	login VARCHAR(255) NOT NULL UNIQUE,
@@ -101,11 +132,13 @@ CREATE TABLE IF NOT EXISTS usuario (
 	telefone VARCHAR(11),
 	data_nascimento DATE,
 	senha VARCHAR(255) NOT NULL,
-	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	data_atualizacao TIMESTAMP,
 	permissoes BIGINT NOT NULL,
 	ativo BOOLEAN NOT NULL DEFAULT TRUE,
-	PRIMARY KEY(id_usuario)
+	turma INT DEFAULT NULL,
+	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	data_atualizacao TIMESTAMP,
+	PRIMARY KEY(id_usuario),
+	FOREIGN KEY(turma) REFERENCES turma(id_turma)
 );
 
 CREATE TABLE IF NOT EXISTS emprestimo (
@@ -204,3 +237,51 @@ INSERT INTO detalhe_emprestimo (id_usuario, id_emprestimo, acao, detalhe) VALUES
 (3, 1, 1, 'Empréstimo realizado'),
 (3, 2, 2, 'Renovação solicitada');
 
+INSERT INTO turno (id_turno, descricao) VALUES
+(1, 'Manhã'),
+(2, 'Tarde'),
+(3, 'Noite'),
+(4, 'Integral');
+
+INSERT INTO serie (id_serie, descricao) VALUES
+(1, '1º Ano'),
+(2, '2º Ano'),
+(3, '3º Ano');
+
+INSERT INTO turma (id_turma, descricao, serie, turno) VALUES
+(1, 'A', 1, 1),
+(2, 'B', 1, 1),
+(3, 'C', 1, 1),
+(4, 'A', 1, 2),
+(5, 'B', 1, 2),
+(6, 'C', 1, 2),
+(7, 'A', 1, 3),
+(8, 'B', 1, 3),
+(9, 'C', 1, 3),
+(10, 'A', 1, 4),
+(11, 'B', 1, 4),
+(12, 'C', 1, 4),
+(13, 'A', 2, 1),
+(14, 'B', 2, 1),
+(15, 'C', 2, 1),
+(16, 'A', 2, 2),
+(17, 'B', 2, 2),
+(18, 'C', 2, 2),
+(19, 'A', 2, 3),
+(20, 'B', 2, 3),
+(21, 'C', 2, 3),
+(22, 'A', 2, 4),
+(23, 'B', 2, 4),
+(24, 'C', 2, 4),
+(25, 'A', 3, 1),
+(26, 'B', 3, 1),
+(27, 'C', 3, 1),
+(28, 'A', 3, 2),
+(29, 'B', 3, 2),
+(30, 'C', 3, 2),
+(31, 'A', 3, 3),
+(32, 'B', 3, 3),
+(33, 'C', 3, 3),
+(34, 'A', 3, 4),
+(35, 'B', 3, 4),
+(36, 'C', 3, 4);

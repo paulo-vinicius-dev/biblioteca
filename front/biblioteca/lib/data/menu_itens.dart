@@ -19,8 +19,6 @@ List<MenuModelo> menuitens = [
   ]),
   MenuModelo("Controle de Usuários", Icons.co_present_rounded, [
     SubMenuModelo("Usuários", "/usuarios")
-  ]),
-  MenuModelo("Configurações", Icons.settings, [], route: "/configuracoes"),
-  MenuModelo("Sair", Icons.logout, [], route: "/sair")
+  ])
 ];
 

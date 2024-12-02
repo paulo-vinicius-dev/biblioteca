@@ -22,7 +22,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
   bool menuAtivado = false;
   int _expandedIndex = -1;
   List<ExpansionTileController> _controllers = [];
-
+  Map<int, int?> selectSubItens = {};
   @override
   void initState() {
     super.initState();
@@ -61,6 +61,13 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
       });
     }
   }
+  void subItensUnselect(index){
+    for (var key in selectSubItens.keys){
+      if(selectSubItens[key] != selectSubItens[index]){
+        selectSubItens[key] = -1;
+      }
+    }
+  }
   
   @override
   void dispose() {
@@ -93,9 +100,10 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
       builder: (context, child) {
         return Container(
           width: _widthAnimation.value,
-          color: AppTheme.drawerBackgroundColor,
+          color: AppTheme.appBarBackGroundColor,
           child: Column(
             children: <Widget>[
+              const SizedBox(height: 15,),
               Row(
                 mainAxisAlignment: menuAtivado ? MainAxisAlignment.spaceBetween : MainAxisAlignment.center,
                 children: [
@@ -104,11 +112,11 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                       child: FadeTransition(
                         opacity: _logoFadeAnimation,
                         child: Transform.translate(
-                          offset: Offset(-13, 0),
-                          child: Container(
+                          offset: const Offset(-19, 0),
+                          child: SizedBox(
+                            width: 200,
+                            height:  85,
                             child: Image.asset(AppAssets.logo),
-                            width: 190,
-                            height:  80,
                           ),
                         ),
                       )
@@ -125,16 +133,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                   itemBuilder: (context, index) {
                     bool isSelected = _expandedIndex == index;
                     final itemMenu = menuitens[index];
-                    
-                    return GestureDetector(
-                      onTap: () {
-                        if (itemMenu.submenus.isEmpty) {
-                           _navigateToPage(itemMenu.route);
-                        } else {
-                          _handleExpansion(index, !_controllers[index].isExpanded);
-                        }
-                      },
-                      child: ExpansionTile(
+                    return ExpansionTile(
                         controller: _controllers[index],
                         tilePadding: const EdgeInsets.fromLTRB(22, 4, 5, 4),
                         leading: Icon(
@@ -152,6 +151,11 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                         showTrailingIcon: menuAtivado,
                         collapsedTextColor: Colors.black87,
                         onExpansionChanged: (isExpanded) {
+                          if (itemMenu.submenus.isEmpty && isExpanded) {
+                            _navigateToPage(itemMenu.route);
+                          } else if(itemMenu.submenus.isNotEmpty && isExpanded &&!menuAtivado){
+                            onIconPressed();
+                          }
                           _handleExpansion(index, isExpanded);
                         },
                         initiallyExpanded: _expandedIndex == index,
@@ -177,21 +181,22 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                               color: isSelected ? AppTheme.selectedColor(context) : Colors.black87,
                             ),
                         children: itemMenu.submenus.isNotEmpty && menuAtivado
-                          ? itemMenu.submenus.map((submenu) {
+                        ? List.generate(itemMenu.submenus.length, (indexSubItem){
                               return ListTile(
                                 contentPadding: const EdgeInsets.only(left: 66),
                                 title: Text(
-                                  submenu.title,
-                                  style: GoogleFonts.roboto(fontSize: 12.5),
+                                  itemMenu.submenus[indexSubItem].title,
+                                  style: GoogleFonts.roboto(fontSize: 12.5, color: (selectSubItens[index] ==indexSubItem)? AppTheme.selectedColor(context):Colors.black87,)
                                 ),
-                                onTap: () {
-                                  _navigateToPage(submenu.route);
+                                onTap: (){
+                                  subItensUnselect(index);
+                                  selectSubItens[index] = indexSubItem;
+                                  _navigateToPage(itemMenu.submenus[indexSubItem].route);
                                 },
                               );
-                            }).toList()
-                          : [],
-                      ),
-                    );
+
+                        }): [],
+                      );
                   },
                 ),
               ),

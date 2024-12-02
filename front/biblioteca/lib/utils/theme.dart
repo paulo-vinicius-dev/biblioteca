@@ -10,7 +10,6 @@ class AppTheme {
   static const drawerBackgroundColor = Colors.white;
   static const appBarBackGroundColor = Color.fromARGB(179, 255, 255, 255);
   static const scaffoldBackgroundColor = Color(0xFFF0F0F0);
-
   static ColorScheme colorScheme = ColorScheme.fromSeed(
     seedColor: const Color(0xff262A4F),
   );

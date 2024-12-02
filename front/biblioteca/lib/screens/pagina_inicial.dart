@@ -1,3 +1,4 @@
+import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/widgets/forms/form_usuario.dart';
@@ -26,20 +27,20 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
     }else{
       _overlayEntry = OverlayEntry(builder: (context)=>
         Positioned(
-          top:kToolbarHeight + 3,
-          right: 8,
+          top:kToolbarHeight,
+          right: 3,
           child: Material(
             elevation: 4,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(10),
             color: const Color.fromARGB(255, 240, 241, 247),
             child: Container(
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 240, 241, 247),
-                borderRadius: BorderRadius.circular(14)
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10))
               ),
               height: 140,
               width: 210,
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.only(top: 15, left: 0),
               child: ListView(
                 children: [
                   ListTile(
@@ -94,10 +95,27 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                     fit: BoxFit.cover,
                     ),
                   ),
-                  SizedBox(width: 13,),
-                  Text("Administrador"),
+                  SizedBox(width: 20,),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Elena M.", style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Color.fromRGBO(40, 40, 49, 30)
+                        ),
+                      ),
+                      Text("Admin", style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Color.fromRGBO(40, 40, 49, 40)
+                        ),
+                      )
+                  ],
+                  ),
                   SizedBox(
-                    width: 9,
+                    width: 16,
                   ),  
                   IconButton(
                     onPressed: (){
@@ -108,16 +126,13 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                       color: const Color.fromARGB(255, 119, 119, 119),
                     )
                   ),
-                  SizedBox(width: 12,)
+                  SizedBox(width: 17,)
                 ],
               ),
               body: Container(
                 decoration: BoxDecoration(
                     color: AppTheme.drawerBackgroundColor,
                     borderRadius: BorderRadius.circular(10.0)),
-                padding: const EdgeInsets.all(20.0),
-                margin: const EdgeInsets.only(
-                    top: 30.0, left: 50.0, right: 10.0, bottom: 10.0),
                 child: Navigator(
                   key: GlobalKey<NavigatorState>(),
                   initialRoute: _selectedRoute,
@@ -131,7 +146,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                         page = const PesquisarLivro();
                         break;
                       case '/emprestimo':
-                        page = const Emprestimo();
+                        page = const PaginaEmprestimo();
                         break;
                       case '/devolucao':
                         page = const Devolucao();

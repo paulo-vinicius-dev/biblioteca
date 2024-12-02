@@ -100,7 +100,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
       builder: (context, child) {
         return Container(
           width: _widthAnimation.value,
-          color: AppTheme.drawerBackgroundColor,
+          color: AppTheme.appBarBackGroundColor,
           child: Column(
             children: <Widget>[
               const SizedBox(height: 15,),

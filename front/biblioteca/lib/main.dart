@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
+import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:biblioteca/widgets/forms/form_usuario.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   if (Platform.isLinux || Platform.isWindows) {
@@ -31,7 +33,13 @@ class Myapp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: AppTheme.colorScheme,
           scaffoldBackgroundColor: AppTheme.scaffoldBackgroundColor,
-          fontFamily: "Nunito"),
+          textTheme: GoogleFonts.robotoTextTheme(),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              textStyle: GoogleFonts.roboto()
+            )
+          )
+        ),
       // initialRoute: AppRoutes.login,
       home: const TelaPaginaIncial(),
       routes: {

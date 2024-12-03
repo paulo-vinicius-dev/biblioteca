@@ -22,14 +22,14 @@ const List<String> turnos = <String>[
   'Noturno'
 ];
 
-class FormUsuario extends StatefulWidget {
-  const FormUsuario({super.key});
+class FormUser extends StatefulWidget {
+  const FormUser({super.key});
 
   @override
-  State<FormUsuario> createState() => _FormUsuarioState();
+  State<FormUser> createState() => _FormUserState();
 }
 
-class _FormUsuarioState extends State<FormUsuario> {
+class _FormUserState extends State<FormUser> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   final TextEditingController _userTypeController = TextEditingController();

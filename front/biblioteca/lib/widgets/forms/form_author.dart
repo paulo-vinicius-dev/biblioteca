@@ -29,6 +29,8 @@ class _FormAutorState extends State<FormAutor> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+
+        // Barra de navegação
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
@@ -46,6 +48,8 @@ class _FormAutorState extends State<FormAutor> {
             ],
           ),
         ),
+
+        // Formulário
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -57,6 +61,7 @@ class _FormAutorState extends State<FormAutor> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+
                       // Nome
                       TextFormField(
                         controller: _nomeController,

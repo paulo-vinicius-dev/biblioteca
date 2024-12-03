@@ -74,7 +74,7 @@ class Livros extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: const Center(child: Text("Tela de Emprestimos"),),
+      child: const Center(child: Text("Tela de Livros"),),
     );
   }
 }

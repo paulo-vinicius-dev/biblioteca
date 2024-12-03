@@ -40,6 +40,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
     return Material(
       child: Column(
         children: [
+          // Barra de navegação
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
@@ -70,9 +71,12 @@ class AuthorTablePageState extends State<AuthorTablePage> {
               ],
             ),
           ),
+
+          // Corpo da página
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
             child: Column(
+
               // Botão novo autor
               children: [
                 Row(
@@ -99,9 +103,12 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                     )
                   ],
                 ),
+
                 const SizedBox(
                   height: 20.0,
                 ),
+
+                // Tabela de autores
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Row(
@@ -131,14 +138,14 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                   border: TableBorder.all(
                       color: const Color.fromARGB(255, 213, 213, 213)),
                   columnWidths: const {
-                    0: FlexColumnWidth(0.30),
-                    1: FlexColumnWidth(0.17),
-                    2: FlexColumnWidth(0.15),
-                    3: FlexColumnWidth(0.15),
-                    4: FlexColumnWidth(0.17),
-                    5: IntrinsicColumnWidth(),
+                    0: FlexColumnWidth(0.40),
+                    1: FlexColumnWidth(0.40),
+                    2: FlexColumnWidth(0.40),
+                    3: FlexColumnWidth(0.40),
+                    4: IntrinsicColumnWidth()
                   },
                   children: [
+
                     // Cabeçalho da tabela
                     const TableRow(
                       children: [
@@ -173,6 +180,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                         ),
                       ],
                     ),
+
                     // Linhas da tabela
                     for (var author in paginatedAuthors)
                       TableRow(
@@ -302,6 +310,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                       ),
                   ],
                 ),
+
                 // Barra de navegação de páginas
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),

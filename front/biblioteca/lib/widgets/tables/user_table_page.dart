@@ -40,24 +40,44 @@ class UserTablePageState extends State<UserTablePage> {
     return Material(
       child: Column(
         children: [
+
+          // Barra de navegação
           Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 13, horizontal: 13),
-            color: Color.fromRGBO(38, 42, 79, 1),
-            child: Row(
+            padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
+            color: const Color.fromRGBO(38, 42, 79, 1),
+            child: const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(Icons.co_present_rounded, color: Colors.white, size: 20,),
-                SizedBox(width: 7,),
-                Text("Controle de Usuários", style: TextStyle(color: Colors.white),),
-                Icon(Icons.chevron_right, color: Colors.white,),
-                Text("Usuários", style: TextStyle(color: Colors.white),)
+                Icon(
+                  Icons.co_present_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                SizedBox(
+                  width: 7,
+                ),
+                Text(
+                  "Controle de Usuários",
+                  style: TextStyle(color: Colors.white),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: Colors.white,
+                ),
+                Text(
+                  "Usuários",
+                  style: TextStyle(color: Colors.white),
+                )
               ],
             ),
           ),
+
+          // Corpo da página
           SingleChildScrollView(
-            padding: EdgeInsets.symmetric(vertical: 50,horizontal: 40),
+            padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
             child: Column(
+
               // Botão novo usuário
               children: [
                 Row(
@@ -68,13 +88,15 @@ class UserTablePageState extends State<UserTablePage> {
                       },
                       label: const Text(
                         'Novo Usuário',
-                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
                       icon: const Icon(Icons.add),
                       style: ButtonStyle(
                         backgroundColor:
                             WidgetStatePropertyAll(Colors.green.shade800),
-                        foregroundColor: const WidgetStatePropertyAll(Colors.white),
+                        foregroundColor:
+                            const WidgetStatePropertyAll(Colors.white),
                         padding: WidgetStateProperty.all<EdgeInsets>(
                           const EdgeInsets.all(15.0), // Padding personalizado
                         ),
@@ -85,6 +107,8 @@ class UserTablePageState extends State<UserTablePage> {
                 const SizedBox(
                   height: 20.0,
                 ),
+
+                // Tabela de usuários
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Row(
@@ -96,7 +120,8 @@ class UserTablePageState extends State<UserTablePage> {
                           if (value != null) {
                             setState(() {
                               rowsPerPage = value;
-                              currentPage = 1; // Reinicia para a primeira página
+                              currentPage =
+                                  1; // Reinicia para a primeira página
                             });
                           }
                         },
@@ -113,7 +138,7 @@ class UserTablePageState extends State<UserTablePage> {
                   border: TableBorder.all(
                       color: const Color.fromARGB(255, 213, 213, 213)),
                   columnWidths: const {
-                    0: FlexColumnWidth(0.36),
+                    0: FlexColumnWidth(0.30),
                     1: FlexColumnWidth(0.17),
                     2: FlexColumnWidth(0.15),
                     3: FlexColumnWidth(0.15),
@@ -121,6 +146,7 @@ class UserTablePageState extends State<UserTablePage> {
                     5: IntrinsicColumnWidth(),
                   },
                   children: [
+
                     // Cabeçalho da tabela
                     const TableRow(
                       children: [
@@ -161,13 +187,14 @@ class UserTablePageState extends State<UserTablePage> {
                         ),
                       ],
                     ),
+
                     // Linhas da tabela
                     for (var user in paginatedUsers)
                       TableRow(
                         children: [
                           Align(
-                            alignment:
-                                Alignment.centerLeft, // Alinha o texto à esquerda
+                            alignment: Alignment
+                                .centerLeft, // Alinha o texto à esquerda
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(user.nome,
@@ -179,21 +206,8 @@ class UserTablePageState extends State<UserTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.matricula, textAlign: TextAlign.left),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(user.turma, textAlign: TextAlign.left),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(user.turno, textAlign: TextAlign.left),
+                              child: Text(user.matricula,
+                                  textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
@@ -201,7 +215,23 @@ class UserTablePageState extends State<UserTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child:
-                                  Text(user.tipoUsuario, textAlign: TextAlign.left),
+                                  Text(user.turma, textAlign: TextAlign.left),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child:
+                                  Text(user.turno, textAlign: TextAlign.left),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(user.tipoUsuario,
+                                  textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
@@ -239,7 +269,7 @@ class UserTablePageState extends State<UserTablePage> {
                                     onPressed: () {},
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                          const Color.fromARGB(255, 26, 96, 153),
+                                          const Color.fromARGB(255, 38, 42, 79),
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 5),
@@ -250,9 +280,38 @@ class UserTablePageState extends State<UserTablePage> {
                                     child: const Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(Icons.note, color: Colors.white),
+                                        Icon(Icons.edit, color: Colors.white),
                                         SizedBox(width: 4),
                                         Text('Editar',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 3),
+
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 128, 128, 128),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.library_books_rounded,
+                                            color: Colors.white),
+                                        SizedBox(width: 4),
+                                        Text('Histórico',
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
@@ -268,6 +327,7 @@ class UserTablePageState extends State<UserTablePage> {
                       ),
                   ],
                 ),
+
                 // Barra de navegação de páginas
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -304,7 +364,9 @@ class UserTablePageState extends State<UserTablePage> {
                             child: Text(
                               i.toString(),
                               style: TextStyle(
-                                color: i == currentPage ? Colors.white : Colors.grey,
+                                color: i == currentPage
+                                    ? Colors.white
+                                    : Colors.grey,
                               ),
                             ),
                           ),

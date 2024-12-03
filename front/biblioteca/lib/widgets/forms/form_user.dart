@@ -235,6 +235,7 @@ class _FormUserState extends State<FormUser> {
                         onTap: () async {
                           final DateTime? pickedDate = await showDatePicker(
                             context: context,
+                            locale: const Locale('pt', 'BR'),
                             initialDate: _today,
                             firstDate: DateTime(1900),
                             lastDate: _today,

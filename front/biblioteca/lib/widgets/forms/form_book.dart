@@ -13,6 +13,9 @@ class _FormBookState extends State<FormBook> {
   final TextEditingController _isbnController = TextEditingController();
   final TextEditingController _editoraController = TextEditingController();
   final TextEditingController _dataPublicacaoController = TextEditingController();
+  final TextEditingController _authorController = TextEditingController();
+  final TextEditingController _pageCountController = TextEditingController();
+  final TextEditingController _subjectsController = TextEditingController();
 
   @override
   void dispose() {
@@ -20,6 +23,9 @@ class _FormBookState extends State<FormBook> {
     _isbnController.dispose();
     _editoraController.dispose();
     _dataPublicacaoController.dispose();
+    _pageCountController.dispose();
+    _subjectsController.dispose();
+
     super.dispose();
   }
 
@@ -27,7 +33,6 @@ class _FormBookState extends State<FormBook> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-
         // Barra de navegação
         Container(
           width: double.infinity,
@@ -36,13 +41,34 @@ class _FormBookState extends State<FormBook> {
           child: const Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.menu_book_outlined, color: Colors.white, size: 20,),
-              SizedBox(width: 7,),
-              Text("Catalogação", style: TextStyle(color: Colors.white),),
-              Icon(Icons.chevron_right, color: Colors.white,),
-              Text("Livros", style: TextStyle(color: Colors.white),),
-              Icon(Icons.chevron_right, color: Colors.white,),
-              Text("Novo Livro", style: TextStyle(color: Colors.white),)
+              Icon(
+                Icons.menu_book_outlined,
+                color: Colors.white,
+                size: 20,
+              ),
+              SizedBox(
+                width: 7,
+              ),
+              Text(
+                "Catalogação",
+                style: TextStyle(color: Colors.white),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: Colors.white,
+              ),
+              Text(
+                "Livros",
+                style: TextStyle(color: Colors.white),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: Colors.white,
+              ),
+              Text(
+                "Novo Livro",
+                style: TextStyle(color: Colors.white),
+              )
             ],
           ),
         ),
@@ -59,7 +85,6 @@ class _FormBookState extends State<FormBook> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-
                       // ISBN
                       TextFormField(
                         controller: _isbnController,
@@ -112,10 +137,9 @@ class _FormBookState extends State<FormBook> {
                       TextFormField(
                         controller: _dataPublicacaoController,
                         decoration: const InputDecoration(
-                          labelText: "Data de Publicação",
+                          labelText: "Ano de Publicação",
                           border: OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.datetime,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Preencha esse campo";
@@ -123,6 +147,81 @@ class _FormBookState extends State<FormBook> {
                           return null;
                         },
                       ),
+                      const SizedBox(height: 20.0),
+
+                      // Autores
+                      // Adicionar lógica para aumentar a quantidade de campos e armazenar os dados em uma lista
+                      Row(children: [
+                        InkWell(
+                          onTap: () => {},
+                          child: Container(
+                            width: 40.0,
+                            height: 40.0,
+                            color: Colors.green,
+                            child: const Icon(Icons.add),
+                            )),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _authorController,
+                            decoration: const InputDecoration(
+                              labelText: "Ano de Publicação",
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Preencha esse campo";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ]),
+                      const SizedBox(height: 20.0),
+                      
+                      // Quantidade de paginas
+                      TextFormField(
+                        controller: _pageCountController,
+                        decoration: const InputDecoration(
+                          labelText: "Quantidade de Páginas",
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Preencha esse campo";
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20.0),
+
+                      // Categorias
+                      // Adicionar lógica para aumentar a quantidade de campos e armazenar os dados em uma lista
+                      Row(children: [
+                        InkWell(
+                          onTap: () => {},
+                          child: Container(
+                            width: 30.0,
+                            height: 30.0,
+                            color: Colors.green,
+                            child: const Icon(Icons.add),
+                          )
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _subjectsController,
+                            decoration: const InputDecoration(
+                              labelText: "Ano de Publicação",
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Preencha esse campo";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ]),
                       const SizedBox(height: 20.0),
 
                       // Botões
@@ -142,7 +241,9 @@ class _FormBookState extends State<FormBook> {
                               child: Text(
                                 "Cancelar",
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onInverseSurface,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onInverseSurface,
                                   fontSize: 18,
                                 ),
                               ),
@@ -156,7 +257,8 @@ class _FormBookState extends State<FormBook> {
                               if (_formKey.currentState!.validate()) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text("Cadastro realizado com sucesso!"),
+                                      content: Text(
+                                          "Cadastro realizado com sucesso!"),
                                       backgroundColor: Colors.green),
                                 );
                               }
@@ -169,7 +271,8 @@ class _FormBookState extends State<FormBook> {
                               child: Text(
                                 "Salvar",
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                   fontSize: 18,
                                 ),
                               ),

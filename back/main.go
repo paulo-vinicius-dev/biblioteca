@@ -20,5 +20,6 @@ func main() {
 	http.HandleFunc("/login", rotas.Login)
 	http.HandleFunc("/usuario", rotas.Usuario)
 	http.HandleFunc("/autor", rotas.Autor)
+	http.HandleFunc("/recuperarsenha", rotas.RecuperarSenha)
 	http.ListenAndServe(":9090", nil)
 }

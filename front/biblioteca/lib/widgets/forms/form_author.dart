@@ -87,9 +87,7 @@ class _FormAutorState extends State<FormAutor> {
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Preencha esse campo";
-                          } else if (int.tryParse(value) == null) {
+                          if (value != null && value.isNotEmpty && int.tryParse(value) == null) {
                             return "Insira um ano válido";
                           }
                           return null;
@@ -105,8 +103,8 @@ class _FormAutorState extends State<FormAutor> {
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Preencha esse campo";
+                          if (value != null && value.isNotEmpty && !RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                            return "Insira uma nacionalidade válida";
                           }
                           return null;
                         },
@@ -127,12 +125,6 @@ class _FormAutorState extends State<FormAutor> {
                         }).toList(),
                         onChanged: (String? newValue) {
                           _sexoController.text = newValue!;
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Selecione um sexo";
-                          }
-                          return null;
                         },
                       ),
                       const SizedBox(height: 20.0),

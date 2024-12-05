@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 
 const List<String> sexos = <String>['Masculino', 'Feminino', 'Outro'];
 
@@ -66,12 +67,14 @@ class _FormAutorState extends State<FormAutor> {
                       TextFormField(
                         controller: _nomeController,
                         decoration: const InputDecoration(
-                          labelText: "Nome",
+                          label: CampoObrigatorio(label: "Nome"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Preencha esse campo";
+                          } else if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$').hasMatch(value)) {
+                            return "O nome deve conter apenas letras";
                           }
                           return null;
                         },

@@ -22,6 +22,7 @@ type requisicaoUsuario struct {
 	DataDeNascimento         string `validate:"optional"`
 	PermissoesDoUsuario      uint64 `validate:"optional"`
 	Ativo                    bool   `validate:"optional"`
+	Turma                    int    `validate:"optional"`
 	TextoDeBusca             string `validate:"optional"` // usado somente quando se procura um usuário
 }
 
@@ -76,6 +77,11 @@ func erroServicoUsuarioParaErrHttp(erro servicoUsuario.ErroDeServicoDoUsuario, r
 			resposta.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(resposta, "Foi tentado atualizar um usuário inexistente")
 			return
+		/*case servicoUsuario.ErroDeServicoDoUsuarioTurmaInvalida:
+			resposta.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(resposta, "A turma fornecida é inválida!")
+			return 
+		*/
 	}
 }
 
@@ -125,7 +131,8 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		novoUsuario.DataDeNascimento = requisicaoUsuario.DataDeNascimento
 		novoUsuario.Permissao = requisicaoUsuario.PermissoesDoUsuario
 		novoUsuario.Senha = requisicaoUsuario.Senha
-		fmt.Println("CPF:", novoUsuario.Cpf)
+		novoUsuario.Turma = requisicaoUsuario.Turma
+
 		erro := servicoUsuario.CriarUsuario(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, novoUsuario)
 
 		if erro != servicoUsuario.ErroDeServicoDoUsuarioNenhum {

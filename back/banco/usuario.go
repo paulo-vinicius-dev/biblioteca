@@ -12,10 +12,7 @@ import (
 
 type ErroBancoUsuario int
 
-
-
-
-func criptografarSenha(senha string) string {
+func CriptografarSenha(senha string) string {
 	hash := sha256.New()
 	hash.Write([]byte(senha))
 	return fmt.Sprintf("%x", hash.Sum(nil))
@@ -37,7 +34,7 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 		return ErroCpfDuplicado
 	}
 
-	senhaCriptogrfada := criptografarSenha(novoUsuario.Senha)
+	senhaCriptogrfada := CriptografarSenha(novoUsuario.Senha)
 	_, erroQuery := conexao.Exec(
 		context.Background(),
 		"insert into usuario(login,cpf, nome, email, telefone, data_nascimento, data_criacao, senha, permissoes) values ($1, $2, $3, $4, $5, $6, CURRENT_DATE, $7, $8)",
@@ -92,7 +89,7 @@ func AtualizarUsuario(usuarioComDadosAntigos,usuarioAtualizado modelos.Usuario) 
 	}
 
 	if usuarioAtualizado.Senha != "" {
-		senhaCriptogrfada := criptografarSenha(usuarioAtualizado.Senha)
+		senhaCriptogrfada := CriptografarSenha(usuarioAtualizado.Senha)
 		textoQuery := "update usuario set senha = $1 where id_usuario = $2"
 		if _, erroQuery := conexao.Query(context.Background(), textoQuery, senhaCriptogrfada, usuarioAtualizado.IdDoUsuario); erroQuery != nil {
 			panic("Um erro desconhecido acontesceu na atualização do usuário")

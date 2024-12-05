@@ -149,34 +149,7 @@ class _FormBookState extends State<FormBook> {
                       ),
                       const SizedBox(height: 20.0),
 
-                      // Autores
-                      // Adicionar lógica para aumentar a quantidade de campos e armazenar os dados em uma lista
-                      Row(children: [
-                        InkWell(
-                          onTap: () => {},
-                          child: Container(
-                            width: 40.0,
-                            height: 40.0,
-                            color: Colors.green,
-                            child: const Icon(Icons.add),
-                            )),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _authorController,
-                            decoration: const InputDecoration(
-                              labelText: "Ano de Publicação",
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Preencha esse campo";
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ]),
-                      const SizedBox(height: 20.0),
+                      
                       
                       // Quantidade de paginas
                       TextFormField(
@@ -193,24 +166,15 @@ class _FormBookState extends State<FormBook> {
                         },
                       ),
                       const SizedBox(height: 20.0),
-
-                      // Categorias
+                      
+                      // Autores
                       // Adicionar lógica para aumentar a quantidade de campos e armazenar os dados em uma lista
-                      Row(children: [
-                        InkWell(
-                          onTap: () => {},
-                          child: Container(
-                            width: 30.0,
-                            height: 30.0,
-                            color: Colors.green,
-                            child: const Icon(Icons.add),
-                          )
-                        ),
+                      Row(children: [                          
                         Expanded(
                           child: TextFormField(
-                            controller: _subjectsController,
+                            controller: _authorController,
                             decoration: const InputDecoration(
-                              labelText: "Ano de Publicação",
+                              labelText: "Autores",
                               border: OutlineInputBorder(),
                             ),
                             validator: (value) {
@@ -221,6 +185,62 @@ class _FormBookState extends State<FormBook> {
                             },
                           ),
                         ),
+                        InkWell(
+                          onTap: () => {},
+                          child: Expanded(
+                            child: Container(
+                              width: 40.0,
+                              height: 40.0,
+                              decoration: const BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(6.0),
+                                  bottomRight: Radius.circular(6.0)
+                                ),
+                              ),
+                              
+                              child: const Icon(Icons.add),
+                            ),
+                          )
+                        )
+                      ]),
+                      const SizedBox(height: 20.0),
+
+                      // Categorias
+                      // Adicionar lógica para aumentar a quantidade de campos e armazenar os dados em uma lista
+                      Row(children: [                       
+                        Expanded(
+                          child: TextFormField(
+                            controller: _subjectsController,
+                            decoration: const InputDecoration(
+                              labelText: "Categorias",
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Preencha esse campo";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => {},
+                          child: Expanded(
+                            child: Container(
+                              width: 40.0,
+                              height: 40.0,
+                              decoration: const BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(6.0),
+                                  bottomRight: Radius.circular(6.0)
+                                ),
+                              ),
+                              child: const Icon(Icons.add),
+                            ),
+                          )
+                        )
                       ]),
                       const SizedBox(height: 20.0),
 

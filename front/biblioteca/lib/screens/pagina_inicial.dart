@@ -158,63 +158,69 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                   )
                 ],
               ),
-              body: Container(
-                decoration: BoxDecoration(
-                    color: AppTheme.drawerBackgroundColor,
-                    borderRadius: BorderRadius.circular(10.0)),
-                child: Navigator(
-                  key: GlobalKey<NavigatorState>(),
-                  initialRoute: _selectedRoute,
-                  onGenerateRoute: (RouteSettings settings) {
-                    Widget page;
-                    switch (settings.name) {
-                      case '/inicio':
-                        page = const Home();
-                        break;
-                      case '/pesquisar_livro':
-                        page = const PesquisarLivro();
-                        break;
-                      case '/emprestimo':
-                        page = const PaginaEmprestimo();
-                        break;
-                      case '/devolucao':
-                        page = const Devolucao();
-                        break;
-                      case '/autores':
-                        page = const AuthorTablePage();
-                        break;
-                      case '/livros':
-                        page = const BookTablePage();
-                        break;
-                      case '/relatorios':
-                        page = const Relatorios();
-                        break;
-                      case '/nada_consta':
-                        page = const NadaConsta();
-                        break;
-                      case AppRoutes.usuarios:
-                        page = const UserTablePage();
-                        break;
-                      case '/configuracoes':
-                        page = const Configuracoes();
-                        break;
-                      case '/sair':
-                        page = const Login();
-                        break;
-                      case '/novo_usuario':
-                        page = const FormUser();
-                        break;
-                      case '/novo_autor':
-                        page = const FormAutor();
-                        break;
-                      case '/novo_livro':
-                        page = const FormBook();
-                        break;
-                      default:
-                        page = const Home();
-                    }
-                    return MaterialPageRoute(builder: (_) => page);
-                  },
+              body: SingleChildScrollView(
+                child: Container(
+                  constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height - 56
+                  ),
+                  decoration: BoxDecoration(
+                      color: AppTheme.drawerBackgroundColor,
+                      borderRadius: BorderRadius.circular(10.0)
+                  ),
+                  child: Navigator(
+                    key: GlobalKey<NavigatorState>(),
+                    initialRoute: _selectedRoute,
+                    onGenerateRoute: (RouteSettings settings) {
+                      Widget page;
+                      switch (settings.name) {
+                        case '/inicio':
+                          page = const Home();
+                          break;
+                        case '/pesquisar_livro':
+                          page = const PesquisarLivro();
+                          break;
+                        case '/emprestimo':
+                          page = const PaginaEmprestimo();
+                          break;
+                        case '/devolucao':
+                          page = const Devolucao();
+                          break;
+                        case '/autores':
+                          page = const AuthorTablePage();
+                          break;
+                        case '/livros':
+                          page = const BookTablePage();
+                          break;
+                        case '/relatorios':
+                          page = const Relatorios();
+                          break;
+                        case '/nada_consta':
+                          page = const NadaConsta();
+                          break;
+                        case AppRoutes.usuarios:
+                          page = const UserTablePage();
+                          break;
+                        case '/configuracoes':
+                          page = const Configuracoes();
+                          break;
+                        case '/sair':
+                          page = const Login();
+                          break;
+                        case '/novo_usuario':
+                          page = const FormUser();
+                          break;
+                        case '/novo_autor':
+                          page = const FormAutor();
+                          break;
+                        case '/novo_livro':
+                          page = const FormBook();
+                          break;
+                        default:
+                          page = const Home();
+                      }
+                      return MaterialPageRoute(builder: (_) => page);
+                    },
+                  ),
                 ),
               ),
             ),

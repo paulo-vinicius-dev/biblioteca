@@ -50,7 +50,7 @@ class Myapp extends StatelessWidget {
 
         //paginas temporarias para teste
         AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
-        AppRoutes.emprestimo: (context) => const Emprestimo(),
+        AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
         AppRoutes.devolucao: (context) => const Devolucao(),
         AppRoutes.autores: (context) => const Autores(),
         AppRoutes.livros: (context) => const Livros(),

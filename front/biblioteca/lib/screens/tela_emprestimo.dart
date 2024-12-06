@@ -1,3 +1,4 @@
+import 'package:biblioteca/widgets/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,21 +16,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
        Material(
             child: Column(
               children: [
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 13, horizontal: 13),
-                    color: Color.fromRGBO(38, 42, 79, 1),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.library_books, color: Colors.white, size: 20,),
-                        SizedBox(width: 7,),
-                        Text("Circulação", style: TextStyle(color: Colors.white),),
-                        Icon(Icons.chevron_right, color: Colors.white,),
-                        Text("Empréstimo", style: TextStyle(color: Colors.white),)
-                      ],
-                    ),
-                  ),
+                const BreadCrumb(breadcrumb: ['Início', 'Empréstimo'], icon: Icons.my_library_books_rounded,),
                 Padding(
                   padding: EdgeInsets.only(top: 40,left: 35),
                   child: Column(

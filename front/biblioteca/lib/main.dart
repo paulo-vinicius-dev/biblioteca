@@ -1,15 +1,13 @@
 import 'dart:io';
 
-import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
-import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
-import 'package:biblioteca/widgets/forms/form_usuario.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
@@ -28,6 +26,16 @@ class Myapp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: const [
+        GlobalCupertinoLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('pt', 'BR'),
+      ],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           useMaterial3: true,
@@ -38,7 +46,7 @@ class Myapp extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               textStyle: GoogleFonts.roboto()
             )
-          )
+          ),
         ),
       // initialRoute: AppRoutes.login,
       home: const TelaPaginaIncial(),
@@ -52,13 +60,11 @@ class Myapp extends StatelessWidget {
         AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
         AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
         AppRoutes.devolucao: (context) => const Devolucao(),
-        AppRoutes.autores: (context) => const Autores(),
         AppRoutes.livros: (context) => const Livros(),
         AppRoutes.relatorios: (context) => const Relatorios(),
         AppRoutes.nadaConsta: (context) => const NadaConsta(),
         AppRoutes.configuracoes: (context) => const Configuracoes(),
 
-        AppRoutes.novoUsuario: (context) => const FormUsuario(),
       },
     );
   }

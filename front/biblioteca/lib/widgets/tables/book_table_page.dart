@@ -1,34 +1,34 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:biblioteca/tem_tabela/user_data.dart';
-import 'package:biblioteca/tem_tabela/user_model.dart';
+import 'package:biblioteca/tem_tabela/book_data.dart';
+import 'package:biblioteca/tem_tabela/book_model.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 
-class UserTablePage extends StatefulWidget {
-  const UserTablePage({super.key});
+class BookTablePage extends StatefulWidget {
+  const BookTablePage({super.key});
 
   @override
-  UserTablePageState createState() => UserTablePageState();
+  BookTablePageState createState() => BookTablePageState();
 }
 
-class UserTablePageState extends State<UserTablePage> {
+class BookTablePageState extends State<BookTablePage> {
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
 
   @override
   Widget build(BuildContext context) {
-    int totalPages = (users.length / rowsPerPage).ceil();
+    int totalPages = (books.length / rowsPerPage).ceil();
 
-    // Calcula o índice inicial e final dos usuários exibidos
+    // Calcula o índice inicial e final dos livros exibidos
     int startIndex = (currentPage - 1) * rowsPerPage;
-    int endIndex = (startIndex + rowsPerPage) < users.length
+    int endIndex = (startIndex + rowsPerPage) < books.length
         ? (startIndex + rowsPerPage)
-        : users.length;
+        : books.length;
 
-    // Seleciona os usuários que serão exibidos na página atual
-    List<User> paginatedUsers = users.sublist(startIndex, endIndex);
+    // Seleciona os livros que serão exibidos na página atual
+    List<Book> paginatedBooks = books.sublist(startIndex, endIndex);
 
     // Lógica para definir os botões de página (máximo 10 botões)
     int startPage = currentPage - 4 < 1 ? 1 : currentPage - 4;
@@ -50,7 +50,7 @@ class UserTablePageState extends State<UserTablePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.co_present_rounded,
+                  Icons.menu_book_outlined,
                   color: Colors.white,
                   size: 20,
                 ),
@@ -58,7 +58,7 @@ class UserTablePageState extends State<UserTablePage> {
                   width: 7,
                 ),
                 Text(
-                  "Controle de Usuários",
+                  "Catalogação",
                   style: TextStyle(color: Colors.white),
                 ),
                 Icon(
@@ -66,7 +66,7 @@ class UserTablePageState extends State<UserTablePage> {
                   color: Colors.white,
                 ),
                 Text(
-                  "Usuários",
+                  "Livros",
                   style: TextStyle(color: Colors.white),
                 )
               ],
@@ -77,17 +77,16 @@ class UserTablePageState extends State<UserTablePage> {
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
             child: Column(
-
-              // Botão novo usuário
+              // Botão novo livro
               children: [
                 Row(
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.novoUsuario);
+                        Navigator.pushNamed(context, AppRoutes.novoLivro);
                       },
                       label: const Text(
-                        'Novo Usuário',
+                        'Novo Livro',
                         style: TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
@@ -104,11 +103,12 @@ class UserTablePageState extends State<UserTablePage> {
                     )
                   ],
                 ),
+
                 const SizedBox(
                   height: 20.0,
                 ),
 
-                // Tabela de usuários
+                // Tabela de livros
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Row(
@@ -138,15 +138,13 @@ class UserTablePageState extends State<UserTablePage> {
                   border: TableBorder.all(
                       color: const Color.fromARGB(255, 213, 213, 213)),
                   columnWidths: const {
-                    0: FlexColumnWidth(0.30),
-                    1: FlexColumnWidth(0.17),
-                    2: FlexColumnWidth(0.15),
-                    3: FlexColumnWidth(0.15),
-                    4: FlexColumnWidth(0.17),
-                    5: IntrinsicColumnWidth(),
+                    0: FlexColumnWidth(0.40),
+                    1: FlexColumnWidth(0.40),
+                    2: FlexColumnWidth(0.40),
+                    3: FlexColumnWidth(0.40),
+                    4: IntrinsicColumnWidth(),
                   },
                   children: [
-
                     // Cabeçalho da tabela
                     const TableRow(
                       children: [
@@ -157,25 +155,19 @@ class UserTablePageState extends State<UserTablePage> {
                                 style: TextStyle(fontWeight: FontWeight.bold))),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('R.A / Matrícula',
+                          child: Text('ISBN',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('Turma',
+                          child: Text('Editora',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('Turno',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Tipo de Usuario',
+                          child: Text('Data de Publicação',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
@@ -189,33 +181,21 @@ class UserTablePageState extends State<UserTablePage> {
                     ),
 
                     // Linhas da tabela
-                    for (var user in paginatedUsers)
+                    for (var book in paginatedBooks)
                       TableRow(
                         children: [
                           Align(
-                            alignment: Alignment
-                                .centerLeft, // Alinha o texto à esquerda
+                            alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.nome,
-                                  textAlign:
-                                      TextAlign.left), // Alinhamento horizontal
+                              child: Text(book.nome, textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.matricula,
-                                  textAlign: TextAlign.left),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Text(user.turma, textAlign: TextAlign.left),
+                              child: Text(book.isbn, textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
@@ -223,14 +203,14 @@ class UserTablePageState extends State<UserTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child:
-                                  Text(user.turno, textAlign: TextAlign.left),
+                                  Text(book.editora, textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.tipoUsuario,
+                              child: Text(book.dataPublicacao,
                                   textAlign: TextAlign.left),
                             ),
                           ),
@@ -290,9 +270,7 @@ class UserTablePageState extends State<UserTablePage> {
                                       ],
                                     ),
                                   ),
-
                                   const SizedBox(width: 3),
-
                                   ElevatedButton(
                                     onPressed: () {},
                                     style: ElevatedButton.styleFrom(
@@ -311,7 +289,7 @@ class UserTablePageState extends State<UserTablePage> {
                                         Icon(Icons.library_books_rounded,
                                             color: Colors.white),
                                         SizedBox(width: 4),
-                                        Text('Histórico',
+                                        Text('Exemplares',
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,

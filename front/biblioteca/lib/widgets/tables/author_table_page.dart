@@ -1,34 +1,34 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:biblioteca/tem_tabela/user_data.dart';
-import 'package:biblioteca/tem_tabela/user_model.dart';
+import 'package:biblioteca/tem_tabela/author_data.dart';
+import 'package:biblioteca/tem_tabela/author_model.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 
-class UserTablePage extends StatefulWidget {
-  const UserTablePage({super.key});
+class AuthorTablePage extends StatefulWidget {
+  const AuthorTablePage({super.key});
 
   @override
-  UserTablePageState createState() => UserTablePageState();
+  AuthorTablePageState createState() => AuthorTablePageState();
 }
 
-class UserTablePageState extends State<UserTablePage> {
+class AuthorTablePageState extends State<AuthorTablePage> {
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
 
   @override
   Widget build(BuildContext context) {
-    int totalPages = (users.length / rowsPerPage).ceil();
+    int totalPages = (authors.length / rowsPerPage).ceil();
 
-    // Calcula o índice inicial e final dos usuários exibidos
+    // Calcula o índice inicial e final dos autores exibidos
     int startIndex = (currentPage - 1) * rowsPerPage;
-    int endIndex = (startIndex + rowsPerPage) < users.length
+    int endIndex = (startIndex + rowsPerPage) < authors.length
         ? (startIndex + rowsPerPage)
-        : users.length;
+        : authors.length;
 
-    // Seleciona os usuários que serão exibidos na página atual
-    List<User> paginatedUsers = users.sublist(startIndex, endIndex);
+    // Seleciona os autores que serão exibidos na página atual
+    List<Author> paginatedAuthors = authors.sublist(startIndex, endIndex);
 
     // Lógica para definir os botões de página (máximo 10 botões)
     int startPage = currentPage - 4 < 1 ? 1 : currentPage - 4;
@@ -40,7 +40,6 @@ class UserTablePageState extends State<UserTablePage> {
     return Material(
       child: Column(
         children: [
-
           // Barra de navegação
           Container(
             width: double.infinity,
@@ -50,7 +49,7 @@ class UserTablePageState extends State<UserTablePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.co_present_rounded,
+                  Icons.menu_book_outlined,
                   color: Colors.white,
                   size: 20,
                 ),
@@ -58,7 +57,7 @@ class UserTablePageState extends State<UserTablePage> {
                   width: 7,
                 ),
                 Text(
-                  "Controle de Usuários",
+                  "Catalogação",
                   style: TextStyle(color: Colors.white),
                 ),
                 Icon(
@@ -66,7 +65,7 @@ class UserTablePageState extends State<UserTablePage> {
                   color: Colors.white,
                 ),
                 Text(
-                  "Usuários",
+                  "Autores",
                   style: TextStyle(color: Colors.white),
                 )
               ],
@@ -78,16 +77,16 @@ class UserTablePageState extends State<UserTablePage> {
             padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
             child: Column(
 
-              // Botão novo usuário
+              // Botão novo autor
               children: [
                 Row(
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.novoUsuario);
+                        Navigator.pushNamed(context, AppRoutes.novoAutor);
                       },
                       label: const Text(
-                        'Novo Usuário',
+                        'Novo Autor',
                         style: TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
@@ -104,11 +103,12 @@ class UserTablePageState extends State<UserTablePage> {
                     )
                   ],
                 ),
+
                 const SizedBox(
                   height: 20.0,
                 ),
 
-                // Tabela de usuários
+                // Tabela de autores
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Row(
@@ -138,12 +138,11 @@ class UserTablePageState extends State<UserTablePage> {
                   border: TableBorder.all(
                       color: const Color.fromARGB(255, 213, 213, 213)),
                   columnWidths: const {
-                    0: FlexColumnWidth(0.30),
-                    1: FlexColumnWidth(0.17),
-                    2: FlexColumnWidth(0.15),
-                    3: FlexColumnWidth(0.15),
-                    4: FlexColumnWidth(0.17),
-                    5: IntrinsicColumnWidth(),
+                    0: FlexColumnWidth(0.40),
+                    1: FlexColumnWidth(0.40),
+                    2: FlexColumnWidth(0.40),
+                    3: FlexColumnWidth(0.40),
+                    4: IntrinsicColumnWidth()
                   },
                   children: [
 
@@ -157,25 +156,19 @@ class UserTablePageState extends State<UserTablePage> {
                                 style: TextStyle(fontWeight: FontWeight.bold))),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('R.A / Matrícula',
+                          child: Text('Ano de Nascimento',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('Turma',
+                          child: Text('Nacionalidade',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('Turno',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Tipo de Usuario',
+                          child: Text('Sexo',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
@@ -189,7 +182,7 @@ class UserTablePageState extends State<UserTablePage> {
                     ),
 
                     // Linhas da tabela
-                    for (var user in paginatedUsers)
+                    for (var author in paginatedAuthors)
                       TableRow(
                         children: [
                           Align(
@@ -197,7 +190,7 @@ class UserTablePageState extends State<UserTablePage> {
                                 .centerLeft, // Alinha o texto à esquerda
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.nome,
+                              child: Text(author.nome,
                                   textAlign:
                                       TextAlign.left), // Alinhamento horizontal
                             ),
@@ -206,7 +199,15 @@ class UserTablePageState extends State<UserTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.matricula,
+                              child: Text(author.anoNascimento.toString(),
+                                  textAlign: TextAlign.left),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(author.nacionalidade,
                                   textAlign: TextAlign.left),
                             ),
                           ),
@@ -215,23 +216,7 @@ class UserTablePageState extends State<UserTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child:
-                                  Text(user.turma, textAlign: TextAlign.left),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Text(user.turno, textAlign: TextAlign.left),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(user.tipoUsuario,
-                                  textAlign: TextAlign.left),
+                                  Text(author.sexo, textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
@@ -290,9 +275,7 @@ class UserTablePageState extends State<UserTablePage> {
                                       ],
                                     ),
                                   ),
-
                                   const SizedBox(width: 3),
-
                                   ElevatedButton(
                                     onPressed: () {},
                                     style: ElevatedButton.styleFrom(
@@ -311,7 +294,7 @@ class UserTablePageState extends State<UserTablePage> {
                                         Icon(Icons.library_books_rounded,
                                             color: Colors.white),
                                         SizedBox(width: 4),
-                                        Text('Histórico',
+                                        Text('Obras',
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,

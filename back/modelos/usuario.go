@@ -11,4 +11,5 @@ type Usuario struct {
 	DataDeNascimento string
 	Permissao        uint64
 	Ativo            bool
+	Turma            int
 }

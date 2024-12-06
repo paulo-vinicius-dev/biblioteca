@@ -9,14 +9,13 @@ import (
 var email string
 var senhaEmail string
 
-func init() {
+func InicializarServicoEmail() {
 	email = os.Getenv("EMAIL")
 	senhaEmail = os.Getenv("SENHA_EMAIL")
 }
 
 
 func Enviar(para, assunto ,corpo string) {
-	
 
 	msg := "From: " + email + "\n" +
 		"To: " + para + "\n" +

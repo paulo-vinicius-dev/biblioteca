@@ -5,8 +5,8 @@ import (
 	"biblioteca/rotas"
 	"log"
 	"net/http"
-
 	"github.com/joho/godotenv"
+	"biblioteca/servicos"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Erro ao carregar variáveis de ambiente!")
 	}
-
+	servicos.InicializarServicoEmail()
 	banco.Inicializar()
 	defer banco.Finalizar()
 	http.HandleFunc("/login", rotas.Login)

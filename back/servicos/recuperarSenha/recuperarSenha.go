@@ -45,7 +45,7 @@ func verificaSeRecuperacaoEValido(codigo string) bool {
 func gerarStringAleatoria() string {
 	caracteres := "abcdefghijklmnopqrsutvwyxz0123456789"
 	return fmt.Sprintf(
-		"%v%v%v%v",
+		"%c%c%c%c",
 		caracteres[rand.Intn(len(caracteres))],
 		caracteres[rand.Intn(len(caracteres))],
 		caracteres[rand.Intn(len(caracteres))],

@@ -1,3 +1,4 @@
+import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
@@ -204,7 +205,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           page = const Configuracoes();
                           break;
                         case '/sair':
-                          page = const Login();
+                          page = const TelaLogin();
                           break;
                         case '/novo_usuario':
                           page = const FormUser();

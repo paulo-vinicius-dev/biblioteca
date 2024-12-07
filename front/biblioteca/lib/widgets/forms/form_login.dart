@@ -1,11 +1,12 @@
 import 'package:biblioteca/data/models/login_model.dart';
-import 'package:biblioteca/data/repositories/login_repository.dart';
-import 'package:biblioteca/data/services/login_service.dart';
+import 'package:biblioteca/data/providers/auth_provider.dart';
+import 'package:biblioteca/data/services/auth_service.dart';
 import 'package:biblioteca/utils/assets.dart';
 import 'package:biblioteca/utils/config.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FormLogin extends StatefulWidget {
   const FormLogin({super.key});
@@ -22,10 +23,11 @@ class _FormLoginState extends State<FormLogin> {
   bool _visiblePassword = false;
 
   //Variáveis de requisição
-  late LoginService _loginService;
-  late LoginRepository _loginRepository;
+  late AuthService _authService;
   Login? _login;
-  String? _error;
+
+  //Provider
+  late AuthProvider _authProvider = AuthProvider();
 
   void tooglePassword() {
     setState(() {
@@ -58,12 +60,13 @@ class _FormLoginState extends State<FormLogin> {
 
   void _autenticar(login, senha) async {
     try {
-      final futureLogin = await _loginRepository.doLogin(login, senha);
+      final futureLogin = await _authService.doLogin(login, senha);
 
       setState(() {
         _login = futureLogin;
 
         if (_login!.aceito) {
+          _authProvider.login(_login!.idSessao, login);
           Navigator.pushReplacementNamed(context, AppRoutes.home);
         } else {
           showError('Usuário e/ou senha incorretos.');
@@ -76,13 +79,13 @@ class _FormLoginState extends State<FormLogin> {
 
   @override
   void initState() {
-    _loginService = LoginService(baseUrl: AppConfig.baseUrl);
-    _loginRepository = LoginRepository(loginService: _loginService);
+    _authService = AuthService(baseUrl: AppConfig.baseUrl);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    _authProvider = Provider.of<AuthProvider>(context);
     return Form(
       key: _formLoginKey,
       child: Column(

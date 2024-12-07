@@ -162,12 +162,10 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
               body: SingleChildScrollView(
                 child: Container(
                   constraints: BoxConstraints(
-                      minHeight: MediaQuery.of(context).size.height - 56
-                  ),
+                      minHeight: MediaQuery.of(context).size.height - 56),
                   decoration: BoxDecoration(
                       color: AppTheme.drawerBackgroundColor,
-                      borderRadius: BorderRadius.circular(10.0)
-                  ),
+                      borderRadius: BorderRadius.circular(10.0)),
                   child: Navigator(
                     key: GlobalKey<NavigatorState>(),
                     initialRoute: _selectedRoute,

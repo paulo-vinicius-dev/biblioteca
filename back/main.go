@@ -3,13 +3,18 @@ package main
 import (
 	"biblioteca/banco"
 	"biblioteca/rotas"
+	"biblioteca/servicos"
+	"fmt"
 	"log"
 	"net/http"
+
 	"github.com/joho/godotenv"
-	"biblioteca/servicos"
 )
 
 func main() {
+
+	ip := "localhost"
+	porta := "9090"
 
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Erro ao carregar variáveis de ambiente!")
@@ -21,5 +26,7 @@ func main() {
 	http.HandleFunc("/usuario", rotas.Usuario)
 	http.HandleFunc("/autor", rotas.Autor)
 	http.HandleFunc("/recuperarsenha", rotas.RecuperarSenha)
-	http.ListenAndServe(":9090", nil)
+	http.HandleFunc("/livro", rotas.Livro)
+	fmt.Printf("Api está rodando em http://%s:%s", ip, porta)
+	http.ListenAndServe(fmt.Sprintf(":%s", porta), nil)
 }

@@ -12,10 +12,16 @@ class _FormBookState extends State<FormBook> {
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
   final TextEditingController _editoraController = TextEditingController();
-  final TextEditingController _dataPublicacaoController = TextEditingController();
-  final TextEditingController _authorController = TextEditingController();
+  final TextEditingController _dataPublicacaoController =
+      TextEditingController();
   final TextEditingController _pageCountController = TextEditingController();
-  final TextEditingController _subjectsController = TextEditingController();
+
+  final List<TextEditingController> _authorsControllers = [
+    TextEditingController()
+  ];
+  final List<TextEditingController> _categoriesControllers = [
+    TextEditingController()
+  ];
 
   @override
   void dispose() {
@@ -24,9 +30,41 @@ class _FormBookState extends State<FormBook> {
     _editoraController.dispose();
     _dataPublicacaoController.dispose();
     _pageCountController.dispose();
-    _subjectsController.dispose();
+
+    for (var controller in _authorsControllers) {
+      controller.dispose();
+    }
+    for (var controller in _categoriesControllers) {
+      controller.dispose();
+    }
 
     super.dispose();
+  }
+
+  void _addAuthorField() {
+    setState(() {
+      _authorsControllers.add(TextEditingController());
+    });
+  }
+
+  void _addCategoryField() {
+    setState(() {
+      _categoriesControllers.add(TextEditingController());
+    });
+  }
+
+  void _removeAuthorField(int index) {
+    setState(() {
+      _authorsControllers[index].dispose();
+      _authorsControllers.removeAt(index);
+    });
+  }
+
+  void _removeCategoryField(int index) {
+    setState(() {
+      _categoriesControllers[index].dispose();
+      _categoriesControllers.removeAt(index);
+    });
   }
 
   @override
@@ -149,8 +187,6 @@ class _FormBookState extends State<FormBook> {
                       ),
                       const SizedBox(height: 20.0),
 
-                      
-                      
                       // Quantidade de paginas
                       TextFormField(
                         controller: _pageCountController,
@@ -166,89 +202,111 @@ class _FormBookState extends State<FormBook> {
                         },
                       ),
                       const SizedBox(height: 20.0),
-                      
+
                       // Autores
-                      // Adicionar lógica para aumentar a quantidade de campos e armazenar os dados em uma lista
-                      Row(children: [                          
-                        Expanded(
-                          child: TextFormField(
-                            controller: _authorController,
-                            decoration: const InputDecoration(
-                              labelText: "Autores",
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Preencha esse campo";
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () => {},
-                          child: Expanded(
-                            child: Container(
-                              width: 40.0,
-                              height: 40.0,
-                              decoration: const BoxDecoration(
-                                color: Colors.green,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(6.0),
-                                  bottomRight: Radius.circular(6.0)
-                                ),
+                      Column(
+                        children: List.generate(_authorsControllers.length, (index) {
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _authorsControllers[index],
+                                      decoration: InputDecoration(
+                                        labelText: "Autor ${index + 1}",
+                                        border: const OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4.0),
+                                  if (index == 0)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.green.shade800,
+                                          shape: BoxShape.circle),
+                                      child: IconButton(
+                                        icon: const Icon(Icons.add,
+                                            color: Colors.white),
+                                        onPressed: _addAuthorField,
+                                      ),
+                                    ),
+                                  if (index > 0)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.red.shade700,
+                                          shape: BoxShape.circle),
+                                      child: IconButton(
+                                        icon: const Icon(Icons.remove,
+                                            color: Colors.white),
+                                        onPressed: () =>
+                                            _removeAuthorField(index),
+                                      ),
+                                    ),
+                                ],
                               ),
-                              
-                              child: const Icon(Icons.add),
-                            ),
-                          )
-                        )
-                      ]),
+                              if (index < _authorsControllers.length - 1)
+                                const SizedBox(height: 16.0),
+                            ],
+                          );
+                        }),
+                      ),
                       const SizedBox(height: 20.0),
 
                       // Categorias
-                      // Adicionar lógica para aumentar a quantidade de campos e armazenar os dados em uma lista
-                      Row(children: [                       
-                        Expanded(
-                          child: TextFormField(
-                            controller: _subjectsController,
-                            decoration: const InputDecoration(
-                              labelText: "Categorias",
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Preencha esse campo";
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () => {},
-                          child: Expanded(
-                            child: Container(
-                              width: 40.0,
-                              height: 40.0,
-                              decoration: const BoxDecoration(
-                                color: Colors.green,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(6.0),
-                                  bottomRight: Radius.circular(6.0)
-                                ),
+                      Column(
+                        children: List.generate(_categoriesControllers.length, (index) {
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _categoriesControllers[index],
+                                      decoration: InputDecoration(
+                                        labelText: "Categoria ${index + 1}",
+                                        border: const OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4.0),
+                                  if (index == 0)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.green.shade800,
+                                          shape: BoxShape.circle),
+                                      child: IconButton(
+                                        icon: const Icon(Icons.add,
+                                            color: Colors.white),
+                                        onPressed: _addCategoryField,
+                                      ),
+                                    ),
+                                  if (index > 0)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.red.shade700,
+                                          shape: BoxShape.circle),
+                                      child: IconButton(
+                                        icon: const Icon(Icons.remove,
+                                            color: Colors.white),
+                                        onPressed: () =>
+                                            _removeCategoryField(index),
+                                      ),
+                                    ),
+                                ],
                               ),
-                              child: const Icon(Icons.add),
-                            ),
-                          )
-                        )
-                      ]),
+                              if (index < _categoriesControllers.length - 1)
+                                const SizedBox(height: 16.0),
+                            ],
+                          );
+                        }),
+                      ),
                       const SizedBox(height: 20.0),
 
                       // Botões
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Cancelar
                           ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
@@ -256,30 +314,30 @@ class _FormBookState extends State<FormBook> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.grey,
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
                               child: Text(
                                 "Cancelar",
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onInverseSurface,
-                                  fontSize: 18,
-                                ),
+                                style: TextStyle(fontSize: 18),
                               ),
                             ),
                           ),
                           const SizedBox(width: 16.0),
-
-                          // Salvar
                           ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
+                                final authors = _authorsControllers
+                                    .map((c) => c.text)
+                                    .toList();
+                                final categories = _categoriesControllers
+                                    .map((c) => c.text)
+                                    .toList();
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Cadastro realizado com sucesso!"),
-                                      backgroundColor: Colors.green),
+                                  SnackBar(
+                                    content: Text(
+                                        "Autores: $authors\nCategorias: $categories"),
+                                    backgroundColor: Colors.green,
+                                  ),
                                 );
                               }
                             },

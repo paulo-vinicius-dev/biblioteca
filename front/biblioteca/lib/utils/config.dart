@@ -1,3 +1,3 @@
 class AppConfig {
-  static const baseUrl = 'localhost:9090';
+  static const baseUrl = 'http://localhost:9090';
 }

@@ -1,4 +1,5 @@
 import 'package:biblioteca/data/providers/auth_provider.dart';
+import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
@@ -12,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  Provider.debugCheckInvalidValueType = null;
   runApp(const Myapp());
 }
 
@@ -23,13 +25,17 @@ class Myapp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ProxyProvider<AuthProvider, UsuarioProvider>(
+          create: (_) => UsuarioProvider(0, ''),
+          update: (_, authProvider, usuarioProvider) => UsuarioProvider(
+              authProvider.idDaSessao!, authProvider.usuarioLogado!),
+        ),
       ],
       child: MaterialApp(
         localizationsDelegates: const [
           GlobalCupertinoLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
-      
         ],
         supportedLocales: const [
           Locale('en'),
@@ -37,16 +43,13 @@ class Myapp extends StatelessWidget {
         ],
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: AppTheme.colorScheme,
-            scaffoldBackgroundColor: AppTheme.scaffoldBackgroundColor,
-            textTheme: GoogleFonts.robotoTextTheme(),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                textStyle: GoogleFonts.roboto()
-              )
-            ),
-          ),
+          useMaterial3: true,
+          colorScheme: AppTheme.colorScheme,
+          scaffoldBackgroundColor: AppTheme.scaffoldBackgroundColor,
+          textTheme: GoogleFonts.robotoTextTheme(),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(textStyle: GoogleFonts.roboto())),
+        ),
         initialRoute: AppRoutes.login,
         // home: const TelaPaginaIncial(),
         routes: {
@@ -54,7 +57,7 @@ class Myapp extends StatelessWidget {
           AppRoutes.home: (ctx) => const TelaPaginaIncial(),
           AppRoutes.redefinirSenha: (ctx) => const TelaRedefinirSenha(),
           AppRoutes.usuarios: (ctx) => const UserTablePage(),
-      
+
           //paginas temporarias para teste
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
           AppRoutes.emprestimo: (context) => const Emprestimo(),
@@ -63,7 +66,6 @@ class Myapp extends StatelessWidget {
           AppRoutes.relatorios: (context) => const Relatorios(),
           AppRoutes.nadaConsta: (context) => const NadaConsta(),
           AppRoutes.configuracoes: (context) => const Configuracoes(),
-      
         },
       ),
     );

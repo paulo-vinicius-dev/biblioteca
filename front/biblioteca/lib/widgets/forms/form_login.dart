@@ -2,7 +2,6 @@ import 'package:biblioteca/data/models/login_model.dart';
 import 'package:biblioteca/data/providers/auth_provider.dart';
 import 'package:biblioteca/data/services/auth_service.dart';
 import 'package:biblioteca/utils/assets.dart';
-import 'package:biblioteca/utils/config.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
@@ -73,13 +72,13 @@ class _FormLoginState extends State<FormLogin> {
         }
       });
     } catch (e) {
-      print(e.toString());
+      showError('Ops! Algo de errado não está certo, volte mais tarde');
     }
   }
 
   @override
   void initState() {
-    _authService = AuthService(baseUrl: AppConfig.baseUrl);
+    _authService = AuthService();
     super.initState();
   }
 

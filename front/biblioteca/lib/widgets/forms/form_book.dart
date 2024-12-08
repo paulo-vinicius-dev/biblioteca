@@ -325,21 +325,23 @@ class _FormBookState extends State<FormBook> {
                           const SizedBox(width: 16.0),
                           ElevatedButton(
                             onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                final authors = _authorsControllers
-                                    .map((c) => c.text)
-                                    .toList();
-                                final categories = _categoriesControllers
-                                    .map((c) => c.text)
-                                    .toList();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        "Autores: $authors\nCategorias: $categories"),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
+                              _tituloController.clear();
+                              _isbnController.clear();
+                              _editoraController.clear();
+                              _dataPublicacaoController.clear();
+                              _pageCountController.clear();
+                              for (var controller in _authorsControllers) {
+                                controller.clear();
                               }
+                              for (var controller in _categoriesControllers) {
+                                controller.clear();
+                              }
+                              setState(() {
+                                _authorsControllers.clear();
+                                _categoriesControllers.clear();
+                                _authorsControllers.add(TextEditingController());
+                                _categoriesControllers.add(TextEditingController());
+                              });
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context).primaryColor,

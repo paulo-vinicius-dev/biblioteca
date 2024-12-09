@@ -156,22 +156,25 @@ func PesquisarUsuario(busca string) []modelos.Usuario {
 	}
 	var usuarioTemporario modelos.Usuario
 	usuariosEncontrados := make([]modelos.Usuario, 0)
-	var cpfTemporario interface{}
-	var telefoneTemporario interface{}
-	var dataDeNascimentoTemporaria interface{}
-	_, erro = pgx.ForEachRow(linhas, []any{&usuarioTemporario.IdDoUsuario, &usuarioTemporario.Login, cpfTemporario, &usuarioTemporario.Nome, &usuarioTemporario.Email, telefoneTemporario, &usuarioTemporario.Permissao, dataDeNascimentoTemporaria, &usuarioTemporario.Ativo}, func() error {
-		//fmt.Println(usuarioTemporario)
-		//fmt.Println(usuariosEncontrados)
-		if v, ok := cpfTemporario.(string); ok {
-			usuarioTemporario.Cpf = v
+	var cpfTemporario *string
+	var telefoneTemporario *string
+	var dataDeNascimentoTemporaria *string
+	_, erro = pgx.ForEachRow(linhas, []any{&usuarioTemporario.IdDoUsuario, &usuarioTemporario.Login, &cpfTemporario, &usuarioTemporario.Nome, &usuarioTemporario.Email, &telefoneTemporario, &usuarioTemporario.Permissao, &dataDeNascimentoTemporaria, &usuarioTemporario.Ativo}, func() error {
+		if cpfTemporario != nil {
+			usuarioTemporario.Cpf = *cpfTemporario
+		} else {
+			usuarioTemporario.Cpf = ""
 		}
-		if v, ok := telefoneTemporario.(string); ok {
-			usuarioTemporario.Telefone = v
+		if telefoneTemporario != nil {
+			usuarioTemporario.Telefone = *telefoneTemporario
+		} else {
+			usuarioTemporario.Telefone = ""
 		}
-		if v, ok := dataDeNascimentoTemporaria.(string); ok {
-			usuarioTemporario.DataDeNascimento = v
+		if dataDeNascimentoTemporaria != nil {
+			usuarioTemporario.DataDeNascimento = *dataDeNascimentoTemporaria
+		} else {
+			usuarioTemporario.DataDeNascimento = ""
 		}
-
 		usuariosEncontrados = append(usuariosEncontrados, usuarioTemporario)
 		return nil
 	})
@@ -187,27 +190,33 @@ func PesquisarUsuarioPeloLogin(login string) (modelos.Usuario, bool) {
 	conexao := PegarConexao()
 	var usuario modelos.Usuario
 	textoQuery := "select id_usuario, login, cpf, nome, email, telefone, to_char(data_nascimento, 'yyyy-mm-dd'), permissoes, ativo from usuario where login = $1"
-	var cpfTemporario interface{}
-	var telefoneTemporario interface{}
-	var dataDeNascimentoTemporaria interface{}
+	var cpfTemporario *string
+	var telefoneTemporario *string
+	var dataDeNascimentoTemporaria *string
 	if erro := conexao.QueryRow(context.Background(), textoQuery, login).Scan(
 		&usuario.IdDoUsuario,
 		&usuario.Login,
-		cpfTemporario,
+		&cpfTemporario,
 		&usuario.Nome,
 		&usuario.Email,
-		telefoneTemporario,
-		dataDeNascimentoTemporaria,
+		&telefoneTemporario,
+		&dataDeNascimentoTemporaria,
 		&usuario.Permissao,
 		&usuario.Ativo); erro == nil {
-		if v, ok := cpfTemporario.(string); ok {
-			usuario.Cpf = v
+		if cpfTemporario != nil {
+			usuario.Cpf = *cpfTemporario
+		} else {
+			usuario.Cpf = ""
 		}
-		if v, ok := telefoneTemporario.(string); ok {
-			usuario.Telefone = v
+		if telefoneTemporario != nil {
+			usuario.Telefone = *telefoneTemporario
+		} else {
+			usuario.Telefone = ""
 		}
-		if v, ok := dataDeNascimentoTemporaria.(string); ok {
-			usuario.DataDeNascimento = v
+		if dataDeNascimentoTemporaria != nil {
+			usuario.DataDeNascimento = *dataDeNascimentoTemporaria
+		} else {
+			usuario.DataDeNascimento = ""
 		}
 
 		return usuario, false
@@ -219,9 +228,9 @@ func PesquisarUsuarioPeloLogin(login string) (modelos.Usuario, bool) {
 func PegarUsuarioPeloId(id int) (modelos.Usuario, bool) {
 	conexao := PegarConexao()
 	var usuario modelos.Usuario
-	var cpfTemporario interface{}
-	var telefoneTemporario interface{}
-	var dataDeNascimentoTemporaria interface{}
+	var cpfTemporario *string
+	var telefoneTemporario *string
+	var dataDeNascimentoTemporaria *string
 	textoQuery := "select id_usuario, login, cpf, nome, email, telefone, to_char(data_nascimento, 'yyyy-mm-dd'), permissoes, ativo from usuario where id_usuario = $1"
 	if erro := conexao.QueryRow(context.Background(), textoQuery, id).Scan(
 		&usuario.IdDoUsuario,
@@ -233,15 +242,22 @@ func PegarUsuarioPeloId(id int) (modelos.Usuario, bool) {
 		dataDeNascimentoTemporaria,
 		&usuario.Permissao,
 		&usuario.Ativo); erro == nil {
-		if v, ok := cpfTemporario.(string); ok {
-			usuario.Cpf = v
+		if cpfTemporario != nil {
+			usuario.Cpf = *cpfTemporario
+		} else {
+			usuario.Cpf = ""
 		}
-		if v, ok := telefoneTemporario.(string); ok {
-			usuario.Telefone = v
+		if telefoneTemporario != nil {
+			usuario.Telefone = *telefoneTemporario
+		} else {
+			usuario.Telefone = ""
 		}
-		if v, ok := dataDeNascimentoTemporaria.(string); ok {
-			usuario.DataDeNascimento = v
+		if dataDeNascimentoTemporaria != nil {
+			usuario.DataDeNascimento = *dataDeNascimentoTemporaria
+		} else {
+			usuario.DataDeNascimento = ""
 		}
+
 		return usuario, true
 	} else {
 		return usuario, false

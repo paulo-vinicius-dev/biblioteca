@@ -223,7 +223,7 @@ class _FormBookState extends State<FormBook> {
                                   if (index == 0)
                                     Container(
                                       decoration: BoxDecoration(
-                                          color: Colors.green.shade800,
+                                          color: Colors.green.shade700,
                                           shape: BoxShape.circle),
                                       child: IconButton(
                                         icon: const Icon(Icons.add,
@@ -234,7 +234,7 @@ class _FormBookState extends State<FormBook> {
                                   if (index > 0)
                                     Container(
                                       decoration: BoxDecoration(
-                                          color: Colors.red.shade700,
+                                          color: Colors.red.shade600,
                                           shape: BoxShape.circle),
                                       child: IconButton(
                                         icon: const Icon(Icons.remove,
@@ -273,7 +273,7 @@ class _FormBookState extends State<FormBook> {
                                   if (index == 0)
                                     Container(
                                       decoration: BoxDecoration(
-                                          color: Colors.green.shade800,
+                                          color: Colors.green.shade700,
                                           shape: BoxShape.circle),
                                       child: IconButton(
                                         icon: const Icon(Icons.add,
@@ -284,7 +284,7 @@ class _FormBookState extends State<FormBook> {
                                   if (index > 0)
                                     Container(
                                       decoration: BoxDecoration(
-                                          color: Colors.red.shade700,
+                                          color: Colors.red.shade600,
                                           shape: BoxShape.circle),
                                       child: IconButton(
                                         icon: const Icon(Icons.remove,

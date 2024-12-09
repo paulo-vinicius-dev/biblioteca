@@ -42,11 +42,16 @@ func CriarLivro(idDaSessao uint64, loginUsuarioCriador string, novoLivro modelos
 	if permissaoDoUsuarioCriador&utilidades.PermissaoCriarUsuario != utilidades.PermissaoCriarUsuario {
 		return ErroDeServicoDoLivroSemPermisao
 	}
+
 	if _, erro := time.Parse(time.DateOnly, novoLivro.AnoPublicao); erro != nil {
 		return ErroDeServicoDoLivroAnoPublicaoInvalida
 	}
-	return erroDoBancoParaErroDeServicoDoLivro(banco.CriarLivro(novoLivro))
 
+	if !utilidades.ValidarISBN(novoLivro.Isbn) {
+		return ErroDeServicoDoLivroIsbnInvalido
+	}
+
+	return erroDoBancoParaErroDeServicoDoLivro(banco.CriarLivro(novoLivro))
 }
 
 func BuscarLivro(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca string) ([]modelos.Livro, ErroDeServicoDoLivro) {
@@ -86,6 +91,14 @@ func AtualizarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, livroCom
 
 	if permissaoDoUsuarioRequerente&utilidades.PermissaoAtualizarUsuario != utilidades.PermissaoAtualizarUsuario {
 		return livroComDadosAtualizados, ErroDeServicoDoLivroSemPermisao
+	}
+
+	if _, erro := time.Parse(time.DateOnly, livroComDadosAtualizados.AnoPublicao); erro != nil {
+		return livroComDadosAtualizados, ErroDeServicoDoLivroAnoPublicaoInvalida
+	}
+
+	if !utilidades.ValidarISBN(livroComDadosAtualizados.Isbn) {
+		return livroComDadosAtualizados, ErroDeServicoDoLivroIsbnInvalido
 	}
 
 	return livroComDadosAtualizados, erroDoBancoParaErroDeServicoDoLivro(banco.AtualizarLivro(livroComDadosAntigos, livroComDadosAtualizados))

@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func AssociarLivroAutor(idLivro int, idAutor int) ErroBancoLivro {
+func AssociarLivroAutor(idLivro, idAutor int) ErroBancoLivro {
 	conexao := PegarConexao()
 
 	_, erroQuery := conexao.Exec(
@@ -17,7 +17,25 @@ func AssociarLivroAutor(idLivro int, idAutor int) ErroBancoLivro {
 
 	if erroQuery != nil {
 		fmt.Println(erroQuery)
-		panic("Um erro imprevisto aconteceu na Associação do livro com o autor. Provavelmente é um bug")
+		panic("Um erro imprevisto aconteceu na Associação do livro com o autor.")
+	}
+
+	return ErroNenhum
+}
+
+func DessasociarLivroAutor(idLivro, idAutor int) ErroBancoLivro {
+	conexao := PegarConexao()
+
+	_, erroQuery := conexao.Exec(
+		context.Background(),
+		"delete from livro_autor where id_livro = $1 and id_autor = $2",
+		idLivro,
+		idAutor,
+	)
+
+	if erroQuery != nil {
+		fmt.Println(erroQuery)
+		panic("Um erro imprevisto aconteceu na Desassociação do livro com o autor.")
 	}
 
 	return ErroNenhum

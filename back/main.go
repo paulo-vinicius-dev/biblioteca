@@ -27,6 +27,6 @@ func main() {
 	http.HandleFunc("/autor", rotas.Autor)
 	http.HandleFunc("/recuperarsenha", rotas.RecuperarSenha)
 	http.HandleFunc("/livro", rotas.Livro)
-	fmt.Printf("Api está rodando em http://%s:%s", ip, porta)
+	fmt.Printf("Api está rodando em http://%s:%s\n", ip, porta)
 	http.ListenAndServe(fmt.Sprintf(":%s", porta), nil)
 }

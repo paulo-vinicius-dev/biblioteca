@@ -23,7 +23,7 @@ type requisicaoLivro struct {
 	TextoDeBusca             string   `validate:"optional"`
 }
 
-type respostaGetLivro struct {
+type respostaPesquisaLivro struct {
 	Id           int      `validate:"optional"`
 	Isbn         string   `validate:"optional"`
 	Titulo       string   `validate:"optional"`
@@ -42,6 +42,10 @@ func erroServicoLivroParaErrHttp(erro servicoLivro.ErroDeServicoDoLivro, respost
 	case servicoLivro.ErroDeServicoDoLivroIsbnDuplicado:
 		resposta.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(resposta, "Isbn duplicado")
+		return
+	case servicoLivro.ErroDeServicoDoLivroIsbnInvalido:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Isbn inválido, o Isbn deve seguir a formatação prevista para ISBN-10 e ISBN-13")
 		return
 	case servicoLivro.ErroDeServicoDoLivroSemPermisao:
 		resposta.WriteHeader(http.StatusBadRequest)
@@ -179,16 +183,9 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 		if erro := servicoLivro.DeletarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, requisicaoLivro.Id); erro != servicoUsuario.ErroDeServicoDoUsuarioNenhum {
 			erroServicoLivroParaErrHttp(erro, resposta)
 		}
-		livroDeletado, _ := servicoLivro.PegarLivroPeloId(requisicaoLivro.Id)
-		respostaLivro := respostaLivro{
-			[]modelos.Livro{
-				livroDeletado,
-			},
-		}
 
-		respostaLivroJson, _ := json.Marshal(&respostaLivro)
-
-		fmt.Fprintf(resposta, "%s", respostaLivroJson)
+		resposta.WriteHeader(http.StatusNoContent)
+		fmt.Fprintf(resposta, "Usuário excluído com sucesso")
 	}
 
 }

@@ -11,11 +11,6 @@ import (
 
 type ErroBancoLivro int
 
-const (
-	ErroIsbnDuplicado = iota
-	ErroLivroInexistente
-)
-
 func CriarLivro(novoLivro modelos.Livro) ErroBancoLivro {
 	conexao := PegarConexao()
 
@@ -105,7 +100,7 @@ func AtualizarLivro(livroComDadosAntigos, livroAtualizado modelos.Livro) ErroBan
 	}
 
 	conexao := PegarConexao()
-	textoQuery := "update livro set isbn = $1, titulo = $2, ano_publicacao = $3, editora = $4, pais = $5, data_atualizacao = current_timestamp where id_livro = $9"
+	textoQuery := "update livro set isbn = $1, titulo = $2, ano_publicacao = $3, editora = $4, pais = $5, data_atualizacao = current_timestamp where id_livro = $6"
 	if _, erroQuery := conexao.Query(
 		context.Background(),
 		textoQuery,
@@ -116,6 +111,7 @@ func AtualizarLivro(livroComDadosAntigos, livroAtualizado modelos.Livro) ErroBan
 		livroAtualizado.Pais,
 		livroAtualizado.IdDoLivro,
 	); erroQuery != nil {
+		fmt.Println(erroQuery)
 		panic("Um erro desconhecido acontesceu na atualização do livro")
 	}
 
@@ -137,7 +133,7 @@ func ExcluirLivro(idDoLivro int) ErroBancoLivro {
 
 	if erroQuery != nil {
 		fmt.Println(erroQuery)
-		panic("Um erro imprevisto acontesceu na exclusão do livro. Provavelmente é um bug")
+		panic("Um erro imprevisto acontenceu na exclusão do livro. Provavelmente é um bug")
 	}
 
 	return ErroNenhum
@@ -146,7 +142,7 @@ func ExcluirLivro(idDoLivro int) ErroBancoLivro {
 func PegarIdLivro(isbn string) int {
 	conexao := PegarConexao()
 	var id int
-	if conexao.QueryRow(context.Background(), "select id_livro from usuario where login = $1", isbn).Scan(&id) == nil {
+	if conexao.QueryRow(context.Background(), "select id_livro from livro where isbn = $1", isbn).Scan(&id) == nil {
 		return id
 	} else {
 		return 0
@@ -156,7 +152,7 @@ func PegarIdLivro(isbn string) int {
 func IsbnDuplicado(cpf string) bool {
 	conexao := PegarConexao()
 	qtdIsbn := 0
-	if conexao.QueryRow(context.Background(), "select count(isbn) from livro u where isbn = $1", cpf).Scan(&qtdIsbn) == nil {
+	if conexao.QueryRow(context.Background(), "select count(isbn) from livro where isbn = $1", cpf).Scan(&qtdIsbn) == nil {
 		return qtdIsbn > 0
 	} else {
 		panic("Erro ao procurar por isbn duplicado. Provavelmente é um bug")

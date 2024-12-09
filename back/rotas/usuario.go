@@ -111,7 +111,6 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 	switch requisicao.Method {
 	case "POST":
 		if len(requisicaoUsuario.Login) < 1 ||
-			len(requisicaoUsuario.Cpf) < 1 ||
 			len(requisicaoUsuario.Nome) < 1 ||
 			len(requisicaoUsuario.Email) < 1 ||
 			len(requisicaoUsuario.Telefone) < 1 ||
@@ -176,7 +175,6 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	case "PUT":
 		if len(requisicaoUsuario.Login) < 1 ||
-			len(requisicaoUsuario.Cpf) < 1 ||
 			len(requisicaoUsuario.Nome) < 1 ||
 			len(requisicaoUsuario.Email) < 1 ||
 			len(requisicaoUsuario.Telefone) < 1 ||

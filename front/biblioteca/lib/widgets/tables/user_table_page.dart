@@ -38,6 +38,7 @@ class UserTablePageState extends State<UserTablePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return _isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -272,7 +273,8 @@ class UserTablePageState extends State<UserTablePage> {
                                           context: context,
                                           builder: (context) {
                                             return AlertDialog(
-                                              title: const Text('Excluir Usuário'),
+                                              title:
+                                                  const Text('Excluir Usuário'),
                                               content: const Text(
                                                   'Tem certeza que deseja excluir este usuário?'),
                                               actions: [
@@ -306,6 +308,7 @@ class UserTablePageState extends State<UserTablePage> {
                                                         const Text('Cancelar')),
                                                 ElevatedButton(
                                                     onPressed: () {
+                                                      print(user.toJson());
                                                       provider.deleteUsuario(
                                                           user.idDoUsuario);
                                                       setState(() {

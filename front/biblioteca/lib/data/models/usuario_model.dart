@@ -75,7 +75,7 @@ class Usuario {
         nome: json["Nome"],
         email: json["Email"],
         telefone: json["Telefone"],
-        dataDeNascimento: DateTime.parse(json["DataDeNascimento"]),
+        dataDeNascimento: json["DataDeNascimento"].toString().isEmpty ? null : DateTime.parse(json["DataDeNascimento"]),
         permissao: json["Permissao"],
         ativo: json["Ativo"],
         turma: json["Turma"],

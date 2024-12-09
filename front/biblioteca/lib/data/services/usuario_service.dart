@@ -58,9 +58,11 @@ class UsuarioService {
         "Nome": usuario.nome,
         "Email": usuario.email,
         "Telefone": usuario.telefone,
-        "DataDeNascimento": DateFormat('yyyy-MM-dd')
-            .format(usuario.dataDeNascimento!)
-            .toString(),
+        "DataDeNascimento": usuario.dataDeNascimento != null
+            ? DateFormat('yyyy-MM-dd')
+                .format(usuario.dataDeNascimento!)
+                .toString()
+            : "",
         "Permissao": usuario.permissao,
         "Senha": usuario.senha,
         "Turma": 0
@@ -82,14 +84,18 @@ class UsuarioService {
       "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
       "Login": usuario.login,
       "Cpf": usuario.cpf,
+      "Senha": usuario.senha,
       "Nome": usuario.nome,
       "Email": usuario.email,
       "Telefone": usuario.telefone,
-      "DataDeNascimento":
-          DateFormat('yyyy-MM-dd').format(usuario.dataDeNascimento!).toString(),
+      "DataDeNascimento": usuario.dataDeNascimento != null
+          ? DateFormat('yyyy-MM-dd')
+              .format(usuario.dataDeNascimento!)
+              .toString()
+          : "",
       "Permissao": usuario.permissao,
-      "Senha": usuario.senha,
-      "Id": usuario.idDoUsuario
+      "Id": usuario.idDoUsuario,
+      "Ativo": true
     };
     print(body);
     final response = await _api.requisicao(

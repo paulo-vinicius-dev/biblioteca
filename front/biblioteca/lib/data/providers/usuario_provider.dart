@@ -20,6 +20,8 @@ class UsuarioProvider with ChangeNotifier {
           .where((usuario) => usuario.ativo && usuario.login != usuarioLogado)
           .toList();
 
+      users.sort((x, y) => x.nome.compareTo(y.nome));
+
       notifyListeners();
     } catch (e) {
       print('$e');

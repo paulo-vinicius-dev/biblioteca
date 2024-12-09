@@ -39,7 +39,6 @@ func erroDoBancoParaErroDeServicoDoUsuario(erro banco.ErroBancoUsuario) ErroDeSe
 	}
 }
 
-
 // Para criar o usuário é preciso forncer todos os dados do novoUsuario
 // mas do usuario criador só precisamos fornecer o sessão
 
@@ -54,11 +53,11 @@ func CriarUsuario(idDaSessao uint64, loginUsuarioCriador string, novoUsuario mod
 		return ErroDeServicoDoUsuarioSemPermisao
 	}
 
-	if !utilidades.StringENumerica(novoUsuario.Cpf) || !utilidades.ValidarCpf(novoUsuario.Cpf) {
+	if len(novoUsuario.Cpf) > 0 && !utilidades.StringENumerica(novoUsuario.Cpf) || !utilidades.ValidarCpf(novoUsuario.Cpf) {
 		return ErroDeServicoDoUsuarioCpfInvalido
 	}
 
-	if !utilidades.StringENumerica(novoUsuario.Telefone) || len(novoUsuario.Telefone) != 11 {
+	if len(novoUsuario.Telefone) > 0 && !utilidades.StringENumerica(novoUsuario.Telefone) || len(novoUsuario.Telefone) != 11 {
 		return ErroDeServicoDoUsuarioTelefoneInvalido
 	}
 
@@ -74,23 +73,21 @@ func CriarUsuario(idDaSessao uint64, loginUsuarioCriador string, novoUsuario mod
 
 }
 
-func BuscarUsuarios(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca string) ([]modelos.Usuario, ErroDeServicoDoUsuario){
+func BuscarUsuarios(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca string) ([]modelos.Usuario, ErroDeServicoDoUsuario) {
 	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioBuscador) != sessao.VALIDO {
 		return nil, ErroDeServicoDoUsuarioSessaoInvalida
 	}
 
 	permissaoDoUsuarioBuscador := sessao.PegarSessaoAtual()[idDaSessao].Permissao
 
-
 	if textoDaBusca == "" {
-		println(loginDoUsuarioBuscador);
+		println(loginDoUsuarioBuscador)
 		usuarioBuscador, erro := banco.PesquisarUsuarioPeloLogin(loginDoUsuarioBuscador)
 		if erro {
 			return []modelos.Usuario{}, ErroDeServicoDoUsuarioNenhum
 		}
 		return []modelos.Usuario{usuarioBuscador}, ErroDeServicoDoUsuarioNenhum
 	}
-
 
 	if permissaoDoUsuarioBuscador&utilidades.PermssaoLerUsuario != utilidades.PermssaoLerUsuario {
 		return nil, ErroDeServicoDoUsuarioSemPermisao
@@ -101,7 +98,6 @@ func BuscarUsuarios(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBus
 	return usuarioEncontrados, ErroDeServicoDoUsuarioNenhum
 }
 
-
 func AtualizarUsuario(idDaSessao uint64, loginDoUsuarioRequerente string, usuarioComDadosAtualizados modelos.Usuario) (modelos.Usuario, ErroDeServicoDoUsuario) {
 
 	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioRequerente) != sessao.VALIDO {
@@ -109,7 +105,6 @@ func AtualizarUsuario(idDaSessao uint64, loginDoUsuarioRequerente string, usuari
 	}
 
 	permissaoDoUsuarioRequerente := sessao.PegarSessaoAtual()[idDaSessao].Permissao
-
 
 	usuarioComDadosAntigos, achou := banco.PegarUsuarioPeloId(usuarioComDadosAtualizados.IdDoUsuario)
 	if !achou {
@@ -123,7 +118,7 @@ func AtualizarUsuario(idDaSessao uint64, loginDoUsuarioRequerente string, usuari
 		return usuarioComDadosAtualizados, ErroDeServicoDoUsuarioSemPermisao
 	}
 
-	if !usuarioMudaASiMesmo && permissaoDoUsuarioRequerente & utilidades.PermissaoAtualizarUsuario != utilidades.PermissaoAtualizarUsuario {
+	if !usuarioMudaASiMesmo && permissaoDoUsuarioRequerente&utilidades.PermissaoAtualizarUsuario != utilidades.PermissaoAtualizarUsuario {
 		return usuarioComDadosAtualizados, ErroDeServicoDoUsuarioSemPermisao
 	}
 
@@ -143,12 +138,10 @@ func AtualizarUsuario(idDaSessao uint64, loginDoUsuarioRequerente string, usuari
 		return usuarioComDadosAtualizados, ErroDeServicoDoUsuarioEmailInvalido
 	}
 
-
-
 	return usuarioComDadosAtualizados, erroDoBancoParaErroDeServicoDoUsuario(banco.AtualizarUsuario(usuarioComDadosAntigos, usuarioComDadosAtualizados))
 }
 
-func PegarUsuarioPeloId(id int) (modelos.Usuario, bool){
+func PegarUsuarioPeloId(id int) (modelos.Usuario, bool) {
 	return banco.PegarUsuarioPeloId(id)
 }
 
@@ -159,7 +152,7 @@ func DeletarUsuario(idDaSessao uint64, loginDoUsuarioRequerente string, idDoUsua
 
 	permissaoDoUsuarioRequerente := sessao.PegarSessaoAtual()[idDaSessao].Permissao
 
-	if permissaoDoUsuarioRequerente & utilidades.PermissaoDeletarUsuario != utilidades.PermissaoDeletarUsuario {
+	if permissaoDoUsuarioRequerente&utilidades.PermissaoDeletarUsuario != utilidades.PermissaoDeletarUsuario {
 		return ErroDeServicoDoUsuarioSemPermisao
 	}
 
@@ -173,5 +166,3 @@ func PegarIdUsuario(login string) int {
 func PegarPermissao(login string) uint64 {
 	return banco.PegarPermissao(login)
 }
-
-

@@ -197,6 +197,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		usuarioComDadosAtualizados.Permissao = requisicaoUsuario.PermissoesDoUsuario
 		usuarioComDadosAtualizados.Senha = requisicaoUsuario.Senha
 		usuarioComDadosAtualizados.IdDoUsuario = requisicaoUsuario.Id
+		usuarioComDadosAtualizados.Ativo = requisicaoUsuario.Ativo
 
 		usuarioAtualizado, erro := servicoUsuario.AtualizarUsuario(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, usuarioComDadosAtualizados)
 

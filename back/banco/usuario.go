@@ -86,10 +86,6 @@ func AtualizarUsuario(usuarioComDadosAntigos, usuarioAtualizado modelos.Usuario)
 		return ErroEmailDuplicado
 	}
 
-	if len(usuarioAtualizado.Cpf) > 0 && CpfDuplicado(usuarioAtualizado.Cpf) {
-		return ErroCpfDuplicado
-	}
-
 	var cpf interface{} = usuarioAtualizado.Cpf
 	if len(cpf.(string)) == 0 {
 		cpf = nil
@@ -122,6 +118,8 @@ func AtualizarUsuario(usuarioComDadosAntigos, usuarioAtualizado modelos.Usuario)
 	); erroQuery != nil {
 		panic("Um erro desconhecido acontesceu na atualização do usuário")
 	}
+
+	fmt.Println(usuarioAtualizado.Nome)
 
 	if usuarioAtualizado.Senha != "" {
 		senhaCriptogrfada := CriptografarSenha(usuarioAtualizado.Senha)

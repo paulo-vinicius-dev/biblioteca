@@ -30,8 +30,23 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 		return ErroLoginDuplicado
 	}
 
-	if CpfDuplicado(novoUsuario.Cpf) {
+	if len(novoUsuario.cpf) > 0 && CpfDuplicado(novoUsuario.Cpf) {
 		return ErroCpfDuplicado
+	}
+
+	cpf := novoUsuario.Cpf
+	if (len(cpf) == 0) {
+		cpf = "NULL"
+	}
+
+	telefone := novoUsuario.Telefone
+	if(len(telefone) == 0) {
+		telefone = "NULL"
+	}
+
+	data_nascimento := novoUsuario.DataDeNascimento
+	if(len(data_nascimento) == 0) {
+		data_nascimento = "NULL"
 	}
 
 	senhaCriptogrfada := CriptografarSenha(novoUsuario.Senha)
@@ -39,11 +54,11 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 		context.Background(),
 		"insert into usuario(login,cpf, nome, email, telefone, data_nascimento, data_criacao, senha, permissoes) values ($1, $2, $3, $4, $5, $6, CURRENT_DATE, $7, $8)",
 		novoUsuario.Login,
-		novoUsuario.Cpf,
+		cpf,
 		novoUsuario.Nome,
 		novoUsuario.Email,
-		novoUsuario.Telefone,
-		novoUsuario.DataDeNascimento,
+		telefone,
+		data_nascimento,
 		senhaCriptogrfada,
 		novoUsuario.Permissao,
 	)

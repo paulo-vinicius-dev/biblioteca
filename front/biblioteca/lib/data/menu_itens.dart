@@ -1,5 +1,5 @@
 
-import 'package:biblioteca/models/modelo_menu.dart';
+import 'package:biblioteca/data/models/modelo_menu.dart';
 import 'package:flutter/material.dart';
 
 List<MenuModelo> menuitens = [

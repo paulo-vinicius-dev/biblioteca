@@ -19,18 +19,18 @@ type requisicaoLivro struct {
 	AnoPublicao              string   `validate:"optional"`
 	Editora                  string   `validate:"optional"`
 	Pais                     int      `validate:"optional"`
-	NomesAutores             []string `validate:"optional"`
+	NomeDosAutores           []string `validate:"optional"`
 	TextoDeBusca             string   `validate:"optional"`
 }
 
 type respostaPesquisaLivro struct {
-	Id           int      `validate:"optional"`
-	Isbn         string   `validate:"optional"`
-	Titulo       string   `validate:"optional"`
-	AnoPublicao  string   `validate:"optional"`
-	Editora      string   `validate:"optional"`
-	Pais         int      `validate:"optional"`
-	NomesAutores []string `validate:"optional"`
+	Id          int      `validate:"optional"`
+	Isbn        string   `validate:"optional"`
+	Titulo      string   `validate:"optional"`
+	AnoPublicao string   `validate:"optional"`
+	Editora     string   `validate:"optional"`
+	Pais        int      `validate:"optional"`
+	NomeAutores []string `validate:"optional"`
 }
 
 type respostaLivro struct {
@@ -102,7 +102,7 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 		novoLivro.Editora = requisicaoLivro.Editora
 		novoLivro.Pais = requisicaoLivro.Pais
 
-		erro := servicoLivro.CriarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, novoLivro)
+		erro := servicoLivro.CriarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, novoLivro, requisicaoLivro.NomeDosAutores)
 
 		if erro != servicoLivro.ErroDeServicoDoLivroNenhum {
 			erroServicoLivroParaErrHttp(erro, resposta)

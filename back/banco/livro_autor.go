@@ -10,7 +10,7 @@ func AssociarLivroAutor(idLivro, idAutor int) ErroBancoLivro {
 
 	_, erroQuery := conexao.Exec(
 		context.Background(),
-		"insert into livro_autor(id_livro, id_autor, data_criacao) values ($1, $2, current_timestamp)",
+		"insert into livro_autor(id_livro, id_autor, data_criacao) values ($1, $2, current_timestamp) on conflict (id_livro, id_autor) do nothing",
 		idLivro,
 		idAutor,
 	)

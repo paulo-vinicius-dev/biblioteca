@@ -11,14 +11,15 @@ import (
 
 type ErroBancoLivro int
 
-func CriarLivro(novoLivro modelos.Livro) ErroBancoLivro {
+func CriarLivro(novoLivro modelos.Livro, nomeAutores []string) ErroBancoLivro {
 	conexao := PegarConexao()
+
+	tx, _ := conexao.Begin(context.Background())
 
 	if IsbnDuplicado(novoLivro.Isbn) {
 		return ErroIsbnDuplicado
 	}
-	_, erroQuery := conexao.Exec(
-		context.Background(),
+	_, erroQuery := tx.Exec(context.Background(),
 		"insert into livro (isbn, titulo, ano_publicacao, editora, pais, data_criacao) VALUES ($1, $2, $3, $4, $5, current_timestamp)",
 		novoLivro.Isbn,
 		novoLivro.Titulo,
@@ -28,10 +29,41 @@ func CriarLivro(novoLivro modelos.Livro) ErroBancoLivro {
 	)
 
 	if erroQuery != nil {
-		fmt.Println(erroQuery)
 		panic("Um erro imprevisto acontesceu no cadastro do livro. Provavelmente é um bug")
 	}
 
+	var idDosAutores []int
+
+	for _, nomeAutor := range nomeAutores {
+		idDoAutor := PegarIdAutor(nomeAutor)
+		if idDoAutor == 0 {
+			InserirAutor(modelos.Autor{Nome: nomeAutor})
+			idDoAutor = PegarIdAutor(nomeAutor)
+		}
+		idDosAutores = append(idDosAutores, idDoAutor)
+	}
+
+	var idDoLivro int
+	tx.QueryRow(context.Background(), "select id_livro from livro where isbn = $1", novoLivro.Isbn).Scan(&idDoLivro)
+
+	for _, idDoAutor := range idDosAutores {
+		_, erroQuery := tx.Exec(
+			context.Background(),
+			"insert into livro_autor(id_livro, id_autor, data_criacao) values ($1, $2, current_timestamp)",
+			idDoLivro,
+			idDoAutor,
+		)
+
+		if erroQuery != nil {
+			tx.Rollback(context.Background())
+			fmt.Println(erroQuery)
+			panic("Um erro imprevisto acontesceu no cadastro do livro. Provavelmente é um bug")
+		}
+
+		fmt.Printf("Autor: %v; Livro: %v\n", idDoAutor, idDoLivro)
+	}
+
+	tx.Commit(context.Background())
 	return ErroNenhum
 }
 

@@ -32,7 +32,7 @@ func erroDoBancoParaErroDeServicoDoLivro(erro banco.ErroBancoLivro) ErroDeServic
 	}
 }
 
-func CriarLivro(idDaSessao uint64, loginUsuarioCriador string, novoLivro modelos.Livro) ErroDeServicoDoLivro {
+func CriarLivro(idDaSessao uint64, loginUsuarioCriador string, novoLivro modelos.Livro, nomeDosAutores []string) ErroDeServicoDoLivro {
 	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginUsuarioCriador) != sessao.VALIDO {
 		return ErroDeServicoDoLivroSessaoInvalida
 	}
@@ -51,7 +51,7 @@ func CriarLivro(idDaSessao uint64, loginUsuarioCriador string, novoLivro modelos
 		return ErroDeServicoDoLivroIsbnInvalido
 	}
 
-	return erroDoBancoParaErroDeServicoDoLivro(banco.CriarLivro(novoLivro))
+	return erroDoBancoParaErroDeServicoDoLivro(banco.CriarLivro(novoLivro, nomeDosAutores))
 }
 
 func BuscarLivro(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca string) ([]modelos.Livro, ErroDeServicoDoLivro) {

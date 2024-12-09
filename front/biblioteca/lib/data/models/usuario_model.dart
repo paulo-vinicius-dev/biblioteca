@@ -29,36 +29,42 @@ class UsuariosAtingidos {
       };
 }
 
+Usuario usuarioFromJson(String str) => Usuario.fromJson(json.decode(str));
+
+String usuarioToJson(Usuario data) => json.encode(data.toJson());
+
 class Usuario {
   int idDoUsuario;
   String login;
-  String cpf;
+  String? cpf;
   String senha;
   String nome;
   String email;
-  String telefone;
-  DateTime dataDeNascimento;
+  String? telefone;
+  DateTime? dataDeNascimento;
   int permissao;
   bool ativo;
   int turma;
 
-  //Esses Campos diferem da tabela precisam ser organizados
-  String turno = 'M';
+  //Esses Campos diferem da tabela precisam ser alterados
   String tipoUsuario = 'Wtvr';
+  String turno = 'M';
   String matricula = '0';
 
   Usuario({
-    required this.idDoUsuario,
+    this.idDoUsuario = 0,
     required this.login,
     required this.cpf,
     required this.senha,
     required this.nome,
     required this.email,
     required this.telefone,
-    required this.dataDeNascimento,
-    required this.permissao,
-    required this.ativo,
-    required this.turma,
+    this.dataDeNascimento,
+    //Por enquanto todo mundo é adm, que mal pode ter nisso
+    this.permissao = 15,
+    this.ativo = true,
+    //por enquanto a turma vai ser mocada
+    this.turma = 0,
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
@@ -83,10 +89,11 @@ class Usuario {
         "Nome": nome,
         "Email": email,
         "Telefone": telefone,
-        "DataDeNascimento":
-            "${dataDeNascimento.year.toString().padLeft(4, '0')}-${dataDeNascimento.month.toString().padLeft(2, '0')}-${dataDeNascimento.day.toString().padLeft(2, '0')}",
+        "DataDeNascimento": dataDeNascimento == null
+            ? null
+            : "${dataDeNascimento?.year.toString().padLeft(4, '0')}-${dataDeNascimento?.month.toString().padLeft(2, '0')}-${dataDeNascimento?.day.toString().padLeft(2, '0')}",
         "Permissao": permissao,
-        "Ativo": ativo,
+        //"Ativo": ativo,
         "Turma": turma,
       };
 }

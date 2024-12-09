@@ -11,15 +11,39 @@ class UsuarioProvider with ChangeNotifier {
 
   List<Usuario> users = [];
   UsuariosAtingidos? loadedUsuarios;
-  String? error;
 
   Future<void> loadUsuarios() async {
     try {
       loadedUsuarios =
           await usuarioService.fetchUsuarios(idDaSessao, usuarioLogado);
-      users = loadedUsuarios!.usuarioAtingidos;
+      users = loadedUsuarios!.usuarioAtingidos
+          .where((usuario) => usuario.ativo)
+          .toList();
+      notifyListeners();
     } catch (e) {
-      error = e.toString();
+      print('$e');
+    }
+  }
+
+  Future<void> addUsuario(Usuario usuario) async {
+    late Usuario novoUsuario;
+    try {
+      novoUsuario =
+          await usuarioService.addUsuario(idDaSessao, usuarioLogado, usuario);
+      users.add(novoUsuario);
+    } catch (e) {
+      print('$e');
+    }
+    notifyListeners();
+  }
+
+  Future<void> editUsuario(Usuario usuario) async {
+    late Usuario novoUsuario;
+    try {
+      novoUsuario =
+          await usuarioService.alterUsuario(idDaSessao, usuarioLogado, usuario);
+      users[users.indexOf(usuario)] = novoUsuario;
+    } catch (e) {
       print('$e');
     }
     notifyListeners();

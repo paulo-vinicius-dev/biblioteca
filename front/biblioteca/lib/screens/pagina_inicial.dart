@@ -1,3 +1,4 @@
+import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
@@ -26,6 +27,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
   OverlayEntry? _overlayEntry;
 
   void _toggleOverlay(BuildContext context) {
+
     if (_isExpanded) {
       _overlayEntry?.remove();
       _isExpanded = false;
@@ -98,6 +100,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: Row(
         children: [
@@ -208,6 +211,11 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                         case '/novo_usuario':
                           page = const FormUser();
                           break;
+                        case AppRoutes.editarUsuario:
+                          final user = settings.arguments as Usuario;
+                          return MaterialPageRoute(builder: (context) {
+                            return FormUser(usuario: user);
+                          });
                         case '/novo_autor':
                           page = const FormAutor();
                           break;

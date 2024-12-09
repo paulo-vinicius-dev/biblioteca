@@ -6,6 +6,7 @@ import 'package:biblioteca/screens/redefinir_senha.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
+import 'package:biblioteca/widgets/forms/form_user.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -57,6 +58,8 @@ class Myapp extends StatelessWidget {
           AppRoutes.home: (ctx) => const TelaPaginaIncial(),
           AppRoutes.redefinirSenha: (ctx) => const TelaRedefinirSenha(),
           AppRoutes.usuarios: (ctx) => const UserTablePage(),
+          AppRoutes.novoUsuario: (ctx) => const FormUser(),
+          AppRoutes.editarUsuario: (ctx) => const FormUser(),
 
           //paginas temporarias para teste
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),

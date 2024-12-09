@@ -1,8 +1,8 @@
-import 'package:biblioteca/utils/providers/providers.dart';
+import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:biblioteca/utils/theme.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 
 
 class BreadCrumb extends StatelessWidget {
@@ -35,7 +35,7 @@ class BreadCrumb extends StatelessWidget {
     );
   }
 }
-class BreadCrumbItem extends  ConsumerStatefulWidget  {
+class BreadCrumbItem extends  StatefulWidget  {
   final String name;
   final bool isFirst;
   final List<String>breadcrumb;
@@ -44,10 +44,10 @@ class BreadCrumbItem extends  ConsumerStatefulWidget  {
   const BreadCrumbItem({super.key, required this.name, required this.isFirst, required this.breadcrumb, required this.icon});
 
   @override
-  ConsumerState<BreadCrumbItem> createState() => _BreadCrumbItemState();
+  State<BreadCrumbItem> createState() => _BreadCrumbItemState();
 }
 
-class _BreadCrumbItemState extends ConsumerState<BreadCrumbItem> {
+class _BreadCrumbItemState extends State<BreadCrumbItem> {
   bool onIt = false;
   Color color = Colors.white;
 
@@ -64,7 +64,7 @@ class _BreadCrumbItemState extends ConsumerState<BreadCrumbItem> {
         InkWell(
           mouseCursor: !(widget.name == widget.breadcrumb.last)?SystemMouseCursors.click:SystemMouseCursors.basic,
            onTap: () {
-            if(widget.isFirst) ref.read(expandedIndexProvider.notifier).state = 0; 
+            if(widget.isFirst) context.read<MenuState>().expandedIndex = 0;
             final routeName = widget.name;
             Navigator.of(context).popUntil((route) {
               final shouldStop = widget.breadcrumb.last == routeName;

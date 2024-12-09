@@ -11,7 +11,11 @@ class AppRoutes {
   static const novoLivro = '/novo_livro';
   static const relatorios = '/relatorios';
   static const nadaConsta = '/nada_consta';
+
   static const usuarios = '/usuarios';
   static const novoUsuario = '/novo_usuario';
+  static const editarUsuario = '/editar_usuario';
+  
+
   static const configuracoes = '/configuracoes';
 }

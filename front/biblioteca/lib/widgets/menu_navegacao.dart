@@ -1,21 +1,22 @@
 import 'package:biblioteca/data/menu_itens.dart';
+import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/utils/assets.dart';
-import 'package:biblioteca/utils/providers/providers.dart';
 import 'package:flutter/material.dart'; 
 import 'package:biblioteca/utils/theme.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 
-class MenuNavegacao extends ConsumerStatefulWidget {
+
+class MenuNavegacao extends StatefulWidget {
   final ValueChanged<String> onPageSelected;
   
   const MenuNavegacao({super.key, required this.onPageSelected});
 
   @override
-  ConsumerState<MenuNavegacao> createState() => _MenuNavegacaoState();
+  State<MenuNavegacao> createState() => _MenuNavegacaoState();
 }
 
-class _MenuNavegacaoState extends ConsumerState<MenuNavegacao> with TickerProviderStateMixin {
+class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateMixin {
   late AnimationController _menuAnimationController;
   late Animation<double> _widthAnimation;
   late Animation<double> _labelFadeAnimation;
@@ -54,12 +55,12 @@ class _MenuNavegacaoState extends ConsumerState<MenuNavegacao> with TickerProvid
             _controllers[i].collapse();
           }
         }
-        ref.read(expandedIndexProvider.notifier).state = index;
+        context.read<MenuState>().expandedIndex = index;
       });
-      
+
     }else{
       setState(() {
-        ref.read(expandedIndexProvider.notifier).state = -1;
+        context.read<MenuState>().expandedIndex = -1;
       });
     }
   }
@@ -97,7 +98,7 @@ class _MenuNavegacaoState extends ConsumerState<MenuNavegacao> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final _expandedIndex = ref.watch(expandedIndexProvider);
+    final _expandedIndex = context.watch<MenuState>().expandedIndex;
     return AnimatedBuilder(
       animation: _menuAnimationController,
       builder: (context, child) {

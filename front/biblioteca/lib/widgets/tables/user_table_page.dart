@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
-
-import 'package:biblioteca/tem_tabela/user_data.dart';
-import 'package:biblioteca/tem_tabela/user_model.dart';
+import 'package:biblioteca/data/models/usuario_model.dart';
+import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/widgets/bread_crumb.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UserTablePage extends StatefulWidget {
   const UserTablePage({super.key});
@@ -18,8 +18,37 @@ class UserTablePageState extends State<UserTablePage> {
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
 
+  bool _isInit = true;
+  bool _isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<UsuarioProvider>(context).loadUsuarios().then((_) => {
+            setState(() {
+              _isLoading = false;
+            })
+          });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return _isLoading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : getPage();
+  }
+
+  Material getPage() {
+    UsuarioProvider provider = Provider.of<UsuarioProvider>(context);
+    List<Usuario> users = provider.users;
     int totalPages = (users.length / rowsPerPage).ceil();
 
     // Calcula o índice inicial e final dos usuários exibidos
@@ -29,7 +58,7 @@ class UserTablePageState extends State<UserTablePage> {
         : users.length;
 
     // Seleciona os usuários que serão exibidos na página atual
-    List<User> paginatedUsers = users.sublist(startIndex, endIndex);
+    List<Usuario> paginatedUsers = users.sublist(startIndex, endIndex);
 
     // Lógica para definir os botões de página (máximo 10 botões)
     int startPage = currentPage - 4 < 1 ? 1 : currentPage - 4;
@@ -41,7 +70,6 @@ class UserTablePageState extends State<UserTablePage> {
     return Material(
       child: Column(
         children: [
-
           // Barra de navegação
           BreadCrumb(breadcrumb: ["Início","Usuários"], icon: Icons.co_present_rounded),
 
@@ -49,7 +77,6 @@ class UserTablePageState extends State<UserTablePage> {
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
             child: Column(
-
               // Botão novo usuário
               children: [
                 Row(
@@ -118,7 +145,6 @@ class UserTablePageState extends State<UserTablePage> {
                     5: IntrinsicColumnWidth(),
                   },
                   children: [
-
                     // Cabeçalho da tabela
                     const TableRow(
                       children: [
@@ -186,8 +212,8 @@ class UserTablePageState extends State<UserTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Text(user.turma, textAlign: TextAlign.left),
+                              child: Text(user.turma.toString(),
+                                  textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
@@ -213,7 +239,75 @@ class UserTablePageState extends State<UserTablePage> {
                               child: Row(
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Excluir Usuário'),
+                                              content: const Text(
+                                                  'Tem certeza que deseja excluir este usuário?'),
+                                              actions: [
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              128,
+                                                              128,
+                                                              128),
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 5),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                    ),
+                                                    child:
+                                                        const Text('Cancelar')),
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      provider.deleteUsuario(
+                                                          user.idDoUsuario);
+                                                      setState(() {
+                                                        users.remove(user);
+                                                      });
+                                                      Navigator.pop(context);
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 5),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                    ),
+                                                    child:
+                                                        const Text('Confirmar'))
+                                              ],
+                                            );
+                                          });
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,
                                       foregroundColor: Colors.white,
@@ -238,7 +332,11 @@ class UserTablePageState extends State<UserTablePage> {
                                   ),
                                   const SizedBox(width: 3),
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, AppRoutes.editarUsuario,
+                                          arguments: user);
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
                                           const Color.fromARGB(255, 38, 42, 79),
@@ -262,9 +360,7 @@ class UserTablePageState extends State<UserTablePage> {
                                       ],
                                     ),
                                   ),
-
                                   const SizedBox(width: 3),
-
                                   ElevatedButton(
                                     onPressed: () {},
                                     style: ElevatedButton.styleFrom(

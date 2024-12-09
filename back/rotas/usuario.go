@@ -174,8 +174,6 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		if len(requisicaoUsuario.Login) < 1 ||
 			len(requisicaoUsuario.Nome) < 1 ||
 			len(requisicaoUsuario.Email) < 1 ||
-			len(requisicaoUsuario.Telefone) < 1 ||
-			len(requisicaoUsuario.DataDeNascimento) < 1 ||
 			requisicaoUsuario.Id == 0 {
 			resposta.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(resposta, "Algum campo necessário para a atualização não foi fornecido")

@@ -53,15 +53,15 @@ func CriarUsuario(idDaSessao uint64, loginUsuarioCriador string, novoUsuario mod
 		return ErroDeServicoDoUsuarioSemPermisao
 	}
 
-	if len(novoUsuario.Cpf) > 0 && !utilidades.StringENumerica(novoUsuario.Cpf) || !utilidades.ValidarCpf(novoUsuario.Cpf) {
+	if len(novoUsuario.Cpf) > 0 && (!utilidades.StringENumerica(novoUsuario.Cpf) || !utilidades.ValidarCpf(novoUsuario.Cpf)) {
 		return ErroDeServicoDoUsuarioCpfInvalido
 	}
 
-	if len(novoUsuario.Telefone) > 0 && !utilidades.StringENumerica(novoUsuario.Telefone) || len(novoUsuario.Telefone) != 11 {
+	if len(novoUsuario.Telefone) > 0 && (!utilidades.StringENumerica(novoUsuario.Telefone) || len(novoUsuario.Telefone) != 11) {
 		return ErroDeServicoDoUsuarioTelefoneInvalido
 	}
 
-	if _, erro := time.Parse(time.DateOnly, novoUsuario.DataDeNascimento); erro != nil {
+	if _, erro := time.Parse(time.DateOnly, novoUsuario.DataDeNascimento); len(novoUsuario.DataDeNascimento) > 0 && erro != nil {
 		return ErroDeServicoDoUsuarioDataDeNascimentoInvalida
 	}
 
@@ -122,15 +122,15 @@ func AtualizarUsuario(idDaSessao uint64, loginDoUsuarioRequerente string, usuari
 		return usuarioComDadosAtualizados, ErroDeServicoDoUsuarioSemPermisao
 	}
 
-	if !utilidades.StringENumerica(usuarioComDadosAtualizados.Cpf) || !utilidades.ValidarCpf(usuarioComDadosAtualizados.Cpf) {
+	if len(usuarioComDadosAtualizados.Cpf) > 0 && (!utilidades.StringENumerica(usuarioComDadosAtualizados.Cpf) || !utilidades.ValidarCpf(usuarioComDadosAtualizados.Cpf)) {
 		return usuarioComDadosAtualizados, ErroDeServicoDoUsuarioCpfInvalido
 	}
 
-	if !utilidades.StringENumerica(usuarioComDadosAtualizados.Telefone) || len(usuarioComDadosAtualizados.Telefone) != 11 {
+	if len(usuarioComDadosAtualizados.Telefone) > 0 && (!utilidades.StringENumerica(usuarioComDadosAtualizados.Telefone) || len(usuarioComDadosAtualizados.Telefone) != 11) {
 		return usuarioComDadosAtualizados, ErroDeServicoDoUsuarioTelefoneInvalido
 	}
 
-	if _, erro := time.Parse(time.DateOnly, usuarioComDadosAtualizados.DataDeNascimento); erro != nil {
+	if _, erro := time.Parse(time.DateOnly, usuarioComDadosAtualizados.DataDeNascimento); len(usuarioComDadosAtualizados.DataDeNascimento) > 0 && erro != nil {
 		return usuarioComDadosAtualizados, ErroDeServicoDoUsuarioDataDeNascimentoInvalida
 	}
 

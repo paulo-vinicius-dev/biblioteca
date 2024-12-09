@@ -5,6 +5,7 @@ import (
 	"biblioteca/modelos"
 	"biblioteca/servicos/sessao"
 	"biblioteca/utilidades"
+	"fmt"
 	"time"
 )
 
@@ -56,6 +57,7 @@ func BuscarLivro(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca 
 
 	permissaoDoUsuarioBuscador := sessao.PegarSessaoAtual()[idDaSessao].Permissao
 
+	fmt.Println(textoDaBusca)
 	if textoDaBusca == "" {
 		livros := banco.PegarTodosLivros()
 		return livros, ErroDeServicoDoLivroNenhum

@@ -50,7 +50,7 @@ func PesquisarLivro(busca string) []modelos.Livro {
 	}
 	var livroTemporario modelos.Livro
 	livrosEncontrados := make([]modelos.Livro, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.AnoPublicao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
+	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
 		livrosEncontrados = append(livrosEncontrados, livroTemporario)
 		return nil
 	})
@@ -61,6 +61,7 @@ func PesquisarLivro(busca string) []modelos.Livro {
 }
 
 func PegarTodosLivros() []modelos.Livro {
+	fmt.Println("Entrou no pegar todos os livros")
 	conexao := PegarConexao()
 	textoQuery := "select id_livro, isbn, titulo, to_char(ano_publicacao, 'yyyy-mm-dd'), editora, pais from livro"
 	linhas, erro := conexao.Query(context.Background(), textoQuery)
@@ -69,7 +70,7 @@ func PegarTodosLivros() []modelos.Livro {
 	}
 	var livroTemporario modelos.Livro
 	livrosEncontrados := make([]modelos.Livro, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.AnoPublicao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
+	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
 		livrosEncontrados = append(livrosEncontrados, livroTemporario)
 		return nil
 	})
@@ -95,6 +96,6 @@ func IsbnDuplicado(cpf string) bool {
 	if conexao.QueryRow(context.Background(), "select count(isbn) from livro u where isbn = $1", cpf).Scan(&qtdIsbn) == nil {
 		return qtdIsbn > 0
 	} else {
-		panic("Erro ao procurar por cpf duplicado. Provavelmente é um bug")
+		panic("Erro ao procurar por isbn duplicado. Provavelmente é um bug")
 	}
 }

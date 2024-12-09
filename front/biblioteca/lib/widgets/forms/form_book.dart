@@ -1,3 +1,4 @@
+import 'package:biblioteca/widgets/bread_crumb.dart';
 import 'package:flutter/material.dart';
 
 class FormBook extends StatefulWidget {
@@ -29,23 +30,7 @@ class _FormBookState extends State<FormBook> {
       children: [
 
         // Barra de navegação
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
-          color: const Color.fromRGBO(38, 42, 79, 1),
-          child: const Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.menu_book_outlined, color: Colors.white, size: 20,),
-              SizedBox(width: 7,),
-              Text("Catalogação", style: TextStyle(color: Colors.white),),
-              Icon(Icons.chevron_right, color: Colors.white,),
-              Text("Livros", style: TextStyle(color: Colors.white),),
-              Icon(Icons.chevron_right, color: Colors.white,),
-              Text("Novo Livro", style: TextStyle(color: Colors.white),)
-            ],
-          ),
-        ),
+        BreadCrumb(breadcrumb: ['Início','Livros','Novo Livro'], icon: Icons.menu_book_outlined),
 
         // Formulário
         Padding(

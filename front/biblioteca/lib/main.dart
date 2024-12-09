@@ -10,6 +10,7 @@ import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   if (Platform.isLinux || Platform.isWindows) {
@@ -18,7 +19,11 @@ void main() {
     Process.run("go", ["run", dir]);
   }
 
-  runApp(const Myapp());
+  runApp(
+    ProviderScope(
+      child: const Myapp()
+    )
+  );
 }
 
 class Myapp extends StatelessWidget {

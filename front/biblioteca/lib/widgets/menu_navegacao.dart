@@ -1,26 +1,27 @@
 import 'package:biblioteca/data/menu_itens.dart';
 import 'package:biblioteca/utils/assets.dart';
+import 'package:biblioteca/utils/providers/providers.dart';
 import 'package:flutter/material.dart'; 
 import 'package:biblioteca/utils/theme.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MenuNavegacao extends StatefulWidget {
+class MenuNavegacao extends ConsumerStatefulWidget {
   final ValueChanged<String> onPageSelected;
   
   const MenuNavegacao({super.key, required this.onPageSelected});
 
   @override
-  State<MenuNavegacao> createState() => _MenuNavegacaoState();
+  ConsumerState<MenuNavegacao> createState() => _MenuNavegacaoState();
 }
 
-class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateMixin {
+class _MenuNavegacaoState extends ConsumerState<MenuNavegacao> with TickerProviderStateMixin {
   late AnimationController _menuAnimationController;
   late Animation<double> _widthAnimation;
   late Animation<double> _labelFadeAnimation;
   late Animation<double> _logoFadeAnimation;
   final _animationDuration = const Duration(milliseconds: 300);
   bool menuAtivado = false;
-  int _expandedIndex = -1;
   List<ExpansionTileController> _controllers = [];
   Map<int, int?> selectSubItens = {};
   @override
@@ -53,11 +54,12 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
             _controllers[i].collapse();
           }
         }
-        _expandedIndex = index;
+        ref.read(expandedIndexProvider.notifier).state = index;
       });
+      
     }else{
       setState(() {
-        _expandedIndex = -1;
+        ref.read(expandedIndexProvider.notifier).state = -1;
       });
     }
   }
@@ -95,6 +97,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final _expandedIndex = ref.watch(expandedIndexProvider);
     return AnimatedBuilder(
       animation: _menuAnimationController,
       builder: (context, child) {

@@ -14,34 +14,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     return Material(
       child: Column(
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
-            color: const Color.fromRGBO(38, 42, 79, 1),
-            child: const Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.library_books,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                SizedBox(width: 7,),
-                Text(
-                  "Circulação",
-                  style: TextStyle(color: Colors.white),
-                ),
-                Icon(
-                  Icons.chevron_right,
-                  color: Colors.white,
-                ),
-                Text(
-                  "Empréstimo",
-                  style: TextStyle(color: Colors.white),
-                )
-              ],
-            ),
-          ),
+          BreadCrumb(breadcrumb: ['Início','Empréstimo'], icon: Icons.my_library_books_rounded),
           Padding(
             padding: const EdgeInsets.only(top: 40, left: 35),
             child: Column(

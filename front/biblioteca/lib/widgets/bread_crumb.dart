@@ -1,14 +1,21 @@
+import 'package:biblioteca/utils/providers/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:biblioteca/utils/theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 
 class BreadCrumb extends StatelessWidget {
   final List<String> breadcrumb;
   final IconData icon;
   const BreadCrumb({super.key, required this.breadcrumb, required this.icon});
+  
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 10.0),
-      height: 40.0,
+      padding: const EdgeInsets.only(left: 14.0),
+      height: 43.0,
       width: double.infinity,
       color: Color.fromRGBO(38, 42, 79, 1),
       child: Row(
@@ -28,20 +35,19 @@ class BreadCrumb extends StatelessWidget {
     );
   }
 }
-
-class BreadCrumbItem extends StatefulWidget {
+class BreadCrumbItem extends  ConsumerStatefulWidget  {
   final String name;
   final bool isFirst;
-  final breadcrumb;
-  final icon;
+  final List<String>breadcrumb;
+  final IconData icon;
 
-  const BreadCrumbItem({super.key, required this.name, required this.isFirst, this.breadcrumb, this.icon});
+  const BreadCrumbItem({super.key, required this.name, required this.isFirst, required this.breadcrumb, required this.icon});
 
   @override
-  State<BreadCrumbItem> createState() => _BreadCrumbItemState();
+  ConsumerState<BreadCrumbItem> createState() => _BreadCrumbItemState();
 }
 
-class _BreadCrumbItemState extends State<BreadCrumbItem> {
+class _BreadCrumbItemState extends ConsumerState<BreadCrumbItem> {
   bool onIt = false;
   Color color = Colors.white;
 
@@ -49,44 +55,49 @@ class _BreadCrumbItemState extends State<BreadCrumbItem> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        widget.isFirst? Padding(padding: EdgeInsets.only(right: 8),child: Icon(widget.icon, color: Colors.white,),): const Icon(Icons.chevron_right, color: Colors.white,),
-        GestureDetector(
-          onTap: () {
-            while (widget.breadcrumb.last != widget.name) {
-              setState((){
-                Navigator.pop(context);
-              });
-            }
+        widget.isFirst
+            ? Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: Icon(widget.icon, color: Colors.white,),
+              )
+              : const Icon(Icons.chevron_right, color: Colors.white,),
+        InkWell(
+          mouseCursor: !(widget.name == widget.breadcrumb.last)?SystemMouseCursors.click:SystemMouseCursors.basic,
+           onTap: () {
+            if(widget.isFirst) ref.read(expandedIndexProvider.notifier).state = 0; 
+            final routeName = widget.name;
+            Navigator.of(context).popUntil((route) {
+              final shouldStop = widget.breadcrumb.last == routeName;
+              if (!shouldStop) widget.breadcrumb.removeLast();
+              return shouldStop;
+            });
           },
-          child: MouseRegion(
-            opaque: true,
-            onEnter: (_) {
-              setState(() {
-                onIt = true;
-                color = const Color.fromARGB(255, 21, 101, 192);
-              });
-            },
-            onExit: (_) {
-              setState(() {
-                onIt = false;
-                color = Colors.white;
-              });
-            },
+          onHover: (hovering) {
+            setState(() {
+              onIt = hovering && widget.name != widget.breadcrumb.last;
+              color = onIt
+                  ? AppTheme.selectedColor(context)
+                  : Colors.white;
+            });
+          },
             child: Text(
               widget.name,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
                     letterSpacing: 0.3,
-                    color:
-                        (widget.name == widget.breadcrumb.last) ? Colors.white : color,
+                    color:(widget.name == widget.breadcrumb.last) 
+                        ? Colors.white 
+                        : color,
+                    decorationColor: onIt && widget.name != widget.breadcrumb.last
+                      ? AppTheme.selectedColor(context)
+                      :Colors.white,
                     decoration: onIt && widget.name != widget.breadcrumb.last
                     ? TextDecoration.underline
                     : TextDecoration.none,
                   ),
             ),
           ),
-        ),
       ],
     );
   }

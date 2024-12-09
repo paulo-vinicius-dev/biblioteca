@@ -235,11 +235,11 @@ func PegarUsuarioPeloId(id int) (modelos.Usuario, bool) {
 	if erro := conexao.QueryRow(context.Background(), textoQuery, id).Scan(
 		&usuario.IdDoUsuario,
 		&usuario.Login,
-		cpfTemporario,
+		&cpfTemporario,
 		&usuario.Nome,
 		&usuario.Email,
-		telefoneTemporario,
-		dataDeNascimentoTemporaria,
+		&telefoneTemporario,
+		&dataDeNascimentoTemporaria,
 		&usuario.Permissao,
 		&usuario.Ativo); erro == nil {
 		if cpfTemporario != nil {

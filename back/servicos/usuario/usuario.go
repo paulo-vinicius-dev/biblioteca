@@ -5,6 +5,7 @@ import (
 	"biblioteca/modelos"
 	"biblioteca/servicos/sessao"
 	"biblioteca/utilidades"
+	"fmt"
 	"time"
 )
 
@@ -155,6 +156,8 @@ func DeletarUsuario(idDaSessao uint64, loginDoUsuarioRequerente string, idDoUsua
 	if permissaoDoUsuarioRequerente&utilidades.PermissaoDeletarUsuario != utilidades.PermissaoDeletarUsuario {
 		return ErroDeServicoDoUsuarioSemPermisao
 	}
+
+	fmt.Println(idDoUsuarioQueDesejaExcluir)
 
 	return erroDoBancoParaErroDeServicoDoUsuario(banco.ExcluirUsuario(idDoUsuarioQueDesejaExcluir))
 }

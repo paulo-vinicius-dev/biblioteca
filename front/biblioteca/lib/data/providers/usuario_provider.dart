@@ -19,6 +19,7 @@ class UsuarioProvider with ChangeNotifier {
       users = loadedUsuarios!.usuarioAtingidos
           .where((usuario) => usuario.ativo && usuario.login != usuarioLogado)
           .toList();
+
       notifyListeners();
     } catch (e) {
       print('$e');

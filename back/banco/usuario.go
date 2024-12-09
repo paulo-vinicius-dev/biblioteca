@@ -6,8 +6,8 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
-	pgx "github.com/jackc/pgx/v5"
 
+	pgx "github.com/jackc/pgx/v5"
 )
 
 type ErroBancoUsuario int
@@ -17,7 +17,6 @@ func CriptografarSenha(senha string) string {
 	hash.Write([]byte(senha))
 	return fmt.Sprintf("%x", hash.Sum(nil))
 }
-
 
 func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 	conexao := PegarConexao()
@@ -30,8 +29,23 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 		return ErroLoginDuplicado
 	}
 
-	if CpfDuplicado(novoUsuario.Cpf) {
+	if len(novoUsuario.Cpf) > 0 && CpfDuplicado(novoUsuario.Cpf) {
 		return ErroCpfDuplicado
+	}
+
+	cpf := novoUsuario.Cpf
+	if len(cpf) == 0 {
+		cpf = "null"
+	}
+
+	telefone := novoUsuario.Telefone
+	if len(telefone) == 0 {
+		telefone = "null"
+	}
+
+	var data_nascimento interface{} = novoUsuario.DataDeNascimento
+	if len(data_nascimento.(string)) == 0 {
+		data_nascimento = nil
 	}
 
 	senhaCriptogrfada := CriptografarSenha(novoUsuario.Senha)
@@ -39,11 +53,11 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 		context.Background(),
 		"insert into usuario(login,cpf, nome, email, telefone, data_nascimento, data_criacao, senha, permissoes) values ($1, $2, $3, $4, $5, $6, CURRENT_DATE, $7, $8)",
 		novoUsuario.Login,
-		novoUsuario.Cpf,
+		cpf,
 		novoUsuario.Nome,
 		novoUsuario.Email,
-		novoUsuario.Telefone,
-		novoUsuario.DataDeNascimento,
+		telefone,
+		data_nascimento,
 		senhaCriptogrfada,
 		novoUsuario.Permissao,
 	)
@@ -56,34 +70,49 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 	return ErroNenhum
 }
 
-func AtualizarUsuario(usuarioComDadosAntigos,usuarioAtualizado modelos.Usuario) ErroBancoUsuario {
+func AtualizarUsuario(usuarioComDadosAntigos, usuarioAtualizado modelos.Usuario) ErroBancoUsuario {
 
-	if usuarioComDadosAntigos.Login != usuarioAtualizado.Login && LoginDuplicado(usuarioAtualizado.Login){
+	if usuarioComDadosAntigos.Login != usuarioAtualizado.Login && LoginDuplicado(usuarioAtualizado.Login) {
 		return ErroLoginDuplicado
 	}
 
-	if usuarioComDadosAntigos.Cpf != usuarioAtualizado.Cpf && CpfDuplicado(usuarioAtualizado.Cpf){
+	if len(usuarioAtualizado.Cpf) > 0 && (usuarioComDadosAntigos.Cpf != usuarioAtualizado.Cpf && CpfDuplicado(usuarioAtualizado.Cpf)) {
 		return ErroCpfDuplicado
 	}
 
-	if usuarioComDadosAntigos.Email != usuarioAtualizado.Email && CpfDuplicado(usuarioAtualizado.Email){
+	if usuarioComDadosAntigos.Email != usuarioAtualizado.Email && CpfDuplicado(usuarioAtualizado.Email) {
 		return ErroEmailDuplicado
+	}
+
+	cpf := usuarioAtualizado.Cpf
+	if len(cpf) == 0 {
+		cpf = "null"
+	}
+
+	telefone := usuarioAtualizado.Telefone
+	if len(telefone) == 0 {
+		telefone = "null"
+	}
+
+	var data_nascimento interface{} = usuarioAtualizado.DataDeNascimento
+	if len(data_nascimento.(string)) == 0 {
+		data_nascimento = nil
 	}
 
 	conexao := PegarConexao()
 	textoQuery := "update usuario set login = $1, cpf = $2, nome = $3, email = $4, telefone = $5, data_nascimento = $6, data_atualizacao = CURRENT_DATE, permissoes = $7, ativo = $8 where id_usuario = $9"
-	if _, erroQuery  := conexao.Query(
+	if _, erroQuery := conexao.Query(
 		context.Background(),
 		textoQuery,
-	        usuarioAtualizado.Login,
-	        usuarioAtualizado.Cpf,
-	        usuarioAtualizado.Nome,
-	        usuarioAtualizado.Email,
-		usuarioAtualizado.Telefone,
-		usuarioAtualizado.DataDeNascimento,
-	        usuarioAtualizado.Permissao,
+		usuarioAtualizado.Login,
+		cpf,
+		usuarioAtualizado.Nome,
+		usuarioAtualizado.Email,
+		telefone,
+		data_nascimento,
+		usuarioAtualizado.Permissao,
 		usuarioAtualizado.Ativo,
-	        usuarioAtualizado.IdDoUsuario,
+		usuarioAtualizado.IdDoUsuario,
 	); erroQuery != nil {
 		panic("Um erro desconhecido acontesceu na atualização do usuário")
 	}
@@ -99,7 +128,7 @@ func AtualizarUsuario(usuarioComDadosAntigos,usuarioAtualizado modelos.Usuario) 
 	return ErroNenhum
 }
 
-func ExcluirUsuario(idDoUsuario int) ErroBancoUsuario{
+func ExcluirUsuario(idDoUsuario int) ErroBancoUsuario {
 	usuario, achou := PegarUsuarioPeloId(idDoUsuario)
 	if !achou {
 		return ErroUsuarioInexistente
@@ -109,24 +138,24 @@ func ExcluirUsuario(idDoUsuario int) ErroBancoUsuario{
 	return AtualizarUsuario(usuarioCopia, usuario)
 }
 
-
-func PesquisarUsuario(busca string) []modelos.Usuario  {
+func PesquisarUsuario(busca string) []modelos.Usuario {
 	conexao := PegarConexao()
 	busca = "%" + busca + "%" // isso está sujeitio a sql injection por favor olhar depois
-	textoQuery := "select id_usuario, login, cpf, nome, email, telefone, to_char(data_nascimento, 'yyyy-mm-dd'), permissoes, ativo from usuario where login like $1 or nome like $1 or email like $1 or cpf like $1"
+	textoQuery := "select id_usuario, login, cpf, nome, email, telefone,  permissoes, ativo from usuario where login like $1 or nome like $1 or email like $1 or cpf like $1"
 	linhas, erro := conexao.Query(context.Background(), textoQuery, busca)
 	if erro != nil {
 		return []modelos.Usuario{}
 	}
 	var usuarioTemporario modelos.Usuario
 	usuariosEncontrados := make([]modelos.Usuario, 0)
-	_, erro = pgx.ForEachRow(linhas,[]any{&usuarioTemporario.IdDoUsuario,&usuarioTemporario.Login,&usuarioTemporario.Cpf,&usuarioTemporario.Nome,&usuarioTemporario.Email,&usuarioTemporario.Telefone,&usuarioTemporario.DataDeNascimento,&usuarioTemporario.Permissao, &usuarioTemporario.Ativo}, func () error {
+	_, erro = pgx.ForEachRow(linhas, []any{&usuarioTemporario.IdDoUsuario, &usuarioTemporario.Login, &usuarioTemporario.Cpf, &usuarioTemporario.Nome, &usuarioTemporario.Email, &usuarioTemporario.Telefone, &usuarioTemporario.Permissao, &usuarioTemporario.Ativo}, func() error {
 		usuariosEncontrados = append(usuariosEncontrados, usuarioTemporario)
 		return nil
 	})
 	if erro != nil {
 		return []modelos.Usuario{}
 	}
+	fmt.Println(usuariosEncontrados)
 	return usuariosEncontrados
 }
 
@@ -134,7 +163,7 @@ func PesquisarUsuarioPeloLogin(login string) (modelos.Usuario, bool) {
 	conexao := PegarConexao()
 	var usuario modelos.Usuario
 	textoQuery := "select id_usuario, login, cpf, nome, email, telefone, to_char(data_nascimento, 'yyyy-mm-dd'), permissoes, ativo from usuario where login = $1"
-	if erro := conexao.QueryRow(context.Background(), textoQuery,  login).Scan(
+	if erro := conexao.QueryRow(context.Background(), textoQuery, login).Scan(
 		&usuario.IdDoUsuario,
 		&usuario.Login,
 		&usuario.Cpf,
@@ -150,12 +179,11 @@ func PesquisarUsuarioPeloLogin(login string) (modelos.Usuario, bool) {
 	}
 }
 
-
 func PegarUsuarioPeloId(id int) (modelos.Usuario, bool) {
 	conexao := PegarConexao()
 	var usuario modelos.Usuario
 	textoQuery := "select id_usuario, login, cpf, nome, email, telefone, to_char(data_nascimento, 'yyyy-mm-dd'), permissoes, ativo from usuario where id_usuario = $1"
-	if erro := conexao.QueryRow(context.Background(), textoQuery,  id).Scan(
+	if erro := conexao.QueryRow(context.Background(), textoQuery, id).Scan(
 		&usuario.IdDoUsuario,
 		&usuario.Login,
 		&usuario.Cpf,
@@ -165,10 +193,10 @@ func PegarUsuarioPeloId(id int) (modelos.Usuario, bool) {
 		&usuario.DataDeNascimento,
 		&usuario.Permissao,
 		&usuario.Ativo); erro == nil {
-			return usuario, true
-		} else {
-			return usuario, false
-		}
+		return usuario, true
+	} else {
+		return usuario, false
+	}
 }
 
 func PegarPermissao(loginDoUsuario string) uint64 {
@@ -184,7 +212,7 @@ func PegarPermissao(loginDoUsuario string) uint64 {
 func PegarIdUsuario(login string) int {
 	conexao := PegarConexao()
 	var id int
-	if conexao.QueryRow(context.Background(), "select id_usuario from usuario where login = $1",  login).Scan(&id) == nil {
+	if conexao.QueryRow(context.Background(), "select id_usuario from usuario where login = $1", login).Scan(&id) == nil {
 		return id
 	} else {
 		return 0

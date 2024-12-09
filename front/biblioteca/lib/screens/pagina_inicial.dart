@@ -1,3 +1,5 @@
+import 'package:biblioteca/data/models/usuario_model.dart';
+import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
@@ -25,6 +27,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
   OverlayEntry? _overlayEntry;
 
   void _toggleOverlay(BuildContext context) {
+
     if (_isExpanded) {
       _overlayEntry?.remove();
       _isExpanded = false;
@@ -97,6 +100,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: Row(
         children: [
@@ -161,12 +165,10 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
               body: SingleChildScrollView(
                 child: Container(
                   constraints: BoxConstraints(
-                      minHeight: MediaQuery.of(context).size.height - 56
-                  ),
+                      minHeight: MediaQuery.of(context).size.height - 56),
                   decoration: BoxDecoration(
                       color: AppTheme.drawerBackgroundColor,
-                      borderRadius: BorderRadius.circular(10.0)
-                  ),
+                      borderRadius: BorderRadius.circular(10.0)),
                   child: Navigator(
                     key: GlobalKey<NavigatorState>(),
                     initialRoute: _selectedRoute,
@@ -204,11 +206,16 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           page = const Configuracoes();
                           break;
                         case '/sair':
-                          page = const Login();
+                          page = const TelaLogin();
                           break;
                         case '/novo_usuario':
                           page = const FormUser();
                           break;
+                        case AppRoutes.editarUsuario:
+                          final user = settings.arguments as Usuario;
+                          return MaterialPageRoute(builder: (context) {
+                            return FormUser(usuario: user);
+                          });
                         case '/novo_autor':
                           page = const FormAutor();
                           break;

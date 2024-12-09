@@ -1,12 +1,11 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'dart:convert';
-
+import 'package:biblioteca/data/models/login_model.dart';
+import 'package:biblioteca/data/providers/auth_provider.dart';
+import 'package:biblioteca/data/services/auth_service.dart';
 import 'package:biblioteca/utils/assets.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class FormLogin extends StatefulWidget {
   const FormLogin({super.key});
@@ -16,10 +15,18 @@ class FormLogin extends StatefulWidget {
 }
 
 class _FormLoginState extends State<FormLogin> {
+  //Variáveis do Formulário
   final _formLoginKey = GlobalKey<FormState>();
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _visiblePassword = false;
+
+  //Variáveis de requisição
+  late AuthService _authService;
+  Login? _login;
+
+  //Provider
+  late AuthProvider _authProvider = AuthProvider();
 
   void tooglePassword() {
     setState(() {
@@ -50,30 +57,34 @@ class _FormLoginState extends State<FormLogin> {
     );
   }
 
-  doLogin(String user, String password) async {
-    var url = Uri.http('localhost:9090', '/login');
+  void _autenticar(login, senha) async {
+    try {
+      final futureLogin = await _authService.doLogin(login, senha);
 
-    http
-        .post(url,
-            body: jsonEncode({
-              'Login': user,
-              'Senha': password,
-            }))
-        .then((response) {
-      var responseLogin = jsonDecode(response.body);
+      setState(() {
+        _login = futureLogin;
 
-      if (response.statusCode == 200 && responseLogin['Aceito']) {
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
-      } else if (response.statusCode == 200 && !responseLogin['Aceito']) {
-        showError('Usuário ou senha incorretos');
-      }
-    }).catchError((err) {
-      showError("Ops! Ocorreu um erro ao tentar realizar o Login");
-    });
+        if (_login!.aceito) {
+          _authProvider.login(_login!.idSessao, login);
+          Navigator.pushReplacementNamed(context, AppRoutes.home);
+        } else {
+          showError('Usuário e/ou senha incorretos.');
+        }
+      });
+    } catch (e) {
+      showError('Ops! Algo de errado não está certo, volte mais tarde');
+    }
+  }
+
+  @override
+  void initState() {
+    _authService = AuthService();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    _authProvider = Provider.of<AuthProvider>(context);
     return Form(
       key: _formLoginKey,
       child: Column(
@@ -125,7 +136,7 @@ class _FormLoginState extends State<FormLogin> {
             child: ElevatedButton(
               onPressed: () {
                 if (_formLoginKey.currentState!.validate()) {
-                  doLogin(_userController.text, _passwordController.text);
+                  _autenticar(_userController.text, _passwordController.text);
                 }
               },
               style: AppTheme.btnPrimary(context),

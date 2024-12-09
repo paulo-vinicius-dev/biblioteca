@@ -22,7 +22,6 @@ class UserTablePageState extends State<UserTablePage> {
 
   @override
   void didChangeDependencies() {
-    
     if (_isInit) {
       setState(() {
         _isLoading = true;
@@ -39,7 +38,6 @@ class UserTablePageState extends State<UserTablePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return _isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -48,7 +46,8 @@ class UserTablePageState extends State<UserTablePage> {
   }
 
   Material getPage() {
-    List<Usuario> users = context.watch<UsuarioProvider>().users;
+    UsuarioProvider provider = Provider.of<UsuarioProvider>(context);
+    List<Usuario> users = provider.users;
     int totalPages = (users.length / rowsPerPage).ceil();
 
     // Calcula o índice inicial e final dos usuários exibidos
@@ -268,7 +267,75 @@ class UserTablePageState extends State<UserTablePage> {
                               child: Row(
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Excluir Usuário'),
+                                              content: const Text(
+                                                  'Tem certeza que deseja excluir este usuário?'),
+                                              actions: [
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              128,
+                                                              128,
+                                                              128),
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 5),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                    ),
+                                                    child:
+                                                        const Text('Cancelar')),
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      provider.deleteUsuario(
+                                                          user.idDoUsuario);
+                                                      setState(() {
+                                                        users.remove(user);
+                                                      });
+                                                      Navigator.pop(context);
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 5),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                    ),
+                                                    child:
+                                                        const Text('Confirmar'))
+                                              ],
+                                            );
+                                          });
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,
                                       foregroundColor: Colors.white,
@@ -295,7 +362,8 @@ class UserTablePageState extends State<UserTablePage> {
                                   ElevatedButton(
                                     onPressed: () {
                                       Navigator.pushNamed(
-                                          context, AppRoutes.editarUsuario, arguments: user);
+                                          context, AppRoutes.editarUsuario,
+                                          arguments: user);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:

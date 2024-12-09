@@ -17,7 +17,7 @@ class UsuarioProvider with ChangeNotifier {
       loadedUsuarios =
           await usuarioService.fetchUsuarios(idDaSessao, usuarioLogado);
       users = loadedUsuarios!.usuarioAtingidos
-          .where((usuario) => usuario.ativo)
+          .where((usuario) => usuario.ativo && usuario.login != usuarioLogado)
           .toList();
       notifyListeners();
     } catch (e) {
@@ -43,6 +43,18 @@ class UsuarioProvider with ChangeNotifier {
       novoUsuario =
           await usuarioService.alterUsuario(idDaSessao, usuarioLogado, usuario);
       users[users.indexOf(usuario)] = novoUsuario;
+    } catch (e) {
+      print('$e');
+    }
+    notifyListeners();
+  }
+
+  Future<void> deleteUsuario(int idDoUsuario) async {
+    late Usuario usuarioDeletado;
+    try {
+      usuarioDeletado = await usuarioService.deleteUsuario(
+          idDaSessao, usuarioLogado, idDoUsuario);
+      users.remove(usuarioDeletado);
     } catch (e) {
       print('$e');
     }

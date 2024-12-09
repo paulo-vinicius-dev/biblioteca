@@ -272,7 +272,7 @@ class UserTablePageState extends State<UserTablePage> {
                                           context: context,
                                           builder: (context) {
                                             return AlertDialog(
-                                              title: Text('Excluir Usuário'),
+                                              title: const Text('Excluir Usuário'),
                                               content: const Text(
                                                   'Tem certeza que deseja excluir este usuário?'),
                                               actions: [

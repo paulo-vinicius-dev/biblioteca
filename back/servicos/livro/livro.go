@@ -1,4 +1,4 @@
-package usuario
+package livro
 
 import (
 	"biblioteca/banco"
@@ -18,7 +18,6 @@ const (
 	ErroDeServicoDoLivroIsbnInvalido
 	ErroDeServicoDoLivroSemPermisao
 	ErroDeServicoDoLivroSessaoInvalida
-	ErroDeServicoDoLivroCpfInvalido
 	ErroDeServicoDoLivroAnoPublicaoInvalida
 	ErroDeServicoDoLivroFalhaNaBusca
 	ErroDeServicoDoLivroLivroInexistente
@@ -72,6 +71,44 @@ func BuscarLivro(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca 
 	return livrosEncontrados, ErroDeServicoDoLivroNenhum
 }
 
+func AtualizarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, livroComDadosAtualizados modelos.Livro) (modelos.Livro, ErroDeServicoDoLivro) {
+
+	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioRequerente) != sessao.VALIDO {
+		return livroComDadosAtualizados, ErroDeServicoDoLivroSessaoInvalida
+	}
+
+	permissaoDoUsuarioRequerente := sessao.PegarSessaoAtual()[idDaSessao].Permissao
+
+	livroComDadosAntigos, achou := banco.PegarLivroPeloId(livroComDadosAtualizados.IdDoLivro)
+	if !achou {
+		return livroComDadosAtualizados, ErroDeServicoDoLivroLivroInexistente
+	}
+
+	if permissaoDoUsuarioRequerente&utilidades.PermissaoAtualizarUsuario != utilidades.PermissaoAtualizarUsuario {
+		return livroComDadosAtualizados, ErroDeServicoDoLivroSemPermisao
+	}
+
+	return livroComDadosAtualizados, erroDoBancoParaErroDeServicoDoLivro(banco.AtualizarLivro(livroComDadosAntigos, livroComDadosAtualizados))
+}
+
+func DeletarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, idDoLivroQueDesejaExcluir int) ErroDeServicoDoLivro {
+	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioRequerente) != sessao.VALIDO {
+		return ErroDeServicoDoLivroSessaoInvalida
+	}
+
+	permissaoDoUsuarioRequerente := sessao.PegarSessaoAtual()[idDaSessao].Permissao
+
+	if permissaoDoUsuarioRequerente&utilidades.PermissaoDeletarUsuario != utilidades.PermissaoDeletarUsuario {
+		return ErroDeServicoDoLivroSemPermisao
+	}
+
+	return erroDoBancoParaErroDeServicoDoLivro(banco.ExcluirLivro(idDoLivroQueDesejaExcluir))
+}
+
 func PegarIdLivro(isbn string) int {
 	return banco.PegarIdLivro(isbn)
+}
+
+func PegarLivroPeloId(id int) (modelos.Livro, bool) {
+	return banco.PegarLivroPeloId(id)
 }

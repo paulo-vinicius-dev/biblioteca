@@ -3,6 +3,7 @@ package rotas
 import (
 	"biblioteca/modelos"
 	servicoLivro "biblioteca/servicos/livro"
+	servicoUsuario "biblioteca/servicos/usuario"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,15 +11,26 @@ import (
 )
 
 type requisicaoLivro struct {
-	IdDaSessao               uint64 `validate:"required"`
-	LoginDoUsuarioRequerente string `validate:"required"`
-	Id                       int    `validate:"optional"`
-	Isbn                     string `validate:"optional"`
-	Titulo                   string `validate:"optional"`
-	AnoPublicao              string `validate:"optional"`
-	Editora                  string `validate:"optional"`
-	Pais                     int
-	TextoDeBusca             string `validate:"optional"`
+	IdDaSessao               uint64   `validate:"required"`
+	LoginDoUsuarioRequerente string   `validate:"required"`
+	Id                       int      `validate:"optional"`
+	Isbn                     string   `validate:"optional"`
+	Titulo                   string   `validate:"optional"`
+	AnoPublicao              string   `validate:"optional"`
+	Editora                  string   `validate:"optional"`
+	Pais                     int      `validate:"optional"`
+	NomesAutores             []string `validate:"optional"`
+	TextoDeBusca             string   `validate:"optional"`
+}
+
+type respostaGetLivro struct {
+	Id           int      `validate:"optional"`
+	Isbn         string   `validate:"optional"`
+	Titulo       string   `validate:"optional"`
+	AnoPublicao  string   `validate:"optional"`
+	Editora      string   `validate:"optional"`
+	Pais         int      `validate:"optional"`
+	NomesAutores []string `validate:"optional"`
 }
 
 type respostaLivro struct {
@@ -30,6 +42,14 @@ func erroServicoLivroParaErrHttp(erro servicoLivro.ErroDeServicoDoLivro, respost
 	case servicoLivro.ErroDeServicoDoLivroIsbnDuplicado:
 		resposta.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(resposta, "Isbn duplicado")
+		return
+	case servicoLivro.ErroDeServicoDoLivroSemPermisao:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Este usuário não tem permissão para essa operação")
+		return
+	case servicoLivro.ErroDeServicoDoLivroAnoPublicaoInvalida:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Ano de Publicação inválido")
 		return
 	case servicoLivro.ErroDeServicoDoLivroSessaoInvalida:
 		resposta.WriteHeader(http.StatusUnauthorized)
@@ -44,7 +64,7 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	if erro != nil {
 		resposta.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(resposta, "A requisição para a rota de livr foi mal feita")
+		fmt.Fprintf(resposta, "A requisição para a rota de livro foi mal feita")
 		return
 	}
 
@@ -112,6 +132,60 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 		respostaLivro := respostaLivro{
 			livrosEncontrados,
 		}
+		respostaLivroJson, _ := json.Marshal(&respostaLivro)
+
+		fmt.Fprintf(resposta, "%s", respostaLivroJson)
+
+	case "PUT":
+		if len(requisicaoLivro.Titulo) < 1 ||
+			len(requisicaoLivro.AnoPublicao) < 1 ||
+			len(requisicaoLivro.Editora) < 1 {
+			resposta.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(resposta, "Algum campo necessário para o cadastro não foi fornecido")
+			return
+		}
+
+		var livroComDadosAtualizados modelos.Livro
+		livroComDadosAtualizados.IdDoLivro = requisicaoLivro.Id
+		livroComDadosAtualizados.Isbn = requisicaoLivro.Isbn
+		livroComDadosAtualizados.Titulo = requisicaoLivro.Titulo
+		livroComDadosAtualizados.AnoPublicao = requisicaoLivro.AnoPublicao
+		livroComDadosAtualizados.Editora = requisicaoLivro.Editora
+		livroComDadosAtualizados.Pais = requisicaoLivro.Pais
+
+		livroAtualizado, erro := servicoLivro.AtualizarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, livroComDadosAtualizados)
+
+		if erro != servicoLivro.ErroDeServicoDoLivroNenhum {
+			erroServicoLivroParaErrHttp(erro, resposta)
+			return
+		}
+
+		respostaLivro := respostaLivro{
+			[]modelos.Livro{
+				livroAtualizado,
+			},
+		}
+		respostaLivroJson, _ := json.Marshal(&respostaLivro)
+
+		fmt.Fprintf(resposta, "%s", respostaLivroJson)
+
+	case "DELETE":
+		if requisicaoLivro.Id == 0 {
+			resposta.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(resposta, "É necessário informar o Id do livro que deseja excluir")
+			return
+		}
+
+		if erro := servicoLivro.DeletarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, requisicaoLivro.Id); erro != servicoUsuario.ErroDeServicoDoUsuarioNenhum {
+			erroServicoLivroParaErrHttp(erro, resposta)
+		}
+		livroDeletado, _ := servicoLivro.PegarLivroPeloId(requisicaoLivro.Id)
+		respostaLivro := respostaLivro{
+			[]modelos.Livro{
+				livroDeletado,
+			},
+		}
+
 		respostaLivroJson, _ := json.Marshal(&respostaLivro)
 
 		fmt.Fprintf(resposta, "%s", respostaLivroJson)

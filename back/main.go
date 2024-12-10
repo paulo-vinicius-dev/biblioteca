@@ -24,5 +24,6 @@ func main() {
 	http.HandleFunc("/recuperarsenha", rotas.RecuperarSenha)
 	http.HandleFunc("/turnos", rotas.Turnos)
 	http.HandleFunc("/series", rotas.Series)
+	http.HandleFunc("/turmas", rotas.Turma)
 	http.ListenAndServe(":9090", nil)
 }

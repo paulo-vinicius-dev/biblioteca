@@ -39,6 +39,7 @@ class UserTablePageState extends State<UserTablePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return _isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -155,12 +156,6 @@ class UserTablePageState extends State<UserTablePage> {
                                 style: TextStyle(fontWeight: FontWeight.bold))),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('R.A / Matrícula',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
                           child: Text('Turma',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.bold)),
@@ -168,6 +163,12 @@ class UserTablePageState extends State<UserTablePage> {
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Turno',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Login',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
@@ -199,15 +200,7 @@ class UserTablePageState extends State<UserTablePage> {
                                   textAlign:
                                       TextAlign.left), // Alinhamento horizontal
                             ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(user.matricula,
-                                  textAlign: TextAlign.left),
-                            ),
-                          ),
+                          ),                          
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
@@ -228,6 +221,14 @@ class UserTablePageState extends State<UserTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
+                              child: Text(user.login,
+                                  textAlign: TextAlign.left),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
                               child: Text(user.tipoUsuario,
                                   textAlign: TextAlign.left),
                             ),
@@ -239,12 +240,70 @@ class UserTablePageState extends State<UserTablePage> {
                               child: Row(
                                 children: [
                                   ElevatedButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 128, 128, 128),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.library_books_rounded,
+                                            color: Colors.white),
+                                        SizedBox(width: 4),
+                                        Text('Histórico',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, AppRoutes.editarUsuario,
+                                          arguments: user);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 38, 42, 79),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.edit, color: Colors.white),
+                                        SizedBox(width: 4),
+                                        Text('Editar',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  ElevatedButton(
                                     onPressed: () {
                                       showDialog(
                                           context: context,
                                           builder: (context) {
                                             return AlertDialog(
-                                              title: Text('Excluir Usuário'),
+                                              title:
+                                                  const Text('Excluir Usuário'),
                                               content: const Text(
                                                   'Tem certeza que deseja excluir este usuário?'),
                                               actions: [
@@ -278,6 +337,7 @@ class UserTablePageState extends State<UserTablePage> {
                                                         const Text('Cancelar')),
                                                 ElevatedButton(
                                                     onPressed: () {
+                                                      print(user.toJson());
                                                       provider.deleteUsuario(
                                                           user.idDoUsuario);
                                                       setState(() {
@@ -323,63 +383,6 @@ class UserTablePageState extends State<UserTablePage> {
                                         Icon(Icons.delete, color: Colors.white),
                                         SizedBox(width: 4),
                                         Text('Excluir',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 3),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                          context, AppRoutes.editarUsuario,
-                                          arguments: user);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 38, 42, 79),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 5),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                    ),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.edit, color: Colors.white),
-                                        SizedBox(width: 4),
-                                        Text('Editar',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 3),
-                                  ElevatedButton(
-                                    onPressed: () {},
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 128, 128, 128),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 5),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                    ),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.library_books_rounded,
-                                            color: Colors.white),
-                                        SizedBox(width: 4),
-                                        Text('Histórico',
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,

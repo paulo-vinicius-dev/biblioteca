@@ -60,14 +60,21 @@ class _FormUserState extends State<FormUser> {
   void initState() {
     if (isModoEdicao()) {
       _nomeController.text = widget.usuario!.nome;
-      _cpfController.text = widget.usuario!.cpf ?? '';
-      _telefoneController.text = widget.usuario!.telefone ?? '';
       _emailController.text = widget.usuario!.email;
-      _dateController.text = widget.usuario!.dataDeNascimento == null
-          ? ''
-          : DateFormat('d/M/y')
-              .format(widget.usuario!.dataDeNascimento!)
-              .toString();
+
+      if (widget.usuario!.cpf.toString() != 'null') {
+        _cpfController.text = widget.usuario!.cpf!;
+      }
+
+      if (widget.usuario!.telefone.toString() != 'null') {
+        _telefoneController.text = widget.usuario!.telefone!;
+      }
+
+      if (widget.usuario!.dataDeNascimento.toString() != 'null') {
+        _dateController.text = DateFormat('d/M/y')
+            .format(widget.usuario!.dataDeNascimento!)
+            .toString();
+      }
     }
 
     super.initState();
@@ -351,8 +358,10 @@ class _FormUserState extends State<FormUser> {
                                         ? null
                                         : _telefoneController.text;
                                 widget.usuario!.dataDeNascimento =
-                                    DateFormat('d/M/y')
-                                          .parse(_dateController.text);
+                                    _dateController.text.isEmpty
+                                        ? null
+                                        : DateFormat('d/M/y')
+                                            .parse(_dateController.text);
 
                                 widget.usuario!.cpf =
                                     _cpfController.text.isEmpty
@@ -367,17 +376,16 @@ class _FormUserState extends State<FormUser> {
                                     .read<UsuarioProvider>()
                                     .addUsuario(Usuario(
                                       login: _loginController.text,
-                                      cpf: _cpfController.text.isEmpty
-                                          ? null
-                                          : _cpfController.text,
+                                      cpf: _cpfController.text,
                                       senha: _passwordController.text,
                                       nome: _nomeController.text,
                                       email: _emailController.text,
-                                      telefone: _telefoneController.text.isEmpty
-                                          ? null
-                                          : _telefoneController.text,
-                                      dataDeNascimento: DateFormat('d/M/y')
-                                          .parse(_dateController.text),
+                                      telefone: _telefoneController.text,
+                                      dataDeNascimento:
+                                          _dateController.text.isEmpty
+                                              ? null
+                                              : DateFormat('d/M/y')
+                                                  .parse(_dateController.text),
                                     ));
                               }
                               Navigator.pushNamedAndRemoveUntil(

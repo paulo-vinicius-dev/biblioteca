@@ -34,14 +34,14 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 		return ErroCpfDuplicado
 	}
 
-	cpf := novoUsuario.Cpf
-	if len(cpf) == 0 {
-		cpf = "null"
+	var cpf interface{} = novoUsuario.Cpf
+	if len(cpf.(string)) == 0 {
+		cpf = nil
 	}
 
-	telefone := novoUsuario.Telefone
-	if len(telefone) == 0 {
-		telefone = "null"
+	var telefone interface{} = novoUsuario.Telefone
+	if len(telefone.(string)) == 0 {
+		telefone = nil
 	}
 
 	var data_nascimento interface{} = novoUsuario.DataDeNascimento
@@ -71,7 +71,9 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 	return ErroNenhum
 }
 
-func AtualizarUsuario(usuarioComDadosAntigos,usuarioAtualizado modelos.Usuario) ErroBancoUsuario {
+func AtualizarUsuario(usuarioComDadosAntigos, usuarioAtualizado modelos.Usuario) ErroBancoUsuario {
+
+	fmt.Println(usuarioAtualizado)
 
 	if usuarioComDadosAntigos.Login != usuarioAtualizado.Login && LoginDuplicado(usuarioAtualizado.Login){
 		return ErroLoginDuplicado
@@ -85,14 +87,14 @@ func AtualizarUsuario(usuarioComDadosAntigos,usuarioAtualizado modelos.Usuario) 
 		return ErroEmailDuplicado
 	}
 
-	cpf := usuarioAtualizado.Cpf
-	if len(cpf) == 0 {
-		cpf = "null"
+	var cpf interface{} = usuarioAtualizado.Cpf
+	if len(cpf.(string)) == 0 {
+		cpf = nil
 	}
 
-	telefone := usuarioAtualizado.Telefone
-	if len(telefone) == 0 {
-		telefone = "null"
+	var telefone interface{} = usuarioAtualizado.Telefone
+	if len(telefone.(string)) == 0 {
+		telefone = nil
 	}
 
 	var data_nascimento interface{} = usuarioAtualizado.DataDeNascimento
@@ -118,6 +120,8 @@ func AtualizarUsuario(usuarioComDadosAntigos,usuarioAtualizado modelos.Usuario) 
 		panic("Um erro desconhecido acontesceu na atualização do usuário")
 	}
 
+	fmt.Println(usuarioAtualizado.Nome)
+
 	if usuarioAtualizado.Senha != "" {
 		senhaCriptogrfada := CriptografarSenha(usuarioAtualizado.Senha)
 		textoQuery := "update usuario set senha = $1 where id_usuario = $2"
@@ -132,8 +136,10 @@ func AtualizarUsuario(usuarioComDadosAntigos,usuarioAtualizado modelos.Usuario) 
 func ExcluirUsuario(idDoUsuario int) ErroBancoUsuario{
 	usuario, achou := PegarUsuarioPeloId(idDoUsuario)
 	if !achou {
+		fmt.Println("erro")
 		return ErroUsuarioInexistente
 	}
+	fmt.Println(usuario)
 	usuarioCopia := usuario
 	usuario.Ativo = false
 	return AtualizarUsuario(usuarioCopia, usuario)
@@ -143,18 +149,37 @@ func ExcluirUsuario(idDoUsuario int) ErroBancoUsuario{
 func PesquisarUsuario(busca string) []modelos.Usuario  {
 	conexao := PegarConexao()
 	busca = "%" + busca + "%" // isso está sujeitio a sql injection por favor olhar depois
-	textoQuery := "select id_usuario, login, cpf, nome, email, telefone,  permissoes, ativo from usuario where login like $1 or nome like $1 or email like $1 or cpf like $1"
+	textoQuery := "select id_usuario, login, cpf, nome, email, telefone,  permissoes, to_char(data_nascimento, 'yyyy-mm-dd'), ativo from usuario where login like $1 or nome like $1 or email like $1"
 	linhas, erro := conexao.Query(context.Background(), textoQuery, busca)
 	if erro != nil {
 		return []modelos.Usuario{}
 	}
 	var usuarioTemporario modelos.Usuario
 	usuariosEncontrados := make([]modelos.Usuario, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{&usuarioTemporario.IdDoUsuario, &usuarioTemporario.Login, &usuarioTemporario.Cpf, &usuarioTemporario.Nome, &usuarioTemporario.Email, &usuarioTemporario.Telefone, &usuarioTemporario.Permissao, &usuarioTemporario.Ativo}, func() error {
+	var cpfTemporario *string
+	var telefoneTemporario *string
+	var dataDeNascimentoTemporaria *string
+	_, erro = pgx.ForEachRow(linhas, []any{&usuarioTemporario.IdDoUsuario, &usuarioTemporario.Login, &cpfTemporario, &usuarioTemporario.Nome, &usuarioTemporario.Email, &telefoneTemporario, &usuarioTemporario.Permissao, &dataDeNascimentoTemporaria, &usuarioTemporario.Ativo}, func() error {
+		if cpfTemporario != nil {
+			usuarioTemporario.Cpf = *cpfTemporario
+		} else {
+			usuarioTemporario.Cpf = ""
+		}
+		if telefoneTemporario != nil {
+			usuarioTemporario.Telefone = *telefoneTemporario
+		} else {
+			usuarioTemporario.Telefone = ""
+		}
+		if dataDeNascimentoTemporaria != nil {
+			usuarioTemporario.DataDeNascimento = *dataDeNascimentoTemporaria
+		} else {
+			usuarioTemporario.DataDeNascimento = ""
+		}
 		usuariosEncontrados = append(usuariosEncontrados, usuarioTemporario)
 		return nil
 	})
 	if erro != nil {
+		fmt.Println(erro)
 		return []modelos.Usuario{}
 	}
 	fmt.Println(usuariosEncontrados)
@@ -165,16 +190,35 @@ func PesquisarUsuarioPeloLogin(login string) (modelos.Usuario, bool) {
 	conexao := PegarConexao()
 	var usuario modelos.Usuario
 	textoQuery := "select id_usuario, login, cpf, nome, email, telefone, to_char(data_nascimento, 'yyyy-mm-dd'), permissoes, ativo from usuario where login = $1"
-	if erro := conexao.QueryRow(context.Background(), textoQuery,  login).Scan(
+	var cpfTemporario *string
+	var telefoneTemporario *string
+	var dataDeNascimentoTemporaria *string
+	if erro := conexao.QueryRow(context.Background(), textoQuery, login).Scan(
 		&usuario.IdDoUsuario,
 		&usuario.Login,
-		&usuario.Cpf,
+		&cpfTemporario,
 		&usuario.Nome,
 		&usuario.Email,
-		&usuario.Telefone,
-		&usuario.DataDeNascimento,
+		&telefoneTemporario,
+		&dataDeNascimentoTemporaria,
 		&usuario.Permissao,
 		&usuario.Ativo); erro == nil {
+		if cpfTemporario != nil {
+			usuario.Cpf = *cpfTemporario
+		} else {
+			usuario.Cpf = ""
+		}
+		if telefoneTemporario != nil {
+			usuario.Telefone = *telefoneTemporario
+		} else {
+			usuario.Telefone = ""
+		}
+		if dataDeNascimentoTemporaria != nil {
+			usuario.DataDeNascimento = *dataDeNascimentoTemporaria
+		} else {
+			usuario.DataDeNascimento = ""
+		}
+
 		return usuario, false
 	} else {
 		return usuario, true
@@ -185,21 +229,40 @@ func PesquisarUsuarioPeloLogin(login string) (modelos.Usuario, bool) {
 func PegarUsuarioPeloId(id int) (modelos.Usuario, bool) {
 	conexao := PegarConexao()
 	var usuario modelos.Usuario
+	var cpfTemporario *string
+	var telefoneTemporario *string
+	var dataDeNascimentoTemporaria *string
 	textoQuery := "select id_usuario, login, cpf, nome, email, telefone, to_char(data_nascimento, 'yyyy-mm-dd'), permissoes, ativo from usuario where id_usuario = $1"
 	if erro := conexao.QueryRow(context.Background(), textoQuery,  id).Scan(
 		&usuario.IdDoUsuario,
 		&usuario.Login,
-		&usuario.Cpf,
+		&cpfTemporario,
 		&usuario.Nome,
 		&usuario.Email,
-		&usuario.Telefone,
-		&usuario.DataDeNascimento,
+		&telefoneTemporario,
+		&dataDeNascimentoTemporaria,
 		&usuario.Permissao,
 		&usuario.Ativo); erro == nil {
-			return usuario, true
+		if cpfTemporario != nil {
+			usuario.Cpf = *cpfTemporario
 		} else {
-			return usuario, false
+			usuario.Cpf = ""
 		}
+		if telefoneTemporario != nil {
+			usuario.Telefone = *telefoneTemporario
+		} else {
+			usuario.Telefone = ""
+		}
+		if dataDeNascimentoTemporaria != nil {
+			usuario.DataDeNascimento = *dataDeNascimentoTemporaria
+		} else {
+			usuario.DataDeNascimento = ""
+		}
+
+		return usuario, true
+	} else {
+		return usuario, false
+	}
 }
 
 func PegarPermissao(loginDoUsuario string) uint64 {

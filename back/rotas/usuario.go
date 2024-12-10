@@ -46,7 +46,7 @@ type ViewUsuario struct {
 
 func modelosUsuarioParaViewUsuario(modelos ...modelos.Usuario) []ViewUsuario {
 	views := make([]ViewUsuario, 0, len(modelos))
-	for _, m := range modelos {
+	for i, m := range modelos {
 		views = append(
 			views,
 			ViewUsuario{
@@ -66,6 +66,9 @@ func modelosUsuarioParaViewUsuario(modelos ...modelos.Usuario) []ViewUsuario {
 				Turno: m.Turma.Turno.IdTurno,
 			},
 		)
+		if m.Turma.IdTurma == 0 {
+			views[i].TurmaDescrisao = ""
+		}
 	}
 	return views
 }

@@ -2,6 +2,7 @@ package rotas
 
 import (
 	"biblioteca/modelos"
+	"biblioteca/servicos"
 	servicoUsuario "biblioteca/servicos/usuario"
 	"encoding/json"
 	"fmt"
@@ -77,6 +78,10 @@ func erroServicoUsuarioParaErrHttp(erro servicoUsuario.ErroDeServicoDoUsuario, r
 		resposta.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(resposta, "Foi tentado atualizar um usuário inexistente")
 		return
+	case servicoUsuario.ErroDeServicoDoUsuarioTurmaInvalida:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Turma inválida")
+		return
 		/*case servicoUsuario.ErroDeServicoDoUsuarioTurmaInvalida:
 		resposta.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(resposta, "A turma fornecida é inválida!")
@@ -128,7 +133,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		novoUsuario.DataDeNascimento = requisicaoUsuario.DataDeNascimento
 		novoUsuario.Permissao = requisicaoUsuario.PermissoesDoUsuario
 		novoUsuario.Senha = requisicaoUsuario.Senha
-		novoUsuario.Turma = requisicaoUsuario.Turma
+		novoUsuario.Turma.IdTurma = requisicaoUsuario.Turma
 
 		erro := servicoUsuario.CriarUsuario(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, novoUsuario)
 
@@ -139,6 +144,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 
 		novoUsuario.IdDoUsuario = servicoUsuario.PegarIdUsuario(novoUsuario.Login)
 		novoUsuario.Ativo = true
+		novoUsuario.Turma, _ = servicos.PegarTurmaPorId(novoUsuario.Turma.IdTurma)
 
 		respostaUsuario := respostaUsuario{
 			[]modelos.Usuario{
@@ -191,6 +197,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		usuarioComDadosAtualizados.Senha = requisicaoUsuario.Senha
 		usuarioComDadosAtualizados.IdDoUsuario = requisicaoUsuario.Id
 		usuarioComDadosAtualizados.Ativo = requisicaoUsuario.Ativo
+		usuarioComDadosAtualizados.Turma.IdTurma = requisicaoUsuario.Turma
 
 		usuarioAtualizado, erro := servicoUsuario.AtualizarUsuario(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, usuarioComDadosAtualizados)
 

@@ -3,7 +3,6 @@
 import 'package:biblioteca/tem_tabela/author_data.dart';
 import 'package:biblioteca/tem_tabela/author_model.dart';
 import 'package:biblioteca/utils/routes.dart';
-import 'package:biblioteca/widgets/bread_crumb.dart';
 import 'package:flutter/material.dart';
 
 class AuthorTablePage extends StatefulWidget {
@@ -42,7 +41,36 @@ class AuthorTablePageState extends State<AuthorTablePage> {
       child: Column(
         children: [
           // Barra de navegação
-           BreadCrumb(breadcrumb: ["Início","Autores"], icon: Icons.menu_book_outlined),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
+            color: const Color.fromRGBO(38, 42, 79, 1),
+            child: const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.menu_book_outlined,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                SizedBox(
+                  width: 7,
+                ),
+                Text(
+                  "Catalogação",
+                  style: TextStyle(color: Colors.white),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: Colors.white,
+                ),
+                Text(
+                  "Autores",
+                  style: TextStyle(color: Colors.white),
+                )
+              ],
+            ),
+          ),
 
           // Corpo da página
           SingleChildScrollView(

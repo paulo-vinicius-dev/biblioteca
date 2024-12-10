@@ -259,6 +259,7 @@ INSERT INTO usuario (login, cpf, nome, email, telefone, data_nascimento, senha, 
 ('biblio','76784092066', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', '76cc71b64516994b050bdb5a79c50865654e551ae126492ee20d08047e841a86',  b'1111'::bit::int), --senhaBiblio
 ('joao','26843511040', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'bffeba2cd38fb42e180da0254a7893f6db46e3cb2a93ff5e9b5494ce789e1006',  b'1111'::bit::int); --senhaJoao
 
+update usuario set permissoes = 15 where id_usuario = 1;
 
 -- Tabela emprestimo
 INSERT INTO emprestimo (id_exemplar_livro, id_livro, id_usuario, data_emprestimo, data_prevista_devolucao, observacao) VALUES

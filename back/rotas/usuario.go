@@ -12,7 +12,7 @@ import (
 type requisicaoUsuario struct {
 	IdDaSessao               uint64 `validate:"required"`
 	LoginDoUsuarioRequerente string `validate:"required"`
-	Id                       int	`validate:"optional"`
+	Id                       int    `validate:"optional"`
 	Login                    string `validate:"optional"`
 	Cpf                      string `validate:"optional"`
 	Senha                    string `validate:"optional"`
@@ -32,55 +32,55 @@ type respostaUsuario struct {
 
 func erroServicoUsuarioParaErrHttp(erro servicoUsuario.ErroDeServicoDoUsuario, resposta http.ResponseWriter) {
 	switch erro {
-		case servicoUsuario.ErroDeServicoDoUsuarioLoginDuplicado:
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "Login duplicado")
-			return
-		case servicoUsuario.ErroDeServicoDoUsuarioCpfDuplicado:
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "Cpf duplicado")
-			return
-		case servicoUsuario.ErroDeServicoDoUsuarioEmailDuplicado:
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "Email duplicado")
-			return
-		case servicoUsuario.ErroDeServicoDoUsuarioEmailInvalido:
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "Email inválido")
-			return
-		case servicoUsuario.ErroDeServicoDoUsuarioErroDesconhecido:
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "Erro desconhecido provavelmente por conta do sql")
-			return
-		case servicoUsuario.ErroDeServicoDoUsuarioTelefoneInvalido:
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "Telefone inválido!")
-			return
+	case servicoUsuario.ErroDeServicoDoUsuarioLoginDuplicado:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Login duplicado")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioCpfDuplicado:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Cpf duplicado")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioEmailDuplicado:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Email duplicado")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioEmailInvalido:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Email inválido")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioErroDesconhecido:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Erro desconhecido provavelmente por conta do sql")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioTelefoneInvalido:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Telefone inválido!")
+		return
 
-		case servicoUsuario.ErroDeServicoDoUsuarioSemPermisao:
-			resposta.WriteHeader(http.StatusForbidden)
-			fmt.Fprintf(resposta, "Este usuário não tem permissão para essa operação")
-			return
-		case servicoUsuario.ErroDeServicoDoUsuarioSessaoInvalida:
-			resposta.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprintf(resposta, "Este usuário não está autorizado(logado). Sessão inválida?")
-			return
-		case servicoUsuario.ErroDeServicoDoUsuarioCpfInvalido:
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "Cpf inválido!")
-			return
-		case servicoUsuario.ErroDeServicoDoUsuarioDataDeNascimentoInvalida:
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "Data de nascimento inválida! deve estar no formato AAAA-MM-DD!")
-			return
-		case servicoUsuario.ErroDeServicoDoUsuarioUsuarioInexistente:
-			resposta.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(resposta, "Foi tentado atualizar um usuário inexistente")
-			return
+	case servicoUsuario.ErroDeServicoDoUsuarioSemPermisao:
+		resposta.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(resposta, "Este usuário não tem permissão para essa operação")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioSessaoInvalida:
+		resposta.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(resposta, "Este usuário não está autorizado(logado). Sessão inválida?")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioCpfInvalido:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Cpf inválido!")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioDataDeNascimentoInvalida:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Data de nascimento inválida! deve estar no formato AAAA-MM-DD!")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioUsuarioInexistente:
+		resposta.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(resposta, "Foi tentado atualizar um usuário inexistente")
+		return
 		/*case servicoUsuario.ErroDeServicoDoUsuarioTurmaInvalida:
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "A turma fornecida é inválida!")
-			return 
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "A turma fornecida é inválida!")
+		return
 		*/
 	}
 }
@@ -111,12 +111,9 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 	switch requisicao.Method {
 	case "POST":
 		if len(requisicaoUsuario.Login) < 1 ||
-			len(requisicaoUsuario.Cpf) < 1 ||
 			len(requisicaoUsuario.Nome) < 1 ||
 			len(requisicaoUsuario.Email) < 1 ||
-			len(requisicaoUsuario.Telefone) < 1 ||
-			len(requisicaoUsuario.Senha) < 1 ||
-			len(requisicaoUsuario.DataDeNascimento) < 1 {
+			len(requisicaoUsuario.Senha) < 1 {
 			resposta.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(resposta, "Algum campo necessário para o cadastro não foi fornecido")
 			return
@@ -155,9 +152,8 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 
 		return
 
-
 	case "GET":
-		usuariosEncontrados, erro := servicoUsuario.BuscarUsuarios(requisicaoUsuario.IdDaSessao,requisicaoUsuario.LoginDoUsuarioRequerente,  requisicaoUsuario.TextoDeBusca)
+		usuariosEncontrados, erro := servicoUsuario.BuscarUsuarios(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, requisicaoUsuario.TextoDeBusca)
 		if erro == servicoUsuario.ErroDeServicoDoUsuarioSemPermisao {
 			resposta.WriteHeader(http.StatusForbidden)
 			fmt.Fprintf(resposta, "Este usuário não tem permissão para essa operação")
@@ -176,7 +172,6 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	case "PUT":
 		if len(requisicaoUsuario.Login) < 1 ||
-			len(requisicaoUsuario.Cpf) < 1 ||
 			len(requisicaoUsuario.Nome) < 1 ||
 			len(requisicaoUsuario.Email) < 1 ||
 			requisicaoUsuario.Id == 0 {
@@ -195,6 +190,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		usuarioComDadosAtualizados.Permissao = requisicaoUsuario.PermissoesDoUsuario
 		usuarioComDadosAtualizados.Senha = requisicaoUsuario.Senha
 		usuarioComDadosAtualizados.IdDoUsuario = requisicaoUsuario.Id
+		usuarioComDadosAtualizados.Ativo = requisicaoUsuario.Ativo
 
 		usuarioAtualizado, erro := servicoUsuario.AtualizarUsuario(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, usuarioComDadosAtualizados)
 
@@ -232,7 +228,6 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		respostaUsuarioJson, _ := json.Marshal(&respostaUsuario)
 
 		fmt.Fprintf(resposta, "%s", respostaUsuarioJson)
-
 
 	}
 

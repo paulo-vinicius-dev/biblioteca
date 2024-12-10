@@ -48,6 +48,11 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 		data_nascimento = nil
 	}
 
+	turmaTemporaria := &novoUsuario.Turma.IdTurma
+	if novoUsuario.Turma.IdTurma == 0 {
+		turmaTemporaria = nil
+	}
+
 	senhaCriptogrfada := CriptografarSenha(novoUsuario.Senha)
 	_, erroQuery := conexao.Exec(
 		context.Background(),
@@ -60,7 +65,7 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 		data_nascimento,
 		senhaCriptogrfada,
 		novoUsuario.Permissao,
-		novoUsuario.Turma.IdTurma,
+		turmaTemporaria,
 	)
 
 	if erroQuery != nil {

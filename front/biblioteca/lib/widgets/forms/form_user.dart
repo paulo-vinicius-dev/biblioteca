@@ -1,6 +1,7 @@
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
+import 'package:biblioteca/widgets/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 import 'package:intl/intl.dart';
@@ -99,44 +100,7 @@ class _FormUserState extends State<FormUser> {
     return Column(
       children: [
         // Barra de navegação
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
-          color: const Color.fromRGBO(38, 42, 79, 1),
-          child: const Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.co_present_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
-              SizedBox(
-                width: 7,
-              ),
-              Text(
-                "Controle de Usuários",
-                style: TextStyle(color: Colors.white),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.white,
-              ),
-              Text(
-                "Usuários",
-                style: TextStyle(color: Colors.white),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.white,
-              ),
-              Text(
-                "Novo Usuário",
-                style: TextStyle(color: Colors.white),
-              )
-            ],
-          ),
-        ),
+         BreadCrumb(breadcrumb: ['Início','Usuários','Novo Usuário'], icon: Icons.co_present_rounded),
 
         // Formulário
         Padding(

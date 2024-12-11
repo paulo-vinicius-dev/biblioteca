@@ -2,6 +2,7 @@ package rotas
 
 import (
 	"biblioteca/modelos"
+	"biblioteca/servicos"
 	servicoUsuario "biblioteca/servicos/usuario"
 	"encoding/json"
 	"fmt"
@@ -26,8 +27,54 @@ type requisicaoUsuario struct {
 	TextoDeBusca             string `validate:"optional"` // usado somente quando se procura um usuário
 }
 
+type ViewUsuario struct {
+	IdDoUsuario      int
+	Login            string
+	Cpf              string
+	Senha            string
+	Nome             string
+	Email            string
+	Telefone         string
+	DataDeNascimento string
+	Permissao        uint64
+	Ativo            bool
+	Turma            int
+	TurmaDescrisao   string
+	Serie            int
+	Turno            int
+}
+
+func modelosUsuarioParaViewUsuario(modelos ...modelos.Usuario) []ViewUsuario {
+	views := make([]ViewUsuario, 0, len(modelos))
+	for i, m := range modelos {
+		views = append(
+			views,
+			ViewUsuario{
+				IdDoUsuario: m.IdDoUsuario,
+				Login: m.Login,
+				Cpf: m.Cpf,
+				Senha: m.Senha,
+				Nome: m.Nome,
+				Email: m.Email,
+				Telefone: m.Telefone,
+				DataDeNascimento: m.DataDeNascimento,
+				Permissao: m.Permissao,
+				Ativo: m.Ativo,
+				Turma: m.Turma.IdTurma,
+				TurmaDescrisao: fmt.Sprintf("%s %s %s", m.Turma.Serie.Descricao, m.Turma.Descricao, m.Turma.Turno.Descricao),
+				Serie: m.Turma.Serie.IdSerie,
+				Turno: m.Turma.Turno.IdTurno,
+			},
+		)
+		if m.Turma.IdTurma == 0 {
+			views[i].TurmaDescrisao = ""
+		}
+	}
+	return views
+}
+
 type respostaUsuario struct {
-	UsuarioAtingidos []modelos.Usuario
+	UsuarioAtingidos []ViewUsuario
 }
 
 func erroServicoUsuarioParaErrHttp(erro servicoUsuario.ErroDeServicoDoUsuario, resposta http.ResponseWriter) {
@@ -76,6 +123,10 @@ func erroServicoUsuarioParaErrHttp(erro servicoUsuario.ErroDeServicoDoUsuario, r
 	case servicoUsuario.ErroDeServicoDoUsuarioUsuarioInexistente:
 		resposta.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(resposta, "Foi tentado atualizar um usuário inexistente")
+		return
+	case servicoUsuario.ErroDeServicoDoUsuarioTurmaInvalida:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Turma inválida")
 		return
 		/*case servicoUsuario.ErroDeServicoDoUsuarioTurmaInvalida:
 		resposta.WriteHeader(http.StatusBadRequest)
@@ -128,7 +179,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		novoUsuario.DataDeNascimento = requisicaoUsuario.DataDeNascimento
 		novoUsuario.Permissao = requisicaoUsuario.PermissoesDoUsuario
 		novoUsuario.Senha = requisicaoUsuario.Senha
-		novoUsuario.Turma = requisicaoUsuario.Turma
+		novoUsuario.Turma.IdTurma = requisicaoUsuario.Turma
 
 		erro := servicoUsuario.CriarUsuario(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, novoUsuario)
 
@@ -139,11 +190,10 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 
 		novoUsuario.IdDoUsuario = servicoUsuario.PegarIdUsuario(novoUsuario.Login)
 		novoUsuario.Ativo = true
+		novoUsuario.Turma, _ = servicos.PegarTurmaPorId(novoUsuario.Turma.IdTurma)
 
 		respostaUsuario := respostaUsuario{
-			[]modelos.Usuario{
-				novoUsuario,
-			},
+			modelosUsuarioParaViewUsuario(novoUsuario),
 		}
 
 		respostaUsuarioJson, _ := json.Marshal(&respostaUsuario)
@@ -164,7 +214,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 			return
 		}
 		respostaUsuario := respostaUsuario{
-			usuariosEncontrados,
+			modelosUsuarioParaViewUsuario(usuariosEncontrados...),
 		}
 		respostaUsuarioJson, _ := json.Marshal(&respostaUsuario)
 
@@ -191,6 +241,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		usuarioComDadosAtualizados.Senha = requisicaoUsuario.Senha
 		usuarioComDadosAtualizados.IdDoUsuario = requisicaoUsuario.Id
 		usuarioComDadosAtualizados.Ativo = requisicaoUsuario.Ativo
+		usuarioComDadosAtualizados.Turma.IdTurma = requisicaoUsuario.Turma
 
 		usuarioAtualizado, erro := servicoUsuario.AtualizarUsuario(requisicaoUsuario.IdDaSessao, requisicaoUsuario.LoginDoUsuarioRequerente, usuarioComDadosAtualizados)
 
@@ -200,9 +251,7 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		}
 
 		respostaUsuario := respostaUsuario{
-			[]modelos.Usuario{
-				usuarioAtualizado,
-			},
+			modelosUsuarioParaViewUsuario(usuarioAtualizado),
 		}
 		respostaUsuarioJson, _ := json.Marshal(&respostaUsuario)
 
@@ -220,11 +269,8 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 		}
 		usuarioDeletado, _ := servicoUsuario.PegarUsuarioPeloId(requisicaoUsuario.Id)
 		respostaUsuario := respostaUsuario{
-			[]modelos.Usuario{
-				usuarioDeletado,
-			},
+			modelosUsuarioParaViewUsuario(usuarioDeletado),
 		}
-
 		respostaUsuarioJson, _ := json.Marshal(&respostaUsuario)
 
 		fmt.Fprintf(resposta, "%s", respostaUsuarioJson)

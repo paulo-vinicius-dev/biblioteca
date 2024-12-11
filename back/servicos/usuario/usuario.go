@@ -3,6 +3,7 @@ package usuario
 import (
 	"biblioteca/banco"
 	"biblioteca/modelos"
+	"biblioteca/servicos"
 	"biblioteca/servicos/sessao"
 	"biblioteca/utilidades"
 	"fmt"
@@ -25,6 +26,7 @@ const (
 	ErroDeServicoDoUsuarioEmailInvalido
 	ErroDeServicoDoUsuarioFalhaNaBusca
 	ErroDeServicoDoUsuarioUsuarioInexistente
+	ErroDeServicoDoUsuarioTurmaInvalida
 )
 
 func erroDoBancoParaErroDeServicoDoUsuario(erro banco.ErroBancoUsuario) ErroDeServicoDoUsuario {
@@ -68,6 +70,14 @@ func CriarUsuario(idDaSessao uint64, loginUsuarioCriador string, novoUsuario mod
 
 	if !utilidades.ValidarEmail(novoUsuario.Email) {
 		return ErroDeServicoDoUsuarioEmailInvalido
+	}
+
+	if novoUsuario.Turma.IdTurma != 0 {
+		if turma, achou := servicos.PegarTurmaPorId(novoUsuario.Turma.IdTurma); !achou {
+			return ErroDeServicoDoUsuarioTurmaInvalida
+		} else {
+			novoUsuario.Turma = turma
+		}
 	}
 
 	return erroDoBancoParaErroDeServicoDoUsuario(banco.CriarUsuario(novoUsuario))
@@ -137,6 +147,14 @@ func AtualizarUsuario(idDaSessao uint64, loginDoUsuarioRequerente string, usuari
 
 	if !utilidades.ValidarEmail(usuarioComDadosAtualizados.Email) {
 		return usuarioComDadosAtualizados, ErroDeServicoDoUsuarioEmailInvalido
+	}
+
+	if usuarioComDadosAtualizados.Turma.IdTurma != 0 {
+		if turma, achou := servicos.PegarTurmaPorId(usuarioComDadosAtualizados.Turma.IdTurma); !achou {
+			return modelos.Usuario{}, ErroDeServicoDoUsuarioTurmaInvalida
+		} else {
+			usuarioComDadosAtualizados.Turma = turma
+		}
 	}
 
 	return usuarioComDadosAtualizados, erroDoBancoParaErroDeServicoDoUsuario(banco.AtualizarUsuario(usuarioComDadosAntigos, usuarioComDadosAtualizados))

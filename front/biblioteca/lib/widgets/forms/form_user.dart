@@ -58,7 +58,6 @@ class _FormUserState extends State<FormUser> {
   @override
   void initState() {
     if (isModoEdicao()) {
-      
       _nomeController.text = widget.usuario!.nome;
       _emailController.text = widget.usuario!.email;
 
@@ -71,11 +70,10 @@ class _FormUserState extends State<FormUser> {
       }
 
       if (widget.usuario!.dataDeNascimento.toString() != 'null') {
-        _telefoneController.text = DateFormat('d/M/y')
-              .format(widget.usuario!.dataDeNascimento!)
-              .toString();
+        _dateController.text = DateFormat('d/M/y')
+            .format(widget.usuario!.dataDeNascimento!)
+            .toString();
       }
-
     }
 
     super.initState();

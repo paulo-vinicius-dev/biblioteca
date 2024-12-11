@@ -1,8 +1,10 @@
 import 'package:biblioteca/data/models/usuario_model.dart';
+import 'package:biblioteca/data/providers/auth_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
+import 'package:biblioteca/utils/utils.dart';
 import 'package:biblioteca/widgets/forms/form_user.dart';
 import 'package:biblioteca/widgets/forms/form_book.dart';
 import 'package:biblioteca/widgets/forms/form_author.dart';
@@ -12,6 +14,7 @@ import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:biblioteca/widgets/menu_navegacao.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TelaPaginaIncial extends StatefulWidget {
   const TelaPaginaIncial({super.key});
@@ -27,7 +30,6 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
   OverlayEntry? _overlayEntry;
 
   void _toggleOverlay(BuildContext context) {
-
     if (_isExpanded) {
       _overlayEntry?.remove();
       _isExpanded = false;
@@ -100,7 +102,8 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
 
   @override
   Widget build(BuildContext context) {
-    
+    String nomeDoUsuario = context.watch<AuthProvider>().usuarioLogado!;
+    capitalize(nomeDoUsuario);
     return Scaffold(
       body: Row(
         children: [
@@ -125,7 +128,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Elena M.",
+                        nomeDoUsuario,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium

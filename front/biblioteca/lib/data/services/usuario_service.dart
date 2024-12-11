@@ -9,14 +9,16 @@ class UsuarioService {
   //Retorna todos os usuários
   Future<UsuariosAtingidos> fetchUsuarios(
       num idDaSessao, String loginDoUsuarioRequerente) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
+      "TextoDeBusca": "_"
+    };
+
     final response = await _api.requisicao(
       apiRoute,
       'GET',
-      {
-        "IdDaSessao": idDaSessao,
-        "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
-        "TextoDeBusca": "_"
-      },
+      body,
     );
 
     if (response.statusCode != 200) {
@@ -28,14 +30,16 @@ class UsuarioService {
   //Retorna o usuário do requerente
   Future<Usuario> getUsuarioRequerente(
       num idDaSessao, String loginDoUsuarioRequerente) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
+      "TextoDeBusca": "_"
+    };
+
     final response = await _api.requisicao(
       apiRoute,
       'GET',
-      {
-        "IdDaSessao": idDaSessao,
-        "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
-        "TextoDeBusca": "_"
-      },
+      body,
     );
 
     if (response.statusCode != 200) {
@@ -47,26 +51,28 @@ class UsuarioService {
   //Cria um novo usuario
   Future<Usuario> addUsuario(
       num idDaSessao, String loginDoUsuarioRequerente, Usuario usuario) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
+      "Login": usuario.login,
+      "Cpf": usuario.cpf,
+      "Nome": usuario.nome,
+      "Email": usuario.email,
+      "Telefone": usuario.telefone,
+      "DataDeNascimento": usuario.dataDeNascimento != null
+          ? DateFormat('yyyy-MM-dd')
+              .format(usuario.dataDeNascimento!)
+              .toString()
+          : "",
+      "Permissao": usuario.permissao,
+      "Senha": usuario.senha,
+      "Turma": 0
+    };
+
     final response = await _api.requisicao(
       apiRoute,
       'POST',
-      {
-        "IdDaSessao": idDaSessao,
-        "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
-        "Login": usuario.login,
-        "Cpf": usuario.cpf,
-        "Nome": usuario.nome,
-        "Email": usuario.email,
-        "Telefone": usuario.telefone,
-        "DataDeNascimento": usuario.dataDeNascimento != null
-            ? DateFormat('yyyy-MM-dd')
-                .format(usuario.dataDeNascimento!)
-                .toString()
-            : "",
-        "Permissao": usuario.permissao,
-        "Senha": usuario.senha,
-        "Turma": 0
-      },
+      body,
     );
 
     if (response.statusCode != 200) {
@@ -95,9 +101,9 @@ class UsuarioService {
           : "",
       "Permissao": usuario.permissao,
       "Id": usuario.idDoUsuario,
-      "Ativo": true
+      "Ativo": usuario.ativo
     };
-    print(body);
+
     final response = await _api.requisicao(
       apiRoute,
       'PUT',
@@ -114,14 +120,16 @@ class UsuarioService {
   //inativa um usuario
   Future<Usuario> deleteUsuario(
       num idDaSessao, String loginDoUsuarioRequerente, int id) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
+      "Id": id
+    };
+
     final response = await _api.requisicao(
       apiRoute,
       'DELETE',
-      {
-        "IdDaSessao": idDaSessao,
-        "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
-        "Id": id
-      },
+      body,
     );
 
     if (response.statusCode != 200) {

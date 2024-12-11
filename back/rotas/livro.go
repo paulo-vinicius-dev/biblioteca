@@ -157,7 +157,7 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 		livroComDadosAtualizados.Editora = requisicaoLivro.Editora
 		livroComDadosAtualizados.Pais = requisicaoLivro.Pais
 
-		livroAtualizado, erro := servicoLivro.AtualizarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, livroComDadosAtualizados)
+		livroAtualizado, erro := servicoLivro.AtualizarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, livroComDadosAtualizados, requisicaoLivro.NomeDosAutores)
 
 		if erro != servicoLivro.ErroDeServicoDoLivroNenhum {
 			erroServicoLivroParaErrHttp(erro, resposta)

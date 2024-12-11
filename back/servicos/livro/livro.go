@@ -76,7 +76,7 @@ func BuscarLivro(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca 
 	return livrosEncontrados, ErroDeServicoDoLivroNenhum
 }
 
-func AtualizarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, livroComDadosAtualizados modelos.Livro) (modelos.Livro, ErroDeServicoDoLivro) {
+func AtualizarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, livroComDadosAtualizados modelos.Livro, nomeDosAutores []string) (modelos.Livro, ErroDeServicoDoLivro) {
 
 	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioRequerente) != sessao.VALIDO {
 		return livroComDadosAtualizados, ErroDeServicoDoLivroSessaoInvalida
@@ -101,7 +101,7 @@ func AtualizarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, livroCom
 		return livroComDadosAtualizados, ErroDeServicoDoLivroIsbnInvalido
 	}
 
-	return livroComDadosAtualizados, erroDoBancoParaErroDeServicoDoLivro(banco.AtualizarLivro(livroComDadosAntigos, livroComDadosAtualizados))
+	return livroComDadosAtualizados, erroDoBancoParaErroDeServicoDoLivro(banco.AtualizarLivro(livroComDadosAntigos, livroComDadosAtualizados, nomeDosAutores))
 }
 
 func DeletarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, idDoLivroQueDesejaExcluir int) ErroDeServicoDoLivro {

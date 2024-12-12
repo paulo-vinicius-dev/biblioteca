@@ -611,7 +611,7 @@ class _FormUserState extends State<FormUser> {
                 },
               ),
             ),
-            obscureText: _confirmPasswordVisible,
+            obscureText: !_confirmPasswordVisible,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Preencha esse campo";

@@ -4,6 +4,12 @@ Usuario usuarioFromJson(String str) => Usuario.fromJson(json.decode(str));
 
 String usuarioToJson(Usuario data) => json.encode(data.toJson());
 
+class TipoDeUsuario {
+  static const bibliotecario = 'Bibliotecário';
+  static const funcionario = 'Funcionário';
+  static const aluno = 'Aluno';
+}
+
 class Usuario {
   int idDoUsuario;
   String login;
@@ -36,6 +42,18 @@ class Usuario {
     this.serie,
     this.turno,
   });
+
+  String get getTurma => turmaDescrisao == null || turmaDescrisao!.isEmpty
+      ? 'N/A'
+      : turmaDescrisao!.replaceAll(turmaDescrisao!.split(' ').last, '');
+
+  String get getTurno => turmaDescrisao == null || turmaDescrisao!.isEmpty
+      ? 'N/A'
+      : turmaDescrisao!.split(' ').last;
+
+  String get getTipoDeUsuario => permissao == 15
+      ? TipoDeUsuario.bibliotecario
+      : (turma == 0 ? TipoDeUsuario.funcionario : TipoDeUsuario.aluno);
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         idDoUsuario: json["IdDoUsuario"],

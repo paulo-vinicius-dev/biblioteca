@@ -256,7 +256,7 @@ class UserTablePageState extends State<UserTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.turma.toString(),
+                              child: Text(user.getTurma,
                                   textAlign: TextAlign.left),
                             ),
                           ),
@@ -265,7 +265,7 @@ class UserTablePageState extends State<UserTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child:
-                                  Text(/*user.turno*/"Manhã", textAlign: TextAlign.left),
+                                  Text(user.getTurno, textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
@@ -280,7 +280,7 @@ class UserTablePageState extends State<UserTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(/*user.tipoUsuario*/"Aluno",
+                              child: Text(user.getTipoDeUsuario,
                                   textAlign: TextAlign.left),
                             ),
                           ),

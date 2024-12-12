@@ -1,34 +1,13 @@
-import 'dart:ffi';
-
+import 'package:biblioteca/data/models/turma.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
+import 'package:biblioteca/data/services/turmas_service.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
-
-const List<String> usuarios = <String>['Aluno', 'Funcionário', 'Bibliotecário'];
-const List<String> turmas = <String>[
-  'N/A',
-  '1º Ano A',
-  '1º Ano B',
-  '1º Ano C',
-  '2º Ano A',
-  '2º Ano B',
-  '2º Ano C',
-  '3º Ano A',
-  '3º Ano B',
-  '3º Ano C'
-];
-
-const List<String> turnos = <String>[
-  'N/A',
-  'Matutino',
-  'Vespertino',
-  'Noturno'
-];
 
 class FormUser extends StatefulWidget {
   const FormUser({super.key, this.usuario});
@@ -58,6 +37,29 @@ class _FormUserState extends State<FormUser> {
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
 
+  final TurmasService _turmasService = TurmasService();
+  List<Turma> turmas = [];
+  bool showTurmas = false;
+
+  final List<String> usuarios = <String>[
+    TipoDeUsuario.aluno,
+    TipoDeUsuario.funcionario,
+    TipoDeUsuario.bibliotecario
+  ];
+
+  final List<String> turnos = <String>['Manhã', 'Tarde', 'Noite', 'Integral'];
+
+  Future<void> _loadTurmas(int turno) async {
+    var futureTurmas = await _turmasService.fetchTurmas();
+    setState(() {
+      turmas = futureTurmas.where((turma) => turma.turno == turno).toList();
+
+      if (!showTurmas) {
+        showTurmas = true;
+      }
+    });
+  }
+
   @override
   void initState() {
     if (isModoEdicao()) {
@@ -76,6 +78,13 @@ class _FormUserState extends State<FormUser> {
         _dateController.text = DateFormat('d/M/y')
             .format(widget.usuario!.dataDeNascimento!)
             .toString();
+      }
+
+      if (widget.usuario!.getTipoDeUsuario == TipoDeUsuario.aluno) {
+        print('é aluno');
+        _turmaController.text = widget.usuario!.turma.toString();
+        _turnoController.text = widget.usuario!.turno.toString();
+        showTurmas = true;
       }
     }
 
@@ -245,7 +254,6 @@ class _FormUserState extends State<FormUser> {
                                   final DateTime? pickedDate =
                                       await showDatePicker(
                                     context: context,
-
                                     initialEntryMode: DatePickerEntryMode.input,
                                     locale: const Locale('pt', 'BR'),
                                     initialDate: isModoEdicao()
@@ -270,9 +278,9 @@ class _FormUserState extends State<FormUser> {
                                 controller: _cpfController,
                                 inputFormatters: [
                                   MaskTextInputFormatter(
-                                    mask: '###.###.###-##', 
-                                    filter: { "#": RegExp(r'[0-9]') },
-                                    type: MaskAutoCompletionType.lazy),
+                                      mask: '###.###.###-##',
+                                      filter: {"#": RegExp(r'[0-9]')},
+                                      type: MaskAutoCompletionType.lazy),
                                 ],
                                 decoration: const InputDecoration(
                                   labelText: "CPF",
@@ -295,68 +303,7 @@ class _FormUserState extends State<FormUser> {
                         const SizedBox(width: 20.0),
 
                         // Informações Acadêmicas
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Informações Acadêmicas",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Turma
-                              DropdownButtonFormField<String>(
-                                decoration: const InputDecoration(
-                                  label: CampoObrigatorio(label: "Turma"),
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: turmas.map((String turma) {
-                                  return DropdownMenuItem<String>(
-                                    value: turma,
-                                    child: Text(turma),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  _turmaController.text = newValue!;
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Selecione uma turma";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Turno
-                              DropdownButtonFormField<String>(
-                                decoration: const InputDecoration(
-                                  label: CampoObrigatorio(label: "Turno"),
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: turnos.map((String turno) {
-                                  return DropdownMenuItem<String>(
-                                    value: turno,
-                                    child: Text(turno),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  _turnoController.text = newValue!;
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Selecione um turno";
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
+                        getBlocoInformacoesAcademicas(),
                       ],
                     ),
                     const SizedBox(height: 20.0),
@@ -418,23 +365,28 @@ class _FormUserState extends State<FormUser> {
                                     .read<UsuarioProvider>()
                                     .editUsuario(widget.usuario!);
                               } else {
-                                context
-                                    .read<UsuarioProvider>()
-                                    .addUsuario(Usuario(
-                                      login: _loginController.text,
-                                      cpf: _cpfController.text,
-                                      senha: _passwordController.text,
-                                      nome: _nomeController.text,
-                                      email: _emailController.text,
-                                      telefone: _telefoneController.text,
-                                      dataDeNascimento:
-                                          _dateController.text.isEmpty
-                                              ? null
-                                              : DateFormat('d/M/y')
-                                                  .parse(_dateController.text),
-                                      turma: int.tryParse(_turmaController.text) ?? 0,
-                                      permissao: 15
-                                    ));
+                                context.read<UsuarioProvider>().addUsuario(
+                                      Usuario(
+                                        login: _loginController.text,
+                                        cpf: _cpfController.text,
+                                        senha: _passwordController.text,
+                                        nome: _nomeController.text,
+                                        email: _emailController.text,
+                                        telefone: _telefoneController.text,
+                                        dataDeNascimento: _dateController
+                                                .text.isEmpty
+                                            ? null
+                                            : DateFormat('d/M/y')
+                                                .parse(_dateController.text),
+                                        turma: int.tryParse(
+                                                _turmaController.text) ??
+                                            0,
+                                        permissao: _userTypeController.text ==
+                                                TipoDeUsuario.bibliotecario
+                                            ? 15
+                                            : 0,
+                                      ),
+                                    );
                               }
                               Navigator.pushNamedAndRemoveUntil(
                                   context,
@@ -472,6 +424,84 @@ class _FormUserState extends State<FormUser> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget getBlocoInformacoesAcademicas() {
+    if (isModoEdicao() &&
+        widget.usuario!.getTipoDeUsuario != TipoDeUsuario.aluno) {
+      return Container();
+    }
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Informações Acadêmicas",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10.0),
+
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(
+              label: CampoObrigatorio(label: "Turno"),
+              border: OutlineInputBorder(),
+            ),
+            items: turnos.map((String turno) {
+              return DropdownMenuItem<String>(
+                value: (turnos.indexOf(turno) + 1).toString(),
+                child: Text(turno),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              _turnoController.text = newValue!;
+              _loadTurmas(int.parse(_turnoController.text));
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Selecione um turno";
+              }
+
+              return null;
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          // Turma
+          getFieldTurmas(),
+        ],
+      ),
+    );
+  }
+
+  Widget getFieldTurmas() {
+    if (!showTurmas) {
+      return Container();
+    }
+
+    return DropdownButtonFormField<String>(
+      decoration: const InputDecoration(
+        label: CampoObrigatorio(label: "Turma"),
+        border: OutlineInputBorder(),
+      ),
+      items: turmas.map((Turma turma) {
+        return DropdownMenuItem<String>(
+          value: turma.turma.toString(),
+          child: Text(turma.turmaSemTurno),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        _turmaController.text = newValue!;
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Selecione uma turma";
+        }
+        return null;
+      },
     );
   }
 

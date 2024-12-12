@@ -1,4 +1,5 @@
 import 'package:biblioteca/data/models/usuario_model.dart';
+import 'package:biblioteca/data/models/usuarios_atingidos.dart';
 import 'package:biblioteca/data/services/api_service.dart';
 import 'package:intl/intl.dart';
 
@@ -22,10 +23,33 @@ class UsuarioService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception();
+      throw Exception(response.data);
     }
     return usuariosAtingidosFromJson(response.data);
   }
+
+
+  //Pesquisa os usuarios
+  Future<UsuariosAtingidos> searchUsuarios(
+      num idDaSessao, String loginDoUsuarioRequerente, String textoDeBusca) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
+      "TextoDeBusca": textoDeBusca
+    };
+
+    final response = await _api.requisicao(
+      apiRoute,
+      'GET',
+      body,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(response.data);
+    }
+    return usuariosAtingidosFromJson(response.data);
+  }
+
 
   //Retorna o usuário do requerente
   Future<Usuario> getUsuarioRequerente(
@@ -43,7 +67,7 @@ class UsuarioService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception();
+      throw Exception(response.data);
     }
     return usuariosAtingidosFromJson(response.data).usuarioAtingidos[0];
   }
@@ -76,7 +100,7 @@ class UsuarioService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception();
+      throw Exception(response.data);
     }
 
     return usuariosAtingidosFromJson(response.data).usuarioAtingidos[0];
@@ -101,7 +125,8 @@ class UsuarioService {
           : "",
       "Permissao": usuario.permissao,
       "Id": usuario.idDoUsuario,
-      "Ativo": usuario.ativo
+      "Ativo": usuario.ativo,
+      "Turma": usuario.turma
     };
 
     final response = await _api.requisicao(
@@ -111,7 +136,7 @@ class UsuarioService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception();
+      throw Exception(response.data);
     }
 
     return usuariosAtingidosFromJson(response.data).usuarioAtingidos[0];
@@ -133,7 +158,7 @@ class UsuarioService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception();
+      throw Exception(response.data);
     }
 
     return usuariosAtingidosFromJson(response.data).usuarioAtingidos[0];

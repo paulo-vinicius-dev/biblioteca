@@ -1,9 +1,12 @@
+import 'dart:ffi';
+
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 import 'package:intl/intl.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
 
 const List<String> usuarios = <String>['Aluno', 'Funcionário', 'Bibliotecário'];
@@ -242,6 +245,7 @@ class _FormUserState extends State<FormUser> {
                                   final DateTime? pickedDate =
                                       await showDatePicker(
                                     context: context,
+
                                     initialEntryMode: DatePickerEntryMode.input,
                                     locale: const Locale('pt', 'BR'),
                                     initialDate: isModoEdicao()
@@ -264,6 +268,12 @@ class _FormUserState extends State<FormUser> {
                               // CPF
                               TextFormField(
                                 controller: _cpfController,
+                                inputFormatters: [
+                                  MaskTextInputFormatter(
+                                    mask: '###.###.###-##', 
+                                    filter: { "#": RegExp(r'[0-9]') },
+                                    type: MaskAutoCompletionType.lazy),
+                                ],
                                 decoration: const InputDecoration(
                                   labelText: "CPF",
                                   border: OutlineInputBorder(),
@@ -422,6 +432,8 @@ class _FormUserState extends State<FormUser> {
                                               ? null
                                               : DateFormat('d/M/y')
                                                   .parse(_dateController.text),
+                                      turma: int.tryParse(_turmaController.text) ?? 0,
+                                      permissao: 15
                                     ));
                               }
                               Navigator.pushNamedAndRemoveUntil(

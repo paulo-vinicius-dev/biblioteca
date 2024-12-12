@@ -13,6 +13,8 @@ class UserTablePage extends StatefulWidget {
 }
 
 class UserTablePageState extends State<UserTablePage> {
+  TextEditingController _buscaController = TextEditingController();
+
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
@@ -38,7 +40,6 @@ class UserTablePageState extends State<UserTablePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return _isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -109,6 +110,8 @@ class UserTablePageState extends State<UserTablePage> {
               // Botão novo usuário
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
@@ -129,7 +132,27 @@ class UserTablePageState extends State<UserTablePage> {
                           const EdgeInsets.all(15.0), // Padding personalizado
                         ),
                       ),
-                    )
+                    ),
+                    SizedBox(
+                      width: 180.0,
+                      height: 30.0,
+                      child: TextField(
+                        cursorHeight: 20.0,
+                        controller: _buscaController,
+                        autofocus: true,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.filter_alt),
+                          prefixIconColor: Theme.of(context).colorScheme.primary,
+                          border: const OutlineInputBorder(),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10.0,
+                          ),
+                          hintText: 'Filtrar resultados',
+                          hintStyle: const TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                      
+                    ),
                   ],
                 ),
                 const SizedBox(
@@ -228,7 +251,7 @@ class UserTablePageState extends State<UserTablePage> {
                                   textAlign:
                                       TextAlign.left), // Alinhamento horizontal
                             ),
-                          ),                          
+                          ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
@@ -242,22 +265,22 @@ class UserTablePageState extends State<UserTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child:
-                                  Text(user.turno, textAlign: TextAlign.left),
+                                  Text(/*user.turno*/"Manhã", textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.login,
-                                  textAlign: TextAlign.left),
+                              child:
+                                  Text(user.login, textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.tipoUsuario,
+                              child: Text(/*user.tipoUsuario*/"Aluno",
                                   textAlign: TextAlign.left),
                             ),
                           ),

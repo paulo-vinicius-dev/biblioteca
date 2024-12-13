@@ -37,7 +37,7 @@ class Usuario {
     required this.dataDeNascimento,
     required this.permissao,
     this.ativo = true,
-    this.turma = 1,
+    this.turma = 0,
     this.turmaDescrisao,
     this.serie,
     this.turno,

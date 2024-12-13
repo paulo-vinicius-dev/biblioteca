@@ -81,11 +81,13 @@ class _FormUserState extends State<FormUser> {
       }
 
       if (widget.usuario!.getTipoDeUsuario == TipoDeUsuario.aluno) {
-        print('é aluno');
-        _turmaController.text = widget.usuario!.turma.toString();
         _turnoController.text = widget.usuario!.turno.toString();
+        _loadTurmas(widget.usuario!.turno!);
+        _turmaController.text = widget.usuario!.turma.toString();
         showTurmas = true;
       }
+    } else {
+      _userTypeController.text = TipoDeUsuario.aluno;
     }
 
     super.initState();
@@ -171,133 +173,7 @@ class _FormUserState extends State<FormUser> {
                         const SizedBox(width: 20.0),
 
                         // Informações Pessoais
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Informações Pessoais",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Nome
-                              TextFormField(
-                                controller: _nomeController,
-                                decoration: const InputDecoration(
-                                  label: CampoObrigatorio(label: "Nome"),
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Preencha esse campo";
-                                  } else if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$')
-                                      .hasMatch(value)) {
-                                    return "O nome deve conter apenas letras";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Email
-                              TextFormField(
-                                controller: _emailController,
-                                decoration: const InputDecoration(
-                                  label: CampoObrigatorio(label: "Email"),
-                                  border: OutlineInputBorder(),
-                                ),
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Preencha esse campo";
-                                  } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                      .hasMatch(value)) {
-                                    return "Insira um email válido";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Telefone
-                              TextFormField(
-                                controller: _telefoneController,
-                                decoration: const InputDecoration(
-                                  labelText: "Telefone",
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value != null &&
-                                      value.isNotEmpty &&
-                                      value.length != 11) {
-                                    return "Insira um telefone válido";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              //Data de Nascimento
-                              TextFormField(
-                                readOnly: true,
-                                controller: _dateController,
-                                decoration: const InputDecoration(
-                                  labelText: "Data de Nascimento",
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: Icon(Icons.calendar_today),
-                                ),
-                                onTap: () async {
-                                  final DateTime? pickedDate =
-                                      await showDatePicker(
-                                    context: context,
-                                    initialEntryMode: DatePickerEntryMode.input,
-                                    locale: const Locale('pt', 'BR'),
-                                    initialDate: isModoEdicao()
-                                        ? widget.usuario!.dataDeNascimento
-                                        : _today,
-                                    firstDate: DateTime(1900),
-                                    lastDate: _today,
-                                  );
-                                  if (pickedDate != null) {
-                                    setState(() {
-                                      _dateController.text = DateFormat('d/M/y')
-                                          .format(pickedDate)
-                                          .toString();
-                                    });
-                                  }
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // CPF
-                              TextFormField(
-                                controller: _cpfController,
-                                inputFormatters: [
-                                  MaskTextInputFormatter(
-                                      mask: '###.###.###-##',
-                                      filter: {"#": RegExp(r'[0-9]')},
-                                      type: MaskAutoCompletionType.lazy),
-                                ],
-                                decoration: const InputDecoration(
-                                  labelText: "CPF",
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value != null &&
-                                      value.isNotEmpty &&
-                                      value.length != 11) {
-                                    return "Insira um CPF válido";
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
+                        getBlocoInformacoesPessoais(context),
 
                         // Espaçamento
                         const SizedBox(width: 20.0),
@@ -343,6 +219,7 @@ class _FormUserState extends State<FormUser> {
                                   "Cadastro realizado com sucesso!";
 
                               if (isModoEdicao()) {
+                                //Editar usuário
                                 mensagem = 'Registro alterado com sucesso!';
                                 widget.usuario!.nome = _nomeController.text;
                                 widget.usuario!.email = _emailController.text;
@@ -361,10 +238,13 @@ class _FormUserState extends State<FormUser> {
                                         ? null
                                         : _cpfController.text;
 
+                                //print(widget.usuario!.toJson());
+
                                 context
                                     .read<UsuarioProvider>()
                                     .editUsuario(widget.usuario!);
                               } else {
+                                //Adicionar usuário
                                 context.read<UsuarioProvider>().addUsuario(
                                       Usuario(
                                         login: _loginController.text,
@@ -388,6 +268,7 @@ class _FormUserState extends State<FormUser> {
                                       ),
                                     );
                               }
+
                               Navigator.pushNamedAndRemoveUntil(
                                   context,
                                   AppRoutes.usuarios,
@@ -427,9 +308,131 @@ class _FormUserState extends State<FormUser> {
     );
   }
 
+  Expanded getBlocoInformacoesPessoais(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Informações Pessoais",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10.0),
+
+          // Nome
+          TextFormField(
+            controller: _nomeController,
+            decoration: const InputDecoration(
+              label: CampoObrigatorio(label: "Nome"),
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Preencha esse campo";
+              } else if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$').hasMatch(value)) {
+                return "O nome deve conter apenas letras";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          // Email
+          TextFormField(
+            controller: _emailController,
+            decoration: const InputDecoration(
+              label: CampoObrigatorio(label: "Email"),
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Preencha esse campo";
+              } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                return "Insira um email válido";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          // Telefone
+          TextFormField(
+            controller: _telefoneController,
+            decoration: const InputDecoration(
+              labelText: "Telefone",
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value != null && value.isNotEmpty && value.length != 11) {
+                return "Insira um telefone válido";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          //Data de Nascimento
+          TextFormField(
+            readOnly: true,
+            controller: _dateController,
+            decoration: const InputDecoration(
+              labelText: "Data de Nascimento",
+              border: OutlineInputBorder(),
+              suffixIcon: Icon(Icons.calendar_today),
+            ),
+            onTap: () async {
+              final DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialEntryMode: DatePickerEntryMode.input,
+                locale: const Locale('pt', 'BR'),
+                initialDate:
+                    isModoEdicao() ? widget.usuario!.dataDeNascimento : _today,
+                firstDate: DateTime(1900),
+                lastDate: _today,
+              );
+              if (pickedDate != null) {
+                setState(() {
+                  _dateController.text =
+                      DateFormat('d/M/y').format(pickedDate).toString();
+                });
+              }
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          // CPF
+          TextFormField(
+            controller: _cpfController,
+            inputFormatters: [
+              MaskTextInputFormatter(
+                  mask: '###.###.###-##',
+                  filter: {"#": RegExp(r'[0-9]')},
+                  type: MaskAutoCompletionType.lazy),
+            ],
+            decoration: const InputDecoration(
+              labelText: "CPF",
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value != null && value.isNotEmpty && value.length != 11) {
+                return "Insira um CPF válido";
+              }
+              return null;
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget getBlocoInformacoesAcademicas() {
     if (isModoEdicao() &&
-        widget.usuario!.getTipoDeUsuario != TipoDeUsuario.aluno) {
+            widget.usuario!.getTipoDeUsuario != TipoDeUsuario.aluno ||
+        !isModoEdicao() && _userTypeController.text != TipoDeUsuario.aluno) {
       return Container();
     }
     return Expanded(
@@ -450,6 +453,7 @@ class _FormUserState extends State<FormUser> {
               label: CampoObrigatorio(label: "Turno"),
               border: OutlineInputBorder(),
             ),
+            value: _turnoController.text.isEmpty ? null : _turnoController.text,
             items: turnos.map((String turno) {
               return DropdownMenuItem<String>(
                 value: (turnos.indexOf(turno) + 1).toString(),
@@ -487,6 +491,7 @@ class _FormUserState extends State<FormUser> {
         label: CampoObrigatorio(label: "Turma"),
         border: OutlineInputBorder(),
       ),
+      value: _turmaController.text.isEmpty ? null : _turmaController.text,
       items: turmas.map((Turma turma) {
         return DropdownMenuItem<String>(
           value: turma.turma.toString(),
@@ -495,6 +500,7 @@ class _FormUserState extends State<FormUser> {
       }).toList(),
       onChanged: (String? newValue) {
         _turmaController.text = newValue!;
+        print(_turmaController.text);
       },
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -528,6 +534,7 @@ class _FormUserState extends State<FormUser> {
               label: CampoObrigatorio(label: "Tipo de Usuário"),
               border: OutlineInputBorder(),
             ),
+            value: _userTypeController.text,
             items: usuarios.map((String userType) {
               return DropdownMenuItem<String>(
                 value: userType,
@@ -536,6 +543,10 @@ class _FormUserState extends State<FormUser> {
             }).toList(),
             onChanged: (String? newValue) {
               _userTypeController.text = newValue!;
+              print(_userTypeController.text == TipoDeUsuario.bibliotecario
+                  ? 15
+                  : 0);
+              setState(() {});
             },
             validator: (value) {
               if (value == null || value.isEmpty) {

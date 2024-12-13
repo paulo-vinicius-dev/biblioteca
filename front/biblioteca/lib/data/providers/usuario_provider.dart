@@ -48,7 +48,7 @@ class UsuarioProvider with ChangeNotifier {
           await usuarioService.alterUsuario(idDaSessao, usuarioLogado, usuario);
       users[users.indexOf(usuario)] = novoUsuario;
     } catch (e) {
-      print('$e');
+      print('Erro aqui: $e');
     }
     notifyListeners();
   }

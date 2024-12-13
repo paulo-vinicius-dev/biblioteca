@@ -28,10 +28,9 @@ class UsuarioService {
     return usuariosAtingidosFromJson(response.data);
   }
 
-
   //Pesquisa os usuarios
-  Future<UsuariosAtingidos> searchUsuarios(
-      num idDaSessao, String loginDoUsuarioRequerente, String textoDeBusca) async {
+  Future<UsuariosAtingidos> searchUsuarios(num idDaSessao,
+      String loginDoUsuarioRequerente, String textoDeBusca) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
@@ -49,7 +48,6 @@ class UsuarioService {
     }
     return usuariosAtingidosFromJson(response.data);
   }
-
 
   //Retorna o usuário do requerente
   Future<Usuario> getUsuarioRequerente(
@@ -90,7 +88,7 @@ class UsuarioService {
           : "",
       "Permissao": usuario.permissao,
       "Senha": usuario.senha,
-      "Turma": 0
+      "Turma": usuario.turma
     };
 
     final response = await _api.requisicao(
@@ -150,7 +148,7 @@ class UsuarioService {
       "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
       "Id": id
     };
-
+    print(body);
     final response = await _api.requisicao(
       apiRoute,
       'DELETE',

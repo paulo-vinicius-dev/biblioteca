@@ -34,7 +34,9 @@ class UserTablePageState extends State<UserTablePage> {
             })
           });
     }
-    _isInit = false;
+    setState(() {
+      _isInit = false;
+    });
     super.didChangeDependencies();
   }
 
@@ -133,26 +135,26 @@ class UserTablePageState extends State<UserTablePage> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 180.0,
-                      height: 30.0,
-                      child: TextField(
-                        cursorHeight: 20.0,
-                        controller: _buscaController,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.filter_alt),
-                          prefixIconColor: Theme.of(context).colorScheme.primary,
-                          border: const OutlineInputBorder(),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                          ),
-                          hintText: 'Filtrar resultados',
-                          hintStyle: const TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                      
-                    ),
+                    //Filtro
+                    // SizedBox(
+                    //   width: 180.0,
+                    //   height: 30.0,
+                    //   child: TextField(
+                    //     cursorHeight: 20.0,
+                    //     controller: _buscaController,
+                    //     decoration: InputDecoration(
+                    //       prefixIcon: const Icon(Icons.filter_alt),
+                    //       prefixIconColor:
+                    //           Theme.of(context).colorScheme.primary,
+                    //       border: const OutlineInputBorder(),
+                    //       contentPadding: const EdgeInsets.symmetric(
+                    //         horizontal: 10.0,
+                    //       ),
+                    //       hintText: 'Filtrar resultados',
+                    //       hintStyle: const TextStyle(fontSize: 12.0),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
                 const SizedBox(
@@ -264,8 +266,8 @@ class UserTablePageState extends State<UserTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Text(user.getTurno, textAlign: TextAlign.left),
+                              child: Text(user.getTurno,
+                                  textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
@@ -388,7 +390,7 @@ class UserTablePageState extends State<UserTablePage> {
                                                         const Text('Cancelar')),
                                                 ElevatedButton(
                                                     onPressed: () {
-                                                      print(user.toJson());
+                                                      
                                                       provider.deleteUsuario(
                                                           user.idDoUsuario);
                                                       setState(() {

@@ -32,7 +32,7 @@ func erroDoBancoParaErroDeServicoDoLivro(erro banco.ErroBancoLivro) ErroDeServic
 	}
 }
 
-func CriarLivro(idDaSessao uint64, loginUsuarioCriador string, novoLivro modelos.Livro, nomeDosAutores []string) ErroDeServicoDoLivro {
+func CriarLivro(idDaSessao uint64, loginUsuarioCriador string, novoLivro modelos.Livro, nomeDosAutores []string, nomeDasCategorias []string) ErroDeServicoDoLivro {
 	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginUsuarioCriador) != sessao.VALIDO {
 		return ErroDeServicoDoLivroSessaoInvalida
 	}
@@ -43,7 +43,7 @@ func CriarLivro(idDaSessao uint64, loginUsuarioCriador string, novoLivro modelos
 		return ErroDeServicoDoLivroSemPermisao
 	}
 
-	if _, erro := time.Parse(time.DateOnly, novoLivro.AnoPublicao); erro != nil {
+	if _, erro := time.Parse(time.DateOnly, novoLivro.AnoPublicacao); erro != nil {
 		return ErroDeServicoDoLivroAnoPublicaoInvalida
 	}
 
@@ -51,7 +51,7 @@ func CriarLivro(idDaSessao uint64, loginUsuarioCriador string, novoLivro modelos
 		return ErroDeServicoDoLivroIsbnInvalido
 	}
 
-	return erroDoBancoParaErroDeServicoDoLivro(banco.CriarLivro(novoLivro, nomeDosAutores))
+	return erroDoBancoParaErroDeServicoDoLivro(banco.CriarLivro(novoLivro, nomeDosAutores, nomeDasCategorias))
 }
 
 func BuscarLivro(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca string) ([]modelos.Livro, ErroDeServicoDoLivro) {
@@ -76,7 +76,7 @@ func BuscarLivro(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca 
 	return livrosEncontrados, ErroDeServicoDoLivroNenhum
 }
 
-func AtualizarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, livroComDadosAtualizados modelos.Livro, nomeDosAutores []string) (modelos.Livro, ErroDeServicoDoLivro) {
+func AtualizarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, livroComDadosAtualizados modelos.Livro, nomeDosAutores []string, nomeDasCategorias []string) (modelos.Livro, ErroDeServicoDoLivro) {
 
 	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioRequerente) != sessao.VALIDO {
 		return livroComDadosAtualizados, ErroDeServicoDoLivroSessaoInvalida
@@ -93,7 +93,7 @@ func AtualizarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, livroCom
 		return livroComDadosAtualizados, ErroDeServicoDoLivroSemPermisao
 	}
 
-	if _, erro := time.Parse(time.DateOnly, livroComDadosAtualizados.AnoPublicao); erro != nil {
+	if _, erro := time.Parse(time.DateOnly, livroComDadosAtualizados.AnoPublicacao); erro != nil {
 		return livroComDadosAtualizados, ErroDeServicoDoLivroAnoPublicaoInvalida
 	}
 
@@ -101,7 +101,7 @@ func AtualizarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, livroCom
 		return livroComDadosAtualizados, ErroDeServicoDoLivroIsbnInvalido
 	}
 
-	return livroComDadosAtualizados, erroDoBancoParaErroDeServicoDoLivro(banco.AtualizarLivro(livroComDadosAntigos, livroComDadosAtualizados, nomeDosAutores))
+	return livroComDadosAtualizados, erroDoBancoParaErroDeServicoDoLivro(banco.AtualizarLivro(livroComDadosAntigos, livroComDadosAtualizados, nomeDosAutores, nomeDasCategorias))
 }
 
 func DeletarLivro(idDaSessao uint64, loginDoUsuarioRequerente string, idDoLivroQueDesejaExcluir int) ErroDeServicoDoLivro {

@@ -10,7 +10,7 @@ import (
 
 type ErroBancoLivro int
 
-func CriarLivro(novoLivro modelos.Livro, nomeAutores []string) ErroBancoLivro {
+func CriarLivro(novoLivro modelos.Livro, nomeAutores []string, nomeCategorias []string) ErroBancoLivro {
 	conexao := PegarConexao()
 
 	if IsbnDuplicado(novoLivro.Isbn) {
@@ -24,7 +24,7 @@ func CriarLivro(novoLivro modelos.Livro, nomeAutores []string) ErroBancoLivro {
 		"insert into livro (isbn, titulo, ano_publicacao, editora, pais, data_criacao) VALUES ($1, $2, $3, $4, $5, current_timestamp)",
 		novoLivro.Isbn,
 		novoLivro.Titulo,
-		novoLivro.AnoPublicao,
+		novoLivro.AnoPublicacao,
 		novoLivro.Editora,
 		novoLivro.Pais,
 	)
@@ -60,6 +60,48 @@ func CriarLivro(novoLivro modelos.Livro, nomeAutores []string) ErroBancoLivro {
 		}
 	}
 
+	var idDasCategorias []int
+
+	for _, nomeCategoria := range nomeCategorias {
+		var idDaCategoria int
+
+		transacao.QueryRow(
+			context.Background(),
+			"select id_categoria from categoria where descricao = $1",
+			nomeCategoria,
+		).Scan(&idDaCategoria)
+
+		if idDaCategoria == 0 {
+
+			transacao.Exec(
+				context.Background(),
+				"insert into categoria(descricao, data_criacao) values ($1, current_timestamp)",
+				nomeCategoria,
+			)
+
+			transacao.QueryRow(
+				context.Background(),
+				"select id_categoria from categoria where descricao = $1",
+				nomeCategoria,
+			).Scan(&idDaCategoria)
+
+		}
+		idDasCategorias = append(idDasCategorias, idDaCategoria)
+	}
+
+	for _, idDaCategoria := range idDasCategorias {
+		_, erroQuery := transacao.Exec(
+			context.Background(),
+			"insert into livro_categoria(id_livro, id_categoria, data_criacao) values ($1, $2, current_timestamp)",
+			idDoLivro,
+			idDaCategoria,
+		)
+
+		if erroQuery != nil {
+			panic("Um erro imprevisto acontesceu no cadastro do livro. Provavelmente é um bug")
+		}
+	}
+
 	transacao.Commit(context.Background())
 	return ErroNenhum
 }
@@ -74,7 +116,7 @@ func PesquisarLivro(busca string) []modelos.Livro {
 	}
 	var livroTemporario modelos.Livro
 	livrosEncontrados := make([]modelos.Livro, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
+	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicacao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
 		livrosEncontrados = append(livrosEncontrados, livroTemporario)
 		return nil
 	})
@@ -94,7 +136,7 @@ func PegarTodosLivros() []modelos.Livro {
 
 	var livroTemporario modelos.Livro
 	livrosEncontrados := make([]modelos.Livro, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
+	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicacao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
 		livrosEncontrados = append(livrosEncontrados, livroTemporario)
 		return nil
 	})
@@ -112,7 +154,7 @@ func PegarLivroPeloId(id int) (modelos.Livro, bool) {
 		&livro.IdDoLivro,
 		&livro.Isbn,
 		&livro.Titulo,
-		&livro.AnoPublicao,
+		&livro.AnoPublicacao,
 		&livro.Editora,
 		&livro.Pais,
 	); erro == nil {
@@ -122,7 +164,7 @@ func PegarLivroPeloId(id int) (modelos.Livro, bool) {
 	}
 }
 
-func AtualizarLivro(livroComDadosAntigos, livroAtualizado modelos.Livro, nomeAutores []string) ErroBancoLivro {
+func AtualizarLivro(livroComDadosAntigos, livroAtualizado modelos.Livro, nomeAutores []string, nomeCategorias []string) ErroBancoLivro {
 	conexao := PegarConexao()
 
 	if livroComDadosAntigos.Isbn != livroAtualizado.Isbn && IsbnDuplicado(livroAtualizado.Isbn) {
@@ -140,7 +182,7 @@ func AtualizarLivro(livroComDadosAntigos, livroAtualizado modelos.Livro, nomeAut
 		textoQuery,
 		livroAtualizado.Isbn,
 		livroAtualizado.Titulo,
-		livroAtualizado.AnoPublicao,
+		livroAtualizado.AnoPublicacao,
 		livroAtualizado.Editora,
 		livroAtualizado.Pais,
 		livroAtualizado.IdDoLivro,
@@ -171,6 +213,55 @@ func AtualizarLivro(livroComDadosAntigos, livroAtualizado modelos.Livro, nomeAut
 			livroComDadosAntigos.IdDoLivro,
 			idDoAutor,
 		); erroQuery != nil {
+			panic("Um erro imprevisto acontesceu no cadastro do livro. Provavelmente é um bug")
+		}
+	}
+
+	if _, erroQuery = transacao.Exec(
+		context.Background(),
+		"delete from livro_categoria where id_livro = $1", livroComDadosAntigos.IdDoLivro,
+	); erroQuery != nil {
+		panic("Um erro imprevisto acontenceu na exclusão da associação do livro autor. Provavelmente é um bug")
+	}
+
+	var idDasCategorias []int
+
+	for _, nomeCategoria := range nomeCategorias {
+		var idDaCategoria int
+
+		transacao.QueryRow(
+			context.Background(),
+			"select id_categoria from categoria where descricao = $1",
+			nomeCategoria,
+		).Scan(&idDaCategoria)
+
+		if idDaCategoria == 0 {
+
+			transacao.Exec(
+				context.Background(),
+				"insert into categoria(descricao, data_criacao) values ($1, current_timestamp)",
+				nomeCategoria,
+			)
+
+			transacao.QueryRow(
+				context.Background(),
+				"select id_categoria from categoria where descricao = $1",
+				nomeCategoria,
+			).Scan(&idDaCategoria)
+
+		}
+		idDasCategorias = append(idDasCategorias, idDaCategoria)
+	}
+
+	for _, idDaCategoria := range idDasCategorias {
+		_, erroQuery := transacao.Exec(
+			context.Background(),
+			"insert into livro_categoria(id_livro, id_categoria, data_criacao) values ($1, $2, current_timestamp)",
+			livroComDadosAntigos.IdDoLivro,
+			idDaCategoria,
+		)
+
+		if erroQuery != nil {
 			panic("Um erro imprevisto acontesceu no cadastro do livro. Provavelmente é um bug")
 		}
 	}

@@ -16,21 +16,22 @@ type requisicaoLivro struct {
 	Id                       int      `validate:"optional"`
 	Isbn                     string   `validate:"optional"`
 	Titulo                   string   `validate:"optional"`
-	AnoPublicao              string   `validate:"optional"`
+	AnoPublicacao            string   `validate:"optional"`
 	Editora                  string   `validate:"optional"`
 	Pais                     int      `validate:"optional"`
 	NomeDosAutores           []string `validate:"optional"`
+	NomeDasCategorias        []string `validate:"optional"`
 	TextoDeBusca             string   `validate:"optional"`
 }
 
 type respostaPesquisaLivro struct {
-	Id          int      `validate:"optional"`
-	Isbn        string   `validate:"optional"`
-	Titulo      string   `validate:"optional"`
-	AnoPublicao string   `validate:"optional"`
-	Editora     string   `validate:"optional"`
-	Pais        int      `validate:"optional"`
-	NomeAutores []string `validate:"optional"`
+	Id            int      `validate:"optional"`
+	Isbn          string   `validate:"optional"`
+	Titulo        string   `validate:"optional"`
+	AnoPublicacao string   `validate:"optional"`
+	Editora       string   `validate:"optional"`
+	Pais          int      `validate:"optional"`
+	NomeAutores   []string `validate:"optional"`
 }
 
 type respostaLivro struct {
@@ -88,7 +89,7 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 	switch requisicao.Method {
 	case "POST":
 		if len(requisicaoLivro.Titulo) < 1 ||
-			len(requisicaoLivro.AnoPublicao) < 1 ||
+			len(requisicaoLivro.AnoPublicacao) < 1 ||
 			len(requisicaoLivro.Editora) < 1 {
 			resposta.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(resposta, "Algum campo necessário para o cadastro não foi fornecido")
@@ -98,11 +99,11 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 		var novoLivro modelos.Livro
 		novoLivro.Isbn = requisicaoLivro.Isbn
 		novoLivro.Titulo = requisicaoLivro.Titulo
-		novoLivro.AnoPublicao = requisicaoLivro.AnoPublicao
+		novoLivro.AnoPublicacao = requisicaoLivro.AnoPublicacao
 		novoLivro.Editora = requisicaoLivro.Editora
 		novoLivro.Pais = requisicaoLivro.Pais
 
-		erro := servicoLivro.CriarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, novoLivro, requisicaoLivro.NomeDosAutores)
+		erro := servicoLivro.CriarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, novoLivro, requisicaoLivro.NomeDosAutores, requisicaoLivro.NomeDasCategorias)
 
 		if erro != servicoLivro.ErroDeServicoDoLivroNenhum {
 			erroServicoLivroParaErrHttp(erro, resposta)
@@ -142,7 +143,7 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	case "PUT":
 		if len(requisicaoLivro.Titulo) < 1 ||
-			len(requisicaoLivro.AnoPublicao) < 1 ||
+			len(requisicaoLivro.AnoPublicacao) < 1 ||
 			len(requisicaoLivro.Editora) < 1 {
 			resposta.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(resposta, "Algum campo necessário para o cadastro não foi fornecido")
@@ -153,11 +154,11 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 		livroComDadosAtualizados.IdDoLivro = requisicaoLivro.Id
 		livroComDadosAtualizados.Isbn = requisicaoLivro.Isbn
 		livroComDadosAtualizados.Titulo = requisicaoLivro.Titulo
-		livroComDadosAtualizados.AnoPublicao = requisicaoLivro.AnoPublicao
+		livroComDadosAtualizados.AnoPublicacao = requisicaoLivro.AnoPublicacao
 		livroComDadosAtualizados.Editora = requisicaoLivro.Editora
 		livroComDadosAtualizados.Pais = requisicaoLivro.Pais
 
-		livroAtualizado, erro := servicoLivro.AtualizarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, livroComDadosAtualizados, requisicaoLivro.NomeDosAutores)
+		livroAtualizado, erro := servicoLivro.AtualizarLivro(requisicaoLivro.IdDaSessao, requisicaoLivro.LoginDoUsuarioRequerente, livroComDadosAtualizados, requisicaoLivro.NomeDosAutores, requisicaoLivro.NomeDasCategorias)
 
 		if erro != servicoLivro.ErroDeServicoDoLivroNenhum {
 			erroServicoLivroParaErrHttp(erro, resposta)

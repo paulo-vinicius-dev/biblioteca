@@ -147,7 +147,6 @@ class UsuarioService {
       "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
       "Id": id
     };
-    print(body);
     final response = await _api.requisicao(
       apiRoute,
       'DELETE',

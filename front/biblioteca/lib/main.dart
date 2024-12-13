@@ -3,6 +3,7 @@ import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
+import 'package:biblioteca/screens/redefinir_senha_codigo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
@@ -69,6 +70,8 @@ class Myapp extends StatelessWidget {
           AppRoutes.relatorios: (context) => const Relatorios(),
           AppRoutes.nadaConsta: (context) => const NadaConsta(),
           AppRoutes.configuracoes: (context) => const Configuracoes(),
+
+          AppRoutes.codigoRedefinirSenha: (context) => const TelaRedefinirSenhaCodigo(),
         },
       ),
     );

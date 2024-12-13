@@ -3,34 +3,20 @@ import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
 
-class FormRedefinirSenha extends StatefulWidget {
-  const FormRedefinirSenha({super.key});
+class FormRedefinirSenhaCodigo extends StatefulWidget {
+  const FormRedefinirSenhaCodigo({super.key});
 
   @override
-  State<FormRedefinirSenha> createState() => _FormRedefinirSenhaState();
+  State<FormRedefinirSenhaCodigo> createState() =>
+      _FormRedefinirSenhaCodigoState();
 }
 
-class _FormRedefinirSenhaState extends State<FormRedefinirSenha> {
-  final _emailController = TextEditingController();
+class _FormRedefinirSenhaCodigoState extends State<FormRedefinirSenhaCodigo> {
+  final _codigoController = TextEditingController();
+  final _novaSenhaController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool showTelaCodigo = false;
-
   RedefinirSenhaService service = RedefinirSenhaService();
-
-  void _resetPassword() {
-    if (_formKey.currentState?.validate() ?? false) {
-      service.enviarEmail(_emailController.text);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-          "O link de recuperação de senha foi enviado para o email '${_emailController.text}', verifique sua caixa de entrada",
-          textAlign: TextAlign.center,
-        )),
-      );
-
-      Navigator.pushNamed(context, AppRoutes.codigoRedefinirSenha);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,38 +34,38 @@ class _FormRedefinirSenhaState extends State<FormRedefinirSenha> {
             height: 20.0,
           ),
           const Text(
-            'Insira seu email para redefinir a senha',
+            'Insira o código para redefinir',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 30),
           TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
+            controller: _codigoController,
             decoration: const InputDecoration(
-              labelText: 'Email',
+              labelText: 'Codigo',
               border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.email),
             ),
-            validator: (email) {
-              if (email == null || email.isEmpty) {
-                return 'Preencha esse campo';
-              } else if (!RegExp(
-                      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-                  .hasMatch(email)) {
-                return 'Insira um email válido';
-              }
-              return null;
-            },
+          ),
+          const SizedBox(height: 30),
+          TextFormField(
+            controller: _novaSenhaController,
+            decoration: const InputDecoration(
+              labelText: 'Nova Senha',
+              border: OutlineInputBorder(),
+            ),
           ),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _resetPassword,
+              onPressed: () {
+                service.redefinirSenha(
+                    _codigoController.text, _novaSenhaController.text);
+                Navigator.pushNamed(context, AppRoutes.login);
+              },
               style: AppTheme.btnPrimary(context),
               child: Text(
-                'Enviar',
+                'Redefinir',
                 style: AppTheme.btnPrimaryText(context),
               ),
             ),

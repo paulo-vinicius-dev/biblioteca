@@ -1,3 +1,4 @@
+import 'package:biblioteca/data/models/emprestimos_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/models/usuarios_atingidos.dart';
 import 'package:biblioteca/data/services/usuario_service.dart';

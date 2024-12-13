@@ -4,6 +4,7 @@ import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biblioteca/widgets/bread_crumb.dart';
 
 class UserTablePage extends StatefulWidget {
   const UserTablePage({super.key});
@@ -74,36 +75,7 @@ class UserTablePageState extends State<UserTablePage> {
       child: Column(
         children: [
           // Barra de navegação
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
-            color: const Color.fromRGBO(38, 42, 79, 1),
-            child: const Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.co_present_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                SizedBox(
-                  width: 7,
-                ),
-                Text(
-                  "Controle de Usuários",
-                  style: TextStyle(color: Colors.white),
-                ),
-                Icon(
-                  Icons.chevron_right,
-                  color: Colors.white,
-                ),
-                Text(
-                  "Usuários",
-                  style: TextStyle(color: Colors.white),
-                )
-              ],
-            ),
-          ),
+          BreadCrumb(breadcrumb: ["Início","Usuários"], icon: Icons.co_present_rounded),
 
           // Corpo da página
           SingleChildScrollView(

@@ -1,5 +1,9 @@
 import 'dart:convert';
 
+
+import 'package:biblioteca/data/models/emprestimos_model.dart';
+
+
 Usuario usuarioFromJson(String str) => Usuario.fromJson(json.decode(str));
 
 String usuarioToJson(Usuario data) => json.encode(data.toJson());
@@ -22,6 +26,9 @@ class Usuario {
   int permissao;
   bool ativo;
   int turma;
+  //remover depois
+  List<EmprestimosModel> livrosEmprestados = [];
+
   String? turmaDescrisao;
   int? serie;
   int? turno;
@@ -38,10 +45,16 @@ class Usuario {
     required this.permissao,
     this.ativo = true,
     this.turma = 0,
+
+    //remover depois
+    List<EmprestimosModel>? livrosEmprestados,
+  }): this.livrosEmprestados = livrosEmprestados ?? [];
+
     this.turmaDescrisao,
     this.serie,
     this.turno,
   });
+
 
   String get getTurma => turmaDescrisao == null || turmaDescrisao!.isEmpty
       ? 'N/A'

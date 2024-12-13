@@ -1,8 +1,10 @@
 import 'package:biblioteca/data/providers/auth_provider.dart';
+import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
+import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
@@ -26,6 +28,7 @@ class Myapp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => MenuState()),
         ProxyProvider<AuthProvider, UsuarioProvider>(
           create: (_) => UsuarioProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => UsuarioProvider(
@@ -52,7 +55,7 @@ class Myapp extends StatelessWidget {
               style: ElevatedButton.styleFrom(textStyle: GoogleFonts.roboto())),
         ),
         initialRoute: AppRoutes.login,
-        // home: const TelaPaginaIncial(),
+        //home: const TelaPaginaIncial(),
         routes: {
           AppRoutes.login: (ctx) => const TelaLogin(),
           AppRoutes.home: (ctx) => const TelaPaginaIncial(),
@@ -63,7 +66,7 @@ class Myapp extends StatelessWidget {
 
           //paginas temporarias para teste
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
-          AppRoutes.emprestimo: (context) => const Emprestimo(),
+          AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
           AppRoutes.devolucao: (context) => const Devolucao(),
           AppRoutes.livros: (context) => const Livros(),
           AppRoutes.relatorios: (context) => const Relatorios(),

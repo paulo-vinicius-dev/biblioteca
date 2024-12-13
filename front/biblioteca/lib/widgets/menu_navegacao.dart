@@ -1,8 +1,10 @@
 import 'package:biblioteca/data/menu_itens.dart';
+import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/utils/assets.dart';
 import 'package:flutter/material.dart'; 
 import 'package:biblioteca/utils/theme.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class MenuNavegacao extends StatefulWidget {
   final ValueChanged<String> onPageSelected;
@@ -20,7 +22,6 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
   late Animation<double> _logoFadeAnimation;
   final _animationDuration = const Duration(milliseconds: 300);
   bool menuAtivado = false;
-  int _expandedIndex = -1;
   List<ExpansionTileController> _controllers = [];
   Map<int, int?> selectSubItens = {};
   @override
@@ -53,11 +54,11 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
             _controllers[i].collapse();
           }
         }
-        _expandedIndex = index;
+        context.read<MenuState>().expandedIndex = index;
       });
     }else{
       setState(() {
-        _expandedIndex = -1;
+        context.read<MenuState>().expandedIndex = -1;
       });
     }
   }
@@ -95,6 +96,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final _expandedIndex = context.watch<MenuState>().expandedIndex;
     return AnimatedBuilder(
       animation: _menuAnimationController,
       builder: (context, child) {

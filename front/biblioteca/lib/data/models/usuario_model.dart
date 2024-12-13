@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:biblioteca/data/models/emprestimos_model.dart';
+
 UsuariosAtingidos usuariosAtingidosFromJson(String str) =>
     UsuariosAtingidos.fromJson(json.decode(str));
 
@@ -45,6 +47,8 @@ class Usuario {
   int permissao;
   bool ativo;
   int turma;
+  //remover depois
+  List<EmprestimosModel> livrosEmprestados = [];
 
   //Esses Campos diferem da tabela precisam ser alterados
   String tipoUsuario = 'Wtvr';
@@ -65,7 +69,9 @@ class Usuario {
     this.ativo = true,
     //por enquanto a turma vai ser mocada
     this.turma = 0,
-  });
+    //remover depois
+    List<EmprestimosModel>? livrosEmprestados,
+  }): this.livrosEmprestados = livrosEmprestados ?? [];
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         idDoUsuario: json["IdDoUsuario"],

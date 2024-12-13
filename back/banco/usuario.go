@@ -78,8 +78,6 @@ func CriarUsuario(novoUsuario modelos.Usuario) ErroBancoUsuario {
 
 func AtualizarUsuario(usuarioComDadosAntigos, usuarioAtualizado modelos.Usuario) ErroBancoUsuario {
 
-	fmt.Println(usuarioAtualizado)
-
 	if usuarioComDadosAntigos.Login != usuarioAtualizado.Login && LoginDuplicado(usuarioAtualizado.Login) {
 		return ErroLoginDuplicado
 	}
@@ -107,6 +105,11 @@ func AtualizarUsuario(usuarioComDadosAntigos, usuarioAtualizado modelos.Usuario)
 		data_nascimento = nil
 	}
 
+	var turma interface{} = usuarioAtualizado.Turma.IdTurma
+	if usuarioAtualizado.Turma.IdTurma == 0 {
+		turma = nil
+	}
+
 	conexao := PegarConexao()
 	textoQuery := "update usuario set login = $1, cpf = $2, nome = $3, email = $4, telefone = $5, data_nascimento = $6, data_atualizacao = CURRENT_DATE, permissoes = $7, ativo = $8, turma = $9 where id_usuario = $10"
 	if _, erroQuery := conexao.Query(
@@ -120,7 +123,7 @@ func AtualizarUsuario(usuarioComDadosAntigos, usuarioAtualizado modelos.Usuario)
 		data_nascimento,
 		usuarioAtualizado.Permissao,
 		usuarioAtualizado.Ativo,
-		usuarioAtualizado.Turma.IdTurma,
+		turma,
 		usuarioAtualizado.IdDoUsuario,
 	); erroQuery != nil {
 		panic("Um erro desconhecido acontesceu na atualização do usuário")

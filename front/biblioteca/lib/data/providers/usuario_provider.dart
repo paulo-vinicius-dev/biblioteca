@@ -25,7 +25,7 @@ class UsuarioProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print('$e');
+      throw Exception("UsuarioProvider: Erro ao carregar os usuários - $e");
     }
   }
 
@@ -36,7 +36,7 @@ class UsuarioProvider with ChangeNotifier {
           await usuarioService.addUsuario(idDaSessao, usuarioLogado, usuario);
       users.add(novoUsuario);
     } catch (e) {
-      print('$e');
+      throw Exception("UsuarioProvider: Erro ao adicionar o usuário - $e");
     }
     notifyListeners();
   }
@@ -48,7 +48,7 @@ class UsuarioProvider with ChangeNotifier {
           await usuarioService.alterUsuario(idDaSessao, usuarioLogado, usuario);
       users[users.indexOf(usuario)] = novoUsuario;
     } catch (e) {
-      print('Erro aqui: $e');
+      throw Exception("UsuarioProvider: Erro ao alterar o usuário - $e");
     }
     notifyListeners();
   }
@@ -60,7 +60,7 @@ class UsuarioProvider with ChangeNotifier {
           idDaSessao, usuarioLogado, idDoUsuario);
       users.remove(usuarioDeletado);
     } catch (e) {
-      print('$e');
+      throw Exception("UsuarioProvider: Erro ao deletar o usuário - $e");
     }
     notifyListeners();
   }

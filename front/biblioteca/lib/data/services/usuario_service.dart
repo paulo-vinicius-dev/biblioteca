@@ -86,11 +86,10 @@ class UsuarioService {
               .format(usuario.dataDeNascimento!)
               .toString()
           : "",
-      "Permissao": usuario.permissao,
+      "PermissoesDoUsuario": usuario.permissao,
       "Senha": usuario.senha,
       "Turma": usuario.turma
     };
-
     final response = await _api.requisicao(
       apiRoute,
       'POST',
@@ -121,7 +120,7 @@ class UsuarioService {
               .format(usuario.dataDeNascimento!)
               .toString()
           : "",
-      "Permissao": usuario.permissao,
+      "PermissoesDoUsuario": usuario.permissao,
       "Id": usuario.idDoUsuario,
       "Ativo": usuario.ativo,
       "Turma": usuario.turma

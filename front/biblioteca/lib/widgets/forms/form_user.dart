@@ -60,6 +60,55 @@ class _FormUserState extends State<FormUser> {
     });
   }
 
+  Future<void> salvar(context) async {
+    if (_formKey.currentState!.validate()) {
+      String mensagem = "Cadastro realizado com sucesso!";
+      UsuarioProvider provider = Provider.of<UsuarioProvider>(context, listen: false);
+
+      if (isModoEdicao()) {
+        //Editar usuário
+        mensagem = 'Registro alterado com sucesso!';
+        widget.usuario!.nome = _nomeController.text;
+        widget.usuario!.email = _emailController.text;
+        widget.usuario!.telefone =
+            _telefoneController.text.isEmpty ? null : _telefoneController.text;
+        widget.usuario!.dataDeNascimento = _dateController.text.isEmpty
+            ? null
+            : DateFormat('d/M/y').parse(_dateController.text);
+
+        widget.usuario!.cpf =
+            _cpfController.text.isEmpty ? null : _cpfController.text;
+
+        await provider.editUsuario(widget.usuario!);
+      } else {
+        //Adicionar usuário
+        Usuario novoUsuario = Usuario(
+          login: _loginController.text,
+          cpf: _cpfController.text,
+          senha: _passwordController.text,
+          nome: _nomeController.text,
+          email: _emailController.text,
+          telefone: _telefoneController.text,
+          dataDeNascimento: _dateController.text.isEmpty
+              ? null
+              : DateFormat('d/M/y').parse(_dateController.text),
+          turma: int.tryParse(_turmaController.text) ?? 0,
+          permissao:
+              _userTypeController.text == TipoDeUsuario.bibliotecario ? 15 : 0,
+        );
+        await provider.addUsuario(novoUsuario);
+      }
+      Navigator.pushNamedAndRemoveUntil(
+          context, AppRoutes.usuarios, ModalRoute.withName(AppRoutes.home));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(mensagem),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     if (isModoEdicao()) {
@@ -214,73 +263,7 @@ class _FormUserState extends State<FormUser> {
                         // Botão Salvar
                         ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              String mensagem =
-                                  "Cadastro realizado com sucesso!";
-
-                              if (isModoEdicao()) {
-                                //Editar usuário
-                                mensagem = 'Registro alterado com sucesso!';
-                                widget.usuario!.nome = _nomeController.text;
-                                widget.usuario!.email = _emailController.text;
-                                widget.usuario!.telefone =
-                                    _telefoneController.text.isEmpty
-                                        ? null
-                                        : _telefoneController.text;
-                                widget.usuario!.dataDeNascimento =
-                                    _dateController.text.isEmpty
-                                        ? null
-                                        : DateFormat('d/M/y')
-                                            .parse(_dateController.text);
-
-                                widget.usuario!.cpf =
-                                    _cpfController.text.isEmpty
-                                        ? null
-                                        : _cpfController.text;
-
-                                //print(widget.usuario!.toJson());
-
-                                context
-                                    .read<UsuarioProvider>()
-                                    .editUsuario(widget.usuario!);
-                              } else {
-                                //Adicionar usuário
-                                context.read<UsuarioProvider>().addUsuario(
-                                      Usuario(
-                                        login: _loginController.text,
-                                        cpf: _cpfController.text,
-                                        senha: _passwordController.text,
-                                        nome: _nomeController.text,
-                                        email: _emailController.text,
-                                        telefone: _telefoneController.text,
-                                        dataDeNascimento: _dateController
-                                                .text.isEmpty
-                                            ? null
-                                            : DateFormat('d/M/y')
-                                                .parse(_dateController.text),
-                                        turma: int.tryParse(
-                                                _turmaController.text) ??
-                                            0,
-                                        permissao: _userTypeController.text ==
-                                                TipoDeUsuario.bibliotecario
-                                            ? 15
-                                            : 0,
-                                      ),
-                                    );
-                              }
-
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  AppRoutes.usuarios,
-                                  ModalRoute.withName(AppRoutes.usuarios));
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(mensagem),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                            }
+                            salvar(context);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).primaryColor,
@@ -407,12 +390,6 @@ class _FormUserState extends State<FormUser> {
           // CPF
           TextFormField(
             controller: _cpfController,
-            inputFormatters: [
-              MaskTextInputFormatter(
-                  mask: '###.###.###-##',
-                  filter: {"#": RegExp(r'[0-9]')},
-                  type: MaskAutoCompletionType.lazy),
-            ],
             decoration: const InputDecoration(
               labelText: "CPF",
               border: OutlineInputBorder(),
@@ -500,7 +477,6 @@ class _FormUserState extends State<FormUser> {
       }).toList(),
       onChanged: (String? newValue) {
         _turmaController.text = newValue!;
-        print(_turmaController.text);
       },
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -543,9 +519,6 @@ class _FormUserState extends State<FormUser> {
             }).toList(),
             onChanged: (String? newValue) {
               _userTypeController.text = newValue!;
-              print(_userTypeController.text == TipoDeUsuario.bibliotecario
-                  ? 15
-                  : 0);
               setState(() {});
             },
             validator: (value) {

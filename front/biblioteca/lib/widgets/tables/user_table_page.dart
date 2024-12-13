@@ -4,6 +4,7 @@ import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biblioteca/widgets/bread_crumb.dart';
 
 class UserTablePage extends StatefulWidget {
   const UserTablePage({super.key});
@@ -13,6 +14,8 @@ class UserTablePage extends StatefulWidget {
 }
 
 class UserTablePageState extends State<UserTablePage> {
+  TextEditingController _buscaController = TextEditingController();
+
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
@@ -32,13 +35,14 @@ class UserTablePageState extends State<UserTablePage> {
             })
           });
     }
-    _isInit = false;
+    setState(() {
+      _isInit = false;
+    });
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return _isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -71,36 +75,7 @@ class UserTablePageState extends State<UserTablePage> {
       child: Column(
         children: [
           // Barra de navegação
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
-            color: const Color.fromRGBO(38, 42, 79, 1),
-            child: const Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.co_present_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                SizedBox(
-                  width: 7,
-                ),
-                Text(
-                  "Controle de Usuários",
-                  style: TextStyle(color: Colors.white),
-                ),
-                Icon(
-                  Icons.chevron_right,
-                  color: Colors.white,
-                ),
-                Text(
-                  "Usuários",
-                  style: TextStyle(color: Colors.white),
-                )
-              ],
-            ),
-          ),
+          BreadCrumb(breadcrumb: ["Início","Usuários"], icon: Icons.co_present_rounded),
 
           // Corpo da página
           SingleChildScrollView(
@@ -109,6 +84,8 @@ class UserTablePageState extends State<UserTablePage> {
               // Botão novo usuário
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
@@ -129,7 +106,27 @@ class UserTablePageState extends State<UserTablePage> {
                           const EdgeInsets.all(15.0), // Padding personalizado
                         ),
                       ),
-                    )
+                    ),
+                    //Filtro
+                    // SizedBox(
+                    //   width: 180.0,
+                    //   height: 30.0,
+                    //   child: TextField(
+                    //     cursorHeight: 20.0,
+                    //     controller: _buscaController,
+                    //     decoration: InputDecoration(
+                    //       prefixIcon: const Icon(Icons.filter_alt),
+                    //       prefixIconColor:
+                    //           Theme.of(context).colorScheme.primary,
+                    //       border: const OutlineInputBorder(),
+                    //       contentPadding: const EdgeInsets.symmetric(
+                    //         horizontal: 10.0,
+                    //       ),
+                    //       hintText: 'Filtrar resultados',
+                    //       hintStyle: const TextStyle(fontSize: 12.0),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
                 const SizedBox(
@@ -228,12 +225,20 @@ class UserTablePageState extends State<UserTablePage> {
                                   textAlign:
                                       TextAlign.left), // Alinhamento horizontal
                             ),
-                          ),                          
+                          ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.turma.toString(),
+                              child: Text(user.getTurma,
+                                  textAlign: TextAlign.left),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(user.getTurno,
                                   textAlign: TextAlign.left),
                             ),
                           ),
@@ -242,22 +247,14 @@ class UserTablePageState extends State<UserTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child:
-                                  Text(user.turno, textAlign: TextAlign.left),
+                                  Text(user.login, textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.login,
-                                  textAlign: TextAlign.left),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(user.tipoUsuario,
+                              child: Text(user.getTipoDeUsuario,
                                   textAlign: TextAlign.left),
                             ),
                           ),
@@ -365,7 +362,7 @@ class UserTablePageState extends State<UserTablePage> {
                                                         const Text('Cancelar')),
                                                 ElevatedButton(
                                                     onPressed: () {
-                                                      print(user.toJson());
+                                                      
                                                       provider.deleteUsuario(
                                                           user.idDoUsuario);
                                                       setState(() {

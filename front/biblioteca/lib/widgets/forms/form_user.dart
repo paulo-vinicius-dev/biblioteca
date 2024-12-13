@@ -1,31 +1,14 @@
+import 'package:biblioteca/data/models/turma.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
+import 'package:biblioteca/data/services/turmas_service.dart';
 import 'package:biblioteca/utils/routes.dart';
+import 'package:biblioteca/widgets/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 import 'package:intl/intl.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
-
-const List<String> usuarios = <String>['Aluno', 'Funcionário', 'Bibliotecário'];
-const List<String> turmas = <String>[
-  'N/A',
-  '1º Ano A',
-  '1º Ano B',
-  '1º Ano C',
-  '2º Ano A',
-  '2º Ano B',
-  '2º Ano C',
-  '3º Ano A',
-  '3º Ano B',
-  '3º Ano C'
-];
-
-const List<String> turnos = <String>[
-  'N/A',
-  'Matutino',
-  'Vespertino',
-  'Noturno'
-];
 
 class FormUser extends StatefulWidget {
   const FormUser({super.key, this.usuario});
@@ -55,6 +38,78 @@ class _FormUserState extends State<FormUser> {
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
 
+  final TurmasService _turmasService = TurmasService();
+  List<Turma> turmas = [];
+  bool showTurmas = false;
+
+  final List<String> usuarios = <String>[
+    TipoDeUsuario.aluno,
+    TipoDeUsuario.funcionario,
+    TipoDeUsuario.bibliotecario
+  ];
+
+  final List<String> turnos = <String>['Manhã', 'Tarde', 'Noite', 'Integral'];
+
+  Future<void> _loadTurmas(int turno) async {
+    var futureTurmas = await _turmasService.fetchTurmas();
+    setState(() {
+      turmas = futureTurmas.where((turma) => turma.turno == turno).toList();
+
+      if (!showTurmas) {
+        showTurmas = true;
+      }
+    });
+  }
+
+  Future<void> salvar(context) async {
+    if (_formKey.currentState!.validate()) {
+      String mensagem = "Cadastro realizado com sucesso!";
+      UsuarioProvider provider = Provider.of<UsuarioProvider>(context, listen: false);
+
+      if (isModoEdicao()) {
+        //Editar usuário
+        mensagem = 'Registro alterado com sucesso!';
+        widget.usuario!.nome = _nomeController.text;
+        widget.usuario!.email = _emailController.text;
+        widget.usuario!.telefone =
+            _telefoneController.text.isEmpty ? null : _telefoneController.text;
+        widget.usuario!.dataDeNascimento = _dateController.text.isEmpty
+            ? null
+            : DateFormat('d/M/y').parse(_dateController.text);
+
+        widget.usuario!.cpf =
+            _cpfController.text.isEmpty ? null : _cpfController.text;
+
+        await provider.editUsuario(widget.usuario!);
+      } else {
+        //Adicionar usuário
+        Usuario novoUsuario = Usuario(
+          login: _loginController.text,
+          cpf: _cpfController.text,
+          senha: _passwordController.text,
+          nome: _nomeController.text,
+          email: _emailController.text,
+          telefone: _telefoneController.text,
+          dataDeNascimento: _dateController.text.isEmpty
+              ? null
+              : DateFormat('d/M/y').parse(_dateController.text),
+          turma: int.tryParse(_turmaController.text) ?? 0,
+          permissao:
+              _userTypeController.text == TipoDeUsuario.bibliotecario ? 15 : 0,
+        );
+        await provider.addUsuario(novoUsuario);
+      }
+      Navigator.pushNamedAndRemoveUntil(
+          context, AppRoutes.usuarios, ModalRoute.withName(AppRoutes.home));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(mensagem),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     if (isModoEdicao()) {
@@ -74,6 +129,15 @@ class _FormUserState extends State<FormUser> {
             .format(widget.usuario!.dataDeNascimento!)
             .toString();
       }
+
+      if (widget.usuario!.getTipoDeUsuario == TipoDeUsuario.aluno) {
+        _turnoController.text = widget.usuario!.turno.toString();
+        _loadTurmas(widget.usuario!.turno!);
+        _turmaController.text = widget.usuario!.turma.toString();
+        showTurmas = true;
+      }
+    } else {
+      _userTypeController.text = TipoDeUsuario.aluno;
     }
 
     super.initState();
@@ -99,44 +163,7 @@ class _FormUserState extends State<FormUser> {
     return Column(
       children: [
         // Barra de navegação
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13),
-          color: const Color.fromRGBO(38, 42, 79, 1),
-          child: const Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.co_present_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
-              SizedBox(
-                width: 7,
-              ),
-              Text(
-                "Controle de Usuários",
-                style: TextStyle(color: Colors.white),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.white,
-              ),
-              Text(
-                "Usuários",
-                style: TextStyle(color: Colors.white),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.white,
-              ),
-              Text(
-                "Novo Usuário",
-                style: TextStyle(color: Colors.white),
-              )
-            ],
-          ),
-        ),
+        BreadCrumb(breadcrumb: ['Início','Usuários','Novo Usuário'], icon: Icons.co_present_rounded),
 
         // Formulário
         Padding(
@@ -159,194 +186,13 @@ class _FormUserState extends State<FormUser> {
                         const SizedBox(width: 20.0),
 
                         // Informações Pessoais
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Informações Pessoais",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Nome
-                              TextFormField(
-                                controller: _nomeController,
-                                decoration: const InputDecoration(
-                                  label: CampoObrigatorio(label: "Nome"),
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Preencha esse campo";
-                                  } else if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$')
-                                      .hasMatch(value)) {
-                                    return "O nome deve conter apenas letras";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Email
-                              TextFormField(
-                                controller: _emailController,
-                                decoration: const InputDecoration(
-                                  label: CampoObrigatorio(label: "Email"),
-                                  border: OutlineInputBorder(),
-                                ),
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Preencha esse campo";
-                                  } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                      .hasMatch(value)) {
-                                    return "Insira um email válido";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Telefone
-                              TextFormField(
-                                controller: _telefoneController,
-                                decoration: const InputDecoration(
-                                  labelText: "Telefone",
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value != null &&
-                                      value.isNotEmpty &&
-                                      value.length != 11) {
-                                    return "Insira um telefone válido";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              //Data de Nascimento
-                              TextFormField(
-                                readOnly: true,
-                                controller: _dateController,
-                                decoration: const InputDecoration(
-                                  labelText: "Data de Nascimento",
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: Icon(Icons.calendar_today),
-                                ),
-                                onTap: () async {
-                                  final DateTime? pickedDate =
-                                      await showDatePicker(
-                                    context: context,
-                                    initialEntryMode: DatePickerEntryMode.input,
-                                    locale: const Locale('pt', 'BR'),
-                                    initialDate: isModoEdicao()
-                                        ? widget.usuario!.dataDeNascimento
-                                        : _today,
-                                    firstDate: DateTime(1900),
-                                    lastDate: _today,
-                                  );
-                                  if (pickedDate != null) {
-                                    setState(() {
-                                      _dateController.text = DateFormat('d/M/y')
-                                          .format(pickedDate)
-                                          .toString();
-                                    });
-                                  }
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // CPF
-                              TextFormField(
-                                controller: _cpfController,
-                                decoration: const InputDecoration(
-                                  labelText: "CPF",
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value != null &&
-                                      value.isNotEmpty &&
-                                      value.length != 11) {
-                                    return "Insira um CPF válido";
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
+                        getBlocoInformacoesPessoais(context),
 
                         // Espaçamento
                         const SizedBox(width: 20.0),
 
                         // Informações Acadêmicas
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Informações Acadêmicas",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Turma
-                              DropdownButtonFormField<String>(
-                                decoration: const InputDecoration(
-                                  label: CampoObrigatorio(label: "Turma"),
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: turmas.map((String turma) {
-                                  return DropdownMenuItem<String>(
-                                    value: turma,
-                                    child: Text(turma),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  _turmaController.text = newValue!;
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Selecione uma turma";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10.0),
-
-                              // Turno
-                              DropdownButtonFormField<String>(
-                                decoration: const InputDecoration(
-                                  label: CampoObrigatorio(label: "Turno"),
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: turnos.map((String turno) {
-                                  return DropdownMenuItem<String>(
-                                    value: turno,
-                                    child: Text(turno),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  _turnoController.text = newValue!;
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Selecione um turno";
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
+                        getBlocoInformacoesAcademicas(),
                       ],
                     ),
                     const SizedBox(height: 20.0),
@@ -381,61 +227,7 @@ class _FormUserState extends State<FormUser> {
                         // Botão Salvar
                         ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              String mensagem =
-                                  "Cadastro realizado com sucesso!";
-
-                              if (isModoEdicao()) {
-                                mensagem = 'Registro alterado com sucesso!';
-                                widget.usuario!.nome = _nomeController.text;
-                                widget.usuario!.email = _emailController.text;
-                                widget.usuario!.telefone =
-                                    _telefoneController.text.isEmpty
-                                        ? null
-                                        : _telefoneController.text;
-                                widget.usuario!.dataDeNascimento =
-                                    _dateController.text.isEmpty
-                                        ? null
-                                        : DateFormat('d/M/y')
-                                            .parse(_dateController.text);
-
-                                widget.usuario!.cpf =
-                                    _cpfController.text.isEmpty
-                                        ? null
-                                        : _cpfController.text;
-
-                                context
-                                    .read<UsuarioProvider>()
-                                    .editUsuario(widget.usuario!);
-                              } else {
-                                context
-                                    .read<UsuarioProvider>()
-                                    .addUsuario(Usuario(
-                                      login: _loginController.text,
-                                      cpf: _cpfController.text,
-                                      senha: _passwordController.text,
-                                      nome: _nomeController.text,
-                                      email: _emailController.text,
-                                      telefone: _telefoneController.text,
-                                      dataDeNascimento:
-                                          _dateController.text.isEmpty
-                                              ? null
-                                              : DateFormat('d/M/y')
-                                                  .parse(_dateController.text),
-                                    ));
-                              }
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  AppRoutes.usuarios,
-                                  ModalRoute.withName(AppRoutes.usuarios));
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(mensagem),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                            }
+                            salvar(context);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).primaryColor,
@@ -463,6 +255,202 @@ class _FormUserState extends State<FormUser> {
     );
   }
 
+  Expanded getBlocoInformacoesPessoais(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Informações Pessoais",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10.0),
+
+          // Nome
+          TextFormField(
+            controller: _nomeController,
+            decoration: const InputDecoration(
+              label: CampoObrigatorio(label: "Nome"),
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Preencha esse campo";
+              } else if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$').hasMatch(value)) {
+                return "O nome deve conter apenas letras";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          // Email
+          TextFormField(
+            controller: _emailController,
+            decoration: const InputDecoration(
+              label: CampoObrigatorio(label: "Email"),
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Preencha esse campo";
+              } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                return "Insira um email válido";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          // Telefone
+          TextFormField(
+            controller: _telefoneController,
+            decoration: const InputDecoration(
+              labelText: "Telefone",
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value != null && value.isNotEmpty && value.length != 11) {
+                return "Insira um telefone válido";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          //Data de Nascimento
+          TextFormField(
+            readOnly: true,
+            controller: _dateController,
+            decoration: const InputDecoration(
+              labelText: "Data de Nascimento",
+              border: OutlineInputBorder(),
+              suffixIcon: Icon(Icons.calendar_today),
+            ),
+            onTap: () async {
+              final DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialEntryMode: DatePickerEntryMode.input,
+                locale: const Locale('pt', 'BR'),
+                initialDate:
+                    isModoEdicao() ? widget.usuario!.dataDeNascimento : _today,
+                firstDate: DateTime(1900),
+                lastDate: _today,
+              );
+              if (pickedDate != null) {
+                setState(() {
+                  _dateController.text =
+                      DateFormat('d/M/y').format(pickedDate).toString();
+                });
+              }
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          // CPF
+          TextFormField(
+            controller: _cpfController,
+            decoration: const InputDecoration(
+              labelText: "CPF",
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value != null && value.isNotEmpty && value.length != 11) {
+                return "Insira um CPF válido";
+              }
+              return null;
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getBlocoInformacoesAcademicas() {
+    if (isModoEdicao() &&
+            widget.usuario!.getTipoDeUsuario != TipoDeUsuario.aluno ||
+        !isModoEdicao() && _userTypeController.text != TipoDeUsuario.aluno) {
+      return Container();
+    }
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Informações Acadêmicas",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10.0),
+
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(
+              label: CampoObrigatorio(label: "Turno"),
+              border: OutlineInputBorder(),
+            ),
+            value: _turnoController.text.isEmpty ? null : _turnoController.text,
+            items: turnos.map((String turno) {
+              return DropdownMenuItem<String>(
+                value: (turnos.indexOf(turno) + 1).toString(),
+                child: Text(turno),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              _turnoController.text = newValue!;
+              _loadTurmas(int.parse(_turnoController.text));
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Selecione um turno";
+              }
+
+              return null;
+            },
+          ),
+          const SizedBox(height: 10.0),
+
+          // Turma
+          getFieldTurmas(),
+        ],
+      ),
+    );
+  }
+
+  Widget getFieldTurmas() {
+    if (!showTurmas) {
+      return Container();
+    }
+
+    return DropdownButtonFormField<String>(
+      decoration: const InputDecoration(
+        label: CampoObrigatorio(label: "Turma"),
+        border: OutlineInputBorder(),
+      ),
+      value: _turmaController.text.isEmpty ? null : _turmaController.text,
+      items: turmas.map((Turma turma) {
+        return DropdownMenuItem<String>(
+          value: turma.turma.toString(),
+          child: Text(turma.turmaSemTurno),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        _turmaController.text = newValue!;
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Selecione uma turma";
+        }
+        return null;
+      },
+    );
+  }
+
   Widget getBlocoInformacoesDeAcesso() {
     if (isModoEdicao()) {
       return Container();
@@ -486,6 +474,7 @@ class _FormUserState extends State<FormUser> {
               label: CampoObrigatorio(label: "Tipo de Usuário"),
               border: OutlineInputBorder(),
             ),
+            value: _userTypeController.text,
             items: usuarios.map((String userType) {
               return DropdownMenuItem<String>(
                 value: userType,
@@ -494,6 +483,7 @@ class _FormUserState extends State<FormUser> {
             }).toList(),
             onChanged: (String? newValue) {
               _userTypeController.text = newValue!;
+              setState(() {});
             },
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -569,7 +559,7 @@ class _FormUserState extends State<FormUser> {
                 },
               ),
             ),
-            obscureText: _confirmPasswordVisible,
+            obscureText: !_confirmPasswordVisible,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Preencha esse campo";

@@ -1,4 +1,6 @@
+import 'package:biblioteca/data/models/emprestimos_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
+import 'package:biblioteca/data/models/usuarios_atingidos.dart';
 import 'package:biblioteca/data/services/usuario_service.dart';
 import 'package:flutter/material.dart';
 
@@ -20,9 +22,11 @@ class UsuarioProvider with ChangeNotifier {
           .where((usuario) => usuario.ativo && usuario.login != usuarioLogado)
           .toList();
 
+      users.sort((x, y) => x.nome.compareTo(y.nome));
+
       notifyListeners();
     } catch (e) {
-      print('$e');
+      throw Exception("UsuarioProvider: Erro ao carregar os usuários - $e");
     }
   }
 
@@ -33,7 +37,7 @@ class UsuarioProvider with ChangeNotifier {
           await usuarioService.addUsuario(idDaSessao, usuarioLogado, usuario);
       users.add(novoUsuario);
     } catch (e) {
-      print('$e');
+      throw Exception("UsuarioProvider: Erro ao adicionar o usuário - $e");
     }
     notifyListeners();
   }
@@ -45,7 +49,7 @@ class UsuarioProvider with ChangeNotifier {
           await usuarioService.alterUsuario(idDaSessao, usuarioLogado, usuario);
       users[users.indexOf(usuario)] = novoUsuario;
     } catch (e) {
-      print('$e');
+      throw Exception("UsuarioProvider: Erro ao alterar o usuário - $e");
     }
     notifyListeners();
   }
@@ -57,7 +61,7 @@ class UsuarioProvider with ChangeNotifier {
           idDaSessao, usuarioLogado, idDoUsuario);
       users.remove(usuarioDeletado);
     } catch (e) {
-      print('$e');
+      throw Exception("UsuarioProvider: Erro ao deletar o usuário - $e");
     }
     notifyListeners();
   }

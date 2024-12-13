@@ -1,7 +1,7 @@
 -- Criação do scheme caso não exista! :)
 -- Há duas formas de usar o banco de dados criando um schema ou um banco separado, escolha o que mais for fácil para você
 -- USANDO SCHEMA:
--- DROP SCHEMA biblioteca CASCADE; -- (Cuidado ao usar esse comando)
+DROP SCHEMA biblioteca CASCADE; -- (Cuidado ao usar esse comando)
  CREATE SCHEMA biblioteca; -- CASO QUEIRA USAR UM SCHEMA (MAIS FÁCIL, só que pode causar erros caso você possua outros schemas no mesmo banco com tabelas com o mesmo nome das utilizadas nesse script)
  SET search_path TO biblioteca; -- Usado somente se você escolher criar um schema
 
@@ -250,29 +250,6 @@ INSERT INTO exemplar_livro (id_livro, cativo, status, estado) VALUES
 -- AtualizarUsuario = 0b100
 -- DeletarUsuario = 0b1000
 
-
-
-
--- Tabela usuario
-INSERT INTO usuario (login, cpf, nome, email, telefone, data_nascimento, senha, permissoes) VALUES
-('admin','21747274046', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3',  b'1111'::bit::int), -- senhaAdmin
-('biblio','76784092066', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', '76cc71b64516994b050bdb5a79c50865654e551ae126492ee20d08047e841a86',  b'1111'::bit::int), --senhaBiblio
-('joao','26843511040', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'bffeba2cd38fb42e180da0254a7893f6db46e3cb2a93ff5e9b5494ce789e1006',  b'1111'::bit::int); --senhaJoao
-
-update usuario set permissoes = 15 where id_usuario = 1;
-
--- Tabela emprestimo
-INSERT INTO emprestimo (id_exemplar_livro, id_livro, id_usuario, data_emprestimo, data_prevista_devolucao, observacao) VALUES
-(1, 1, 3, '2024-01-01', '2024-01-15', 'Primeiro empréstimo'),
-(2, 2, 3, '2024-01-02', '2024-01-16', 'Devolução atrasada');
-
-
--- Tabela detalhe_emprestimo
-INSERT INTO detalhe_emprestimo (id_usuario, id_emprestimo, acao, detalhe) VALUES
-(3, 1, 1, 'Empréstimo realizado'),
-(3, 2, 2, 'Renovação solicitada');
-
-
 INSERT INTO turno (id_turno, descricao) VALUES
 (1, 'Manhã'),
 (2, 'Tarde'),
@@ -323,3 +300,24 @@ INSERT INTO turma (id_turma, descricao, serie, turno) VALUES
 (34, 'A', 3, 4),
 (35, 'B', 3, 4),
 (36, 'C', 3, 4);
+
+-- Tabela usuario
+INSERT INTO usuario (login, cpf, nome, email, telefone, data_nascimento, senha, permissoes) VALUES
+('admin','21747274046', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3',  b'1111'::bit::int), -- senhaAdmin
+('biblio','76784092066', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', '76cc71b64516994b050bdb5a79c50865654e551ae126492ee20d08047e841a86',  b'1111'::bit::int), --senhaBiblio
+('joao','26843511040', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'bffeba2cd38fb42e180da0254a7893f6db46e3cb2a93ff5e9b5494ce789e1006',  b'1111'::bit::int); --senhaJoao
+
+update usuario set permissoes = 15 where id_usuario = 1;
+update usuario set turma = 1 where login = 'joao';
+
+-- Tabela emprestimo
+INSERT INTO emprestimo (id_exemplar_livro, id_livro, id_usuario, data_emprestimo, data_prevista_devolucao, observacao) VALUES
+(1, 1, 3, '2024-01-01', '2024-01-15', 'Primeiro empréstimo'),
+(2, 2, 3, '2024-01-02', '2024-01-16', 'Devolução atrasada');
+
+
+-- Tabela detalhe_emprestimo
+INSERT INTO detalhe_emprestimo (id_usuario, id_emprestimo, acao, detalhe) VALUES
+(3, 1, 1, 'Empréstimo realizado'),
+(3, 2, 2, 'Renovação solicitada');
+

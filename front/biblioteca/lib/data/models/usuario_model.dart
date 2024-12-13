@@ -1,37 +1,18 @@
-// To parse this JSON data, do
-//
-//     final usuariosAtingidos = usuariosAtingidosFromJson(jsonString);
-
 import 'dart:convert';
 
-UsuariosAtingidos usuariosAtingidosFromJson(String str) =>
-    UsuariosAtingidos.fromJson(json.decode(str));
 
-String usuariosAtingidosToJson(UsuariosAtingidos data) =>
-    json.encode(data.toJson());
+import 'package:biblioteca/data/models/emprestimos_model.dart';
 
-class UsuariosAtingidos {
-  List<Usuario> usuarioAtingidos;
-
-  UsuariosAtingidos({
-    required this.usuarioAtingidos,
-  });
-
-  factory UsuariosAtingidos.fromJson(Map<String, dynamic> json) =>
-      UsuariosAtingidos(
-        usuarioAtingidos: List<Usuario>.from(
-            json["UsuarioAtingidos"].map((x) => Usuario.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "UsuarioAtingidos":
-            List<dynamic>.from(usuarioAtingidos.map((x) => x.toJson())),
-      };
-}
 
 Usuario usuarioFromJson(String str) => Usuario.fromJson(json.decode(str));
 
 String usuarioToJson(Usuario data) => json.encode(data.toJson());
+
+class TipoDeUsuario {
+  static const bibliotecario = 'Bibliotecário';
+  static const funcionario = 'Funcionário';
+  static const aluno = 'Aluno';
+}
 
 class Usuario {
   int idDoUsuario;
@@ -45,11 +26,12 @@ class Usuario {
   int permissao;
   bool ativo;
   int turma;
+  //remover depois
+  List<EmprestimosModel> livrosEmprestados = [];
 
-  //Esses Campos diferem da tabela precisam ser alterados
-  String tipoUsuario = 'Wtvr';
-  String turno = 'M';
-  String matricula = '0';
+  String? turmaDescrisao;
+  int? serie;
+  int? turno;
 
   Usuario({
     this.idDoUsuario = 0,
@@ -59,13 +41,32 @@ class Usuario {
     required this.nome,
     required this.email,
     required this.telefone,
-    this.dataDeNascimento,
-    //Por enquanto todo mundo é adm, que mal pode ter nisso
-    this.permissao = 15,
+    required this.dataDeNascimento,
+    required this.permissao,
     this.ativo = true,
-    //por enquanto a turma vai ser mocada
     this.turma = 0,
+
+    //remover depois
+    List<EmprestimosModel>? livrosEmprestados,
+  }): this.livrosEmprestados = livrosEmprestados ?? [];
+
+    this.turmaDescrisao,
+    this.serie,
+    this.turno,
   });
+
+
+  String get getTurma => turmaDescrisao == null || turmaDescrisao!.isEmpty
+      ? 'N/A'
+      : turmaDescrisao!.replaceAll(turmaDescrisao!.split(' ').last, '');
+
+  String get getTurno => turmaDescrisao == null || turmaDescrisao!.isEmpty
+      ? 'N/A'
+      : turmaDescrisao!.split(' ').last;
+
+  String get getTipoDeUsuario => permissao == 15
+      ? TipoDeUsuario.bibliotecario
+      : (turma == 0 ? TipoDeUsuario.funcionario : TipoDeUsuario.aluno);
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         idDoUsuario: json["IdDoUsuario"],
@@ -75,10 +76,15 @@ class Usuario {
         nome: json["Nome"],
         email: json["Email"],
         telefone: json["Telefone"],
-        dataDeNascimento: json["DataDeNascimento"].toString().isEmpty ? null : DateTime.parse(json["DataDeNascimento"]),
+        dataDeNascimento: json["DataDeNascimento"].toString().isEmpty
+            ? null
+            : DateTime.parse(json["DataDeNascimento"]),
         permissao: json["Permissao"],
         ativo: json["Ativo"],
         turma: json["Turma"],
+        turmaDescrisao: json["TurmaDescrisao"],
+        serie: json["Serie"],
+        turno: json["Turno"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -93,7 +99,10 @@ class Usuario {
             ? null
             : "${dataDeNascimento?.year.toString().padLeft(4, '0')}-${dataDeNascimento?.month.toString().padLeft(2, '0')}-${dataDeNascimento?.day.toString().padLeft(2, '0')}",
         "Permissao": permissao,
-        //"Ativo": ativo,
+        "Ativo": ativo,
         "Turma": turma,
+        "TurmaDescrisao": turmaDescrisao,
+        "Serie": serie,
+        "Turno": turno,
       };
 }

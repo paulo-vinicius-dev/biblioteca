@@ -42,7 +42,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
       child: Column(
         children: [
           // Barra de navegação
-          BreadCrumb(breadcrumb: ["Início","Autores"], icon: Icons.menu_book_outlined),
+          const BreadCrumb(breadcrumb: ["Início","Autores"], icon: Icons.menu_book_outlined),
 
           // Corpo da página
           SingleChildScrollView(

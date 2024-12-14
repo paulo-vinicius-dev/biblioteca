@@ -7,7 +7,6 @@ import 'package:biblioteca/widgets/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 import 'package:intl/intl.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
 
 class FormUser extends StatefulWidget {
@@ -163,7 +162,7 @@ class _FormUserState extends State<FormUser> {
     return Column(
       children: [
         // Barra de navegação
-        BreadCrumb(breadcrumb: ['Início','Usuários','Novo Usuário'], icon: Icons.co_present_rounded),
+        const BreadCrumb(breadcrumb: ['Início','Usuários','Novo Usuário'], icon: Icons.co_present_rounded),
 
         // Formulário
         Padding(

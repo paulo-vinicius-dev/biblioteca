@@ -43,7 +43,7 @@ class BookTablePageState extends State<BookTablePage> {
         children: [
 
           // Barra de navegação
-           BreadCrumb(breadcrumb:['Início','Livros'], icon: Icons.menu_book_outlined),
+           const BreadCrumb(breadcrumb:['Início','Livros'], icon: Icons.menu_book_outlined),
 
           // Corpo da página
           SingleChildScrollView(

@@ -96,7 +96,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final _expandedIndex = context.watch<MenuState>().expandedIndex;
+    final expandedIndex = context.watch<MenuState>().expandedIndex;
     return AnimatedBuilder(
       animation: _menuAnimationController,
       builder: (context, child) {
@@ -133,7 +133,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                 child: ListView.builder(
                   itemCount: menuitens.length,
                   itemBuilder: (context, index) {
-                    bool isSelected = _expandedIndex == index;
+                    bool isSelected = expandedIndex == index;
                     final itemMenu = menuitens[index];
                     return ExpansionTile(
                         controller: _controllers[index],
@@ -160,7 +160,7 @@ class _MenuNavegacaoState extends State<MenuNavegacao> with TickerProviderStateM
                           }
                           _handleExpansion(index, isExpanded);
                         },
-                        initiallyExpanded: _expandedIndex == index,
+                        initiallyExpanded: expandedIndex == index,
                         title: FadeTransition(
                           opacity: _labelFadeAnimation,
                           child: Visibility(

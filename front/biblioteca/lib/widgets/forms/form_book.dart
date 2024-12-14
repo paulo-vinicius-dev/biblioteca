@@ -73,7 +73,7 @@ class _FormBookState extends State<FormBook> {
     return Column(
       children: [
         // Barra de navegação
-        BreadCrumb(breadcrumb: ['Início','Livros','Novo Livro'], icon: Icons.menu_book_outlined),
+        const BreadCrumb(breadcrumb: ['Início','Livros','Novo Livro'], icon: Icons.menu_book_outlined),
 
         // Formulário
         Padding(

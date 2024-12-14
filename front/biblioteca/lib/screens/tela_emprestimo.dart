@@ -1,12 +1,9 @@
-import 'dart:ffi';
 
 import 'package:biblioteca/data/models/emprestimos_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
-import 'package:biblioteca/data/services/usuario_service.dart';
 import 'package:biblioteca/tem_tabela/book_data.dart';
 import 'package:biblioteca/tem_tabela/book_model.dart';
-import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/bread_crumb.dart';
 import 'package:provider/provider.dart';
@@ -28,8 +25,8 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   bool showBooks = false;
   bool showLivrosEmprestados = false;
   int selectOption = -1;
-  Book? selectbook = null;
-  late Usuario? selectUser = null;  // Inicializado como null
+  Book? selectbook;
+  late Usuario? selectUser;  // Inicializado como null
    // Lista de livros (precisa ser preenchida com dados reais)
  
   late String dataDevolucao;
@@ -87,14 +84,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   // Formata a data atual (data de empréstimo)
   dataEmprestimo = DateFormat('dd-MM-yyyy').format(now);
   // Calcula a data de devolução (7 dias depois)
-  DateTime dataDevolucaoDate = now.add(Duration(days: 7));
+  DateTime dataDevolucaoDate = now.add(const Duration(days: 7));
   dataDevolucao = DateFormat('dd-MM-yyyy').format(dataDevolucaoDate);
  }
 
 String renovar(String dataString) {
   final formato = DateFormat('dd-MM-yyyy');
   final data = formato.parse(dataString);
-  final novaData = data.add(Duration(days: 7));
+  final novaData = data.add(const Duration(days: 7));
   return formato.format(novaData);
 }
 Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro){
@@ -113,12 +110,12 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 7),
+                  padding: const EdgeInsets.symmetric(vertical: 7),
                   width: double.infinity,
-                  color: Color.fromRGBO(38, 42, 79, 1),
-                  child: Text('Confirmação De ${msg}', textAlign: TextAlign.center, style: TextStyle(fontSize: 17, color: Colors.white),),
+                  color: const Color.fromRGBO(38, 42, 79, 1),
+                  child: Text('Confirmação De $msg', textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: Colors.white),),
                 ),
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
                   Table(
                     columnWidths: const {
                       0: FlexColumnWidth(0.10),
@@ -130,58 +127,58 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                     border: TableBorder.all(color: const Color.fromARGB(255, 213, 213, 213)),
                     children: [
                       TableRow(
-                          decoration: BoxDecoration(color: Color.fromARGB(255, 233, 235, 238)),
+                          decoration: const BoxDecoration(color: Color.fromARGB(255, 233, 235, 238)),
                           children: [
-                             Padding(
+                             const Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Text('Codigo', textAlign: TextAlign.left,style:TextStyle(fontWeight: FontWeight.bold)),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(7.0),
+                            const Padding(
+                              padding: EdgeInsets.all(7.0),
                               child: Text('ISBN', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(7.0),
+                            const Padding(
+                              padding: EdgeInsets.all(7.0),
                               child: Text('Nome', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(7.0),
+                            const Padding(
+                              padding: EdgeInsets.all(7.0),
                               child: Text('Devolução Prevista', textAlign: TextAlign.left, style:TextStyle(fontWeight: FontWeight.bold)),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(7.0),
-                              child: Text('Situação ${msg}', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
+                              child: Text('Situação $msg', textAlign: TextAlign.left, style: const TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ]
                         ),
                         TableRow(
                           children: [
                             Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(livro.codigo, textAlign: TextAlign.left,),
                             ),
                             Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(livro.isbn, textAlign: TextAlign.left,),
                             ),
                             Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(livro.nome, textAlign: TextAlign.left,),
                             ),
                             Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(livro.dataDevolucao, textAlign: TextAlign.left),
                             ),
                             Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('${msg} Realizado!', textAlign: TextAlign.left,style:TextStyle(fontWeight: FontWeight.bold)),
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('$msg Realizado!', textAlign: TextAlign.left,style:const TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ]
                         )
                     ]
                 ),
                 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                      backgroundColor: Colors.green[400],
@@ -190,7 +187,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                   onPressed: () {
                     Navigator.of(context).pop(); // Fecha o diálogo
                   },
-                  child: Text('Confirmar',style: TextStyle(color: Colors.white),),
+                  child: const Text('Confirmar',style: TextStyle(color: Colors.white),),
                 ),
               ],
             ),
@@ -206,7 +203,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
     return Material(
       child: Column(
         children: [
-          BreadCrumb(breadcrumb: ['Início', 'Empréstimo'], icon: Icons.my_library_books_rounded),
+          const BreadCrumb(breadcrumb: ['Início', 'Empréstimo'], icon: Icons.my_library_books_rounded),
           Padding(
             padding: const EdgeInsets.only(top: 40, left: 35, right: 200),
             child: Column(
@@ -235,11 +232,11 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                           backgroundColor: const Color.fromRGBO(38, 42, 79, 1),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                       onPressed: searchUsers,
-                      child: Text("Pesquisar", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
+                      child: const Text("Pesquisar", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
                     ),
                   ],
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 if (search)
                   if (_filteredUsers.isEmpty)
                     const Padding(
@@ -292,7 +289,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                 ),
                                 for (int x = 0; x < _filteredUsers.length; x++)
                                   TableRow(
-                                    decoration: BoxDecoration(color: const Color.fromARGB(120, 255, 255, 255)),
+                                    decoration: const BoxDecoration(color: Color.fromARGB(120, 255, 255, 255)),
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -304,7 +301,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Text(_filteredUsers[x].turno, textAlign: TextAlign.left),
+                                        child: Text(_filteredUsers[x].turno.toString(), textAlign: TextAlign.left),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -327,7 +324,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                 selectUser = _filteredUsers[x];
                                               });
                                           },
-                                          child: Text('Selecionar Leitor', style: TextStyle(color: Colors.white, fontSize: 12), textAlign: TextAlign.center),
+                                          child: const Text('Selecionar Leitor', style: TextStyle(color: Colors.white, fontSize: 12), textAlign: TextAlign.center),
                                         ),
                                       ),
                                     ],
@@ -376,7 +373,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                       ],
                                     ),
                                     TableRow(
-                                      decoration: BoxDecoration(color: const Color.fromARGB(120, 255, 255, 255)),
+                                      decoration: const BoxDecoration(color: Color.fromARGB(120, 255, 255, 255)),
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
@@ -388,7 +385,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
-                                          child: Text(selectUser!.turno, textAlign: TextAlign.left),
+                                          child: Text(selectUser!.turno.toString(), textAlign: TextAlign.left),
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
@@ -407,12 +404,12 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                 if(selectUser != null && selectUser!.livrosEmprestados.isNotEmpty)
                                   Container(
                                     width: double.infinity,
-                                    padding: EdgeInsets.symmetric(vertical: 10),
+                                    padding: const EdgeInsets.symmetric(vertical: 10),
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                        color: Color.fromARGB(255, 213, 213, 213)
+                                        color: const Color.fromARGB(255, 213, 213, 213)
                                       ),
-                                      color:  Color.fromARGB(255, 233, 235, 238),
+                                      color:  const Color.fromARGB(255, 233, 235, 238),
                                     ),
                                     child: Text(
                                       "Livros Emprestados",
@@ -435,7 +432,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                     },
                                     border: TableBorder.all(color: const Color.fromARGB(255, 213, 213, 213)),
                                     children: [
-                                      TableRow(
+                                      const TableRow(
                                           decoration: BoxDecoration(color: Color.fromARGB(255, 233, 235, 238)),
                                           children: [
                                              Padding(
@@ -443,19 +440,19 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                   child: Text('Codigo', textAlign: TextAlign.left,style:TextStyle(fontWeight: FontWeight.bold)),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(7.0),
+                                              padding: EdgeInsets.all(7.0),
                                               child: Text('ISBN', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(7.0),
+                                              padding: EdgeInsets.all(7.0),
                                               child: Text('Nome', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(7.0),
+                                              padding: EdgeInsets.all(7.0),
                                               child: Text('Data de Empréstimo', textAlign: TextAlign.left, style:TextStyle(fontWeight: FontWeight.bold)),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(7.0),
+                                              padding: EdgeInsets.all(7.0),
                                               child: Text('Data de Devolução', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
                                             ),
                                             SizedBox.shrink()
@@ -463,7 +460,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                         ),
                                       for (int x = 0; x < selectUser!.livrosEmprestados.length; x++)
                                         TableRow(
-                                          decoration: BoxDecoration(color: const Color.fromRGBO(233, 235, 238, 75)),
+                                          decoration: const BoxDecoration(color: Color.fromRGBO(233, 235, 238, 75)),
                                           children: [
                                             Padding(
                                               padding: const EdgeInsets.all(7.0),
@@ -498,7 +495,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                               });
                                               msgConfirm(context, 'Renovação', selectUser!.livrosEmprestados[x]);
                                             },
-                                            child: Text('Renovar', style: TextStyle(color:  Colors.white, fontSize: 12), textAlign: TextAlign.center),
+                                            child: const Text('Renovar', style: TextStyle(color:  Colors.white, fontSize: 12), textAlign: TextAlign.center),
                                           ),
                                         ),
                                           ]
@@ -512,7 +509,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 50),
+                                const SizedBox(height: 50),
                                 Text("Pesquisar Exemplar", style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 22)),
                                 const SizedBox(height: 40),
                                 Row(
@@ -536,7 +533,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                           backgroundColor: const Color.fromRGBO(38, 42, 79, 1),
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                                       onPressed: searchBooks,
-                                      child: Text("Pesquisar", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
+                                      child: const Text("Pesquisar", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
                                     ),
                                   ],
                                 ),
@@ -590,7 +587,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                 ],
                                               ),
                                                 TableRow(
-                                                  decoration: BoxDecoration(color: const Color.fromRGBO(233, 235, 238, 75)),
+                                                  decoration: const BoxDecoration(color: Color.fromRGBO(233, 235, 238, 75)),
                                                   children: [
                                                     Padding(
                                                       padding: const EdgeInsets.all(8.0),
@@ -627,7 +624,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                           });
                                                           msgConfirm(context, 'Empréstimo', selectUser!.livrosEmprestados.last);
                                                         },
-                                                        child: Text('Emprestar', style: TextStyle(color: Colors.white, fontSize: 12), textAlign: TextAlign.center),
+                                                        child: const Text('Emprestar', style: TextStyle(color: Colors.white, fontSize: 12), textAlign: TextAlign.center),
                                                       ),
                                                     ),
                                                   ],
@@ -637,7 +634,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                         ),
                                       ],
                                     ),
-                                SizedBox(height: 150,)
+                                const SizedBox(height: 150,)
                               ],
                             ),
                       ],

@@ -12,7 +12,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void logout(num idDaSessao, String loginDoUsuario) {
+  void logout() {
     _idDaSessao = null;
     usuarioLogado = null;
     notifyListeners();

@@ -33,7 +33,7 @@ class _FormAutorState extends State<FormAutor> {
       children: [
 
         // Barra de navegação
-        BreadCrumb(breadcrumb: ['Início','Autores','Novo Autor'], icon: Icons.menu_book_outlined),
+        const BreadCrumb(breadcrumb: ['Início','Autores','Novo Autor'], icon: Icons.menu_book_outlined),
         // Formulário
         Padding(
           padding: const EdgeInsets.all(16.0),

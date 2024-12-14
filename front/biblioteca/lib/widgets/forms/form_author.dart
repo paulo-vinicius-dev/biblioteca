@@ -1,4 +1,4 @@
-import 'package:biblioteca/widgets/bread_crumb.dart';
+import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 

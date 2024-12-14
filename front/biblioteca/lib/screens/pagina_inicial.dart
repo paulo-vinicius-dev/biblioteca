@@ -10,7 +10,7 @@ import 'package:biblioteca/widgets/forms/form_author.dart';
 import 'package:biblioteca/widgets/tables/author_table_page.dart';
 import 'package:biblioteca/widgets/tables/book_table_page.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
-import 'package:biblioteca/widgets/menu_navegacao.dart';
+import 'package:biblioteca/widgets/navegacao/menu_navegacao.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

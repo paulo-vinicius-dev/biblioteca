@@ -4,7 +4,7 @@ import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biblioteca/widgets/bread_crumb.dart';
+import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 
 class UserTablePage extends StatefulWidget {
   const UserTablePage({super.key});

@@ -11,13 +11,13 @@ class UsuarioProvider with ChangeNotifier {
   UsuarioProvider(this.idDaSessao, this.usuarioLogado);
 
   List<Usuario> users = [];
-  UsuariosAtingidos? loadedUsuarios;
 
   Future<void> loadUsuarios() async {
+    UsuariosAtingidos? loadedUsuarios;
     try {
       loadedUsuarios =
           await usuarioService.fetchUsuarios(idDaSessao, usuarioLogado);
-      users = loadedUsuarios!.usuarioAtingidos
+      users = loadedUsuarios.usuarioAtingidos
           .where((usuario) => usuario.ativo && usuario.login != usuarioLogado)
           .toList();
 

@@ -3,7 +3,7 @@ import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/data/services/turmas_service.dart';
 import 'package:biblioteca/utils/routes.dart';
-import 'package:biblioteca/widgets/bread_crumb.dart';
+import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 import 'package:intl/intl.dart';
@@ -22,8 +22,9 @@ class _FormUserState extends State<FormUser> {
     return widget.usuario != null;
   }
 
+  //variáveis do formulário
   final _formKey = GlobalKey<FormState>();
-  final _passwordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _userTypeController = TextEditingController();
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _nomeController = TextEditingController();
@@ -37,10 +38,6 @@ class _FormUserState extends State<FormUser> {
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
 
-  final TurmasService _turmasService = TurmasService();
-  List<Turma> turmas = [];
-  bool showTurmas = false;
-
   final List<String> usuarios = <String>[
     TipoDeUsuario.aluno,
     TipoDeUsuario.funcionario,
@@ -49,10 +46,15 @@ class _FormUserState extends State<FormUser> {
 
   final List<String> turnos = <String>['Manhã', 'Tarde', 'Noite', 'Integral'];
 
+  final TurmasService _turmasService = TurmasService();
+  List<Turma> turmas = [];
+  bool showTurmas = false;
+
   Future<void> _loadTurmas(int turno) async {
     var futureTurmas = await _turmasService.fetchTurmas();
     setState(() {
       turmas = futureTurmas.where((turma) => turma.turno == turno).toList();
+      _turmaController.text = turmas[0].turma.toString();
 
       if (!showTurmas) {
         showTurmas = true;
@@ -63,7 +65,8 @@ class _FormUserState extends State<FormUser> {
   Future<void> salvar(context) async {
     if (_formKey.currentState!.validate()) {
       String mensagem = "Cadastro realizado com sucesso!";
-      UsuarioProvider provider = Provider.of<UsuarioProvider>(context, listen: false);
+      UsuarioProvider provider =
+          Provider.of<UsuarioProvider>(context, listen: false);
 
       if (isModoEdicao()) {
         //Editar usuário
@@ -162,7 +165,9 @@ class _FormUserState extends State<FormUser> {
     return Column(
       children: [
         // Barra de navegação
-        const BreadCrumb(breadcrumb: ['Início','Usuários','Novo Usuário'], icon: Icons.co_present_rounded),
+        const BreadCrumb(
+            breadcrumb: ['Início', 'Usuários', 'Novo Usuário'],
+            icon: Icons.co_present_rounded),
 
         // Formulário
         Padding(

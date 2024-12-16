@@ -2,8 +2,8 @@
 -- Há duas formas de usar o banco de dados criando um schema ou um banco separado, escolha o que mais for fácil para você
 -- USANDO SCHEMA:
 DROP SCHEMA biblioteca CASCADE; -- (Cuidado ao usar esse comando)
- CREATE SCHEMA biblioteca; -- CASO QUEIRA USAR UM SCHEMA (MAIS FÁCIL, só que pode causar erros caso você possua outros schemas no mesmo banco com tabelas com o mesmo nome das utilizadas nesse script)
- SET search_path TO biblioteca; -- Usado somente se você escolher criar um schema
+CREATE SCHEMA biblioteca; -- CASO QUEIRA USAR UM SCHEMA (MAIS FÁCIL, só que pode causar erros caso você possua outros schemas no mesmo banco com tabelas com o mesmo nome das utilizadas nesse script)
+SET search_path TO biblioteca; -- Usado somente se você escolher criar um schema
 
 -- CRIANDO BANCO:
 --DROP DATABASE biblioteca; -- APAGA O BANCO EXISTENTE
@@ -131,14 +131,14 @@ CREATE TABLE IF NOT EXISTS livro_categoria (
 
 CREATE TABLE IF NOT EXISTS exemplar_livro (
 	id_exemplar_livro SERIAL NOT NULL,
-	id_livro INT NOT NULL,
+	livro INT NOT NULL,
 	cativo BOOLEAN NOT NULL,
 	status SMALLINT DEFAULT 1 NOT NULL,
 	estado SMALLINT DEFAULT 1 NOT NULL,
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
-	PRIMARY KEY(id_exemplar_livro, id_livro),
-	FOREIGN KEY(id_livro) REFERENCES livro(id_livro) 
+	PRIMARY KEY(id_exemplar_livro),
+	FOREIGN KEY(livro) REFERENCES livro(id_livro) 
 );
 
 
@@ -162,9 +162,9 @@ CREATE TABLE IF NOT EXISTS usuario (
 
 
 CREATE TABLE IF NOT EXISTS emprestimo (
-	id_exemplar_livro INT NOT NULL,
-	id_livro INT NOT NULL,
-	id_usuario INT NOT NULL,
+	id_emprestimo SERIAL NOT null,
+	exemplar_livro INT NOT NULL,
+	usuario INT NOT NULL,
 	data_emprestimo DATE NOT NULL,
 	num_renovacoes smallint DEFAULT 0,
 	data_prevista_devolucao DATE NOT NULL,
@@ -176,23 +176,25 @@ CREATE TABLE IF NOT EXISTS emprestimo (
 	status smallint DEFAULT 1,
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
-	PRIMARY KEY(id_exemplar_livro, id_livro, id_usuario, data_emprestimo),
-	FOREIGN KEY(id_livro) REFERENCES livro(id_livro),
-	FOREIGN KEY(id_exemplar_livro, id_livro) REFERENCES exemplar_livro(id_exemplar_livro, id_livro),
-	FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario)
+	PRIMARY KEY(id_emprestimo),
+	FOREIGN KEY(exemplar_livro) REFERENCES exemplar_livro(id_exemplar_livro),
+	FOREIGN KEY(usuario) REFERENCES usuario(id_usuario)
 );
 
 
 CREATE TABLE IF NOT EXISTS detalhe_emprestimo (
-	id_usuario INT NOT NULL,
-	id_emprestimo INT NOT NULL,
+	id_detalhe_emprestimo SERIAL NOT NULL,
+	usuario INT NOT NULL,
+	emprestimo INT NOT NULL,
 	data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	acao SMALLINT NOT NULL,
 	detalhe VARCHAR(255),
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	data_atualizacao TIMESTAMP
+	data_atualizacao TIMESTAMP,
+	primary key(id_detalhe_emprestimo),
+	foreign key (usuario) references usuario(id_usuario),
+	foreign key (emprestimo) references emprestimo(id_emprestimo)
 );
-
 
 -- Tabela pais
 INSERT INTO pais (id_pais, nome, sigla) VALUES
@@ -237,10 +239,10 @@ INSERT INTO livro_categoria (id_livro, id_categoria) VALUES
 
 
 -- Tabela exemplar_livro
-INSERT INTO exemplar_livro (id_livro, cativo, status, estado) VALUES
-(1, FALSE, 1, 1),  -- Exemplar de Dom Casmurro
-(2, TRUE, 1, 2),   -- Exemplar de Harry Potter
-(3, FALSE, 2, 3);  -- Exemplar de A Game of Thrones
+INSERT INTO exemplar_livro (id_exemplar_livro, livro, cativo, status, estado) VALUES
+(1, 1, FALSE, 1, 1),  -- Exemplar de Dom Casmurro
+(2, 2, TRUE, 1, 2),   -- Exemplar de Harry Potter
+(3, 3, FALSE, 2, 3);  -- Exemplar de A Game of Thrones
 
 
 
@@ -311,13 +313,13 @@ update usuario set permissoes = 15 where id_usuario = 1;
 update usuario set turma = 1 where login = 'joao';
 
 -- Tabela emprestimo
-INSERT INTO emprestimo (id_exemplar_livro, id_livro, id_usuario, data_emprestimo, data_prevista_devolucao, observacao) VALUES
+INSERT INTO emprestimo (id_emprestimo, exemplar_livro, usuario, data_emprestimo, data_prevista_devolucao, observacao) VALUES
 (1, 1, 3, '2024-01-01', '2024-01-15', 'Primeiro empréstimo'),
 (2, 2, 3, '2024-01-02', '2024-01-16', 'Devolução atrasada');
 
 
 -- Tabela detalhe_emprestimo
-INSERT INTO detalhe_emprestimo (id_usuario, id_emprestimo, acao, detalhe) VALUES
-(3, 1, 1, 'Empréstimo realizado'),
-(3, 2, 2, 'Renovação solicitada');
+INSERT INTO detalhe_emprestimo (id_detalhe_emprestimo, usuario, emprestimo, acao, detalhe) VALUES
+(1, 3, 1, 1, 'Empréstimo realizado'),
+(2, 3, 2, 2, 'Renovação solicitada');
 

@@ -4,7 +4,7 @@ import 'package:biblioteca/tem_tabela/book_data.dart';
 import 'package:biblioteca/tem_tabela/book_model.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:biblioteca/widgets/bread_crumb.dart';
+import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 
 class BookTablePage extends StatefulWidget {
   const BookTablePage({super.key});
@@ -43,7 +43,7 @@ class BookTablePageState extends State<BookTablePage> {
         children: [
 
           // Barra de navegação
-           BreadCrumb(breadcrumb:['Início','Livros'], icon: Icons.menu_book_outlined),
+           const BreadCrumb(breadcrumb:['Início','Livros'], icon: Icons.menu_book_outlined),
 
           // Corpo da página
           SingleChildScrollView(

@@ -4,14 +4,13 @@ import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
-import 'package:biblioteca/utils/utils.dart';
 import 'package:biblioteca/widgets/forms/form_user.dart';
 import 'package:biblioteca/widgets/forms/form_book.dart';
 import 'package:biblioteca/widgets/forms/form_author.dart';
 import 'package:biblioteca/widgets/tables/author_table_page.dart';
 import 'package:biblioteca/widgets/tables/book_table_page.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
-import 'package:biblioteca/widgets/menu_navegacao.dart';
+import 'package:biblioteca/widgets/navegacao/menu_navegacao.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -100,10 +99,16 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
     });
   }
 
+  void _sair(context) {
+    Navigator.pushNamed(
+        context, AppRoutes.login);
+  }
+
   @override
   Widget build(BuildContext context) {
-    String nomeDoUsuario = context.watch<AuthProvider>().usuarioLogado!;
-    capitalize(nomeDoUsuario);
+    AuthProvider authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
+    // capitalize(nomeDoUsuario);
     return Scaffold(
       body: Row(
         children: [
@@ -128,7 +133,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        nomeDoUsuario,
+                        authProvider.usuarioLogado!,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
@@ -209,6 +214,8 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           page = const Configuracoes();
                           break;
                         case '/sair':
+                          authProvider.logout();
+                          _sair(context);
                           page = const TelaLogin();
                           break;
                         case '/novo_usuario':

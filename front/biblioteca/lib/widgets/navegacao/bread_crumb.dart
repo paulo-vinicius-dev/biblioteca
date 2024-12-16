@@ -1,6 +1,5 @@
 import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +16,7 @@ class BreadCrumb extends StatelessWidget {
       padding: const EdgeInsets.only(left: 14.0),
       height: 43.0,
       width: double.infinity,
-      color: Color.fromRGBO(38, 42, 79, 1),
+      color: const Color.fromRGBO(38, 42, 79, 1),
       child: Row(
         children: breadcrumb
             .asMap()
@@ -57,7 +56,7 @@ class _BreadCrumbItemState extends State<BreadCrumbItem> {
       children: [
         widget.isFirst
             ? Padding(
-                padding: EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 8),
                 child: Icon(widget.icon, color: Colors.white,),
               )
               : const Icon(Icons.chevron_right, color: Colors.white,),

@@ -291,6 +291,13 @@ func ExcluirLivro(idDoLivro int) ErroBancoLivro {
 
 	if _, erroQuery = transacao.Exec(
 		context.Background(),
+		"delete from livro_categoria where id_livro = $1", idDoLivro,
+	); erroQuery != nil {
+		panic("Um erro imprevisto acontenceu na exclusão da associação do livro autor. Provavelmente é um bug")
+	}
+
+	if _, erroQuery = transacao.Exec(
+		context.Background(),
 		"delete from livro where id_livro = $1",
 		idDoLivro,
 	); erroQuery != nil {

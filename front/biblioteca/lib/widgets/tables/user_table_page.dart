@@ -4,7 +4,7 @@ import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biblioteca/widgets/bread_crumb.dart';
+import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 
 class UserTablePage extends StatefulWidget {
   const UserTablePage({super.key});
@@ -14,7 +14,7 @@ class UserTablePage extends StatefulWidget {
 }
 
 class UserTablePageState extends State<UserTablePage> {
-  TextEditingController _buscaController = TextEditingController();
+  //TextEditingController _buscaController = TextEditingController();
 
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
@@ -75,7 +75,7 @@ class UserTablePageState extends State<UserTablePage> {
       child: Column(
         children: [
           // Barra de navegação
-          BreadCrumb(breadcrumb: ["Início","Usuários"], icon: Icons.co_present_rounded),
+          const BreadCrumb(breadcrumb: ["Início","Usuários"], icon: Icons.co_present_rounded),
 
           // Corpo da página
           SingleChildScrollView(

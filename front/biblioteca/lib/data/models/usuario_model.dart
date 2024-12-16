@@ -45,15 +45,15 @@ class Usuario {
     required this.permissao,
     this.ativo = true,
     this.turma = 0,
-
-    //remover depois
-    List<EmprestimosModel>? livrosEmprestados,
-  }): this.livrosEmprestados = livrosEmprestados ?? [];
-
     this.turmaDescrisao,
     this.serie,
     this.turno,
-  });
+  
+
+    //remover depois
+    List<EmprestimosModel>? livrosEmprestados,
+  }): livrosEmprestados = livrosEmprestados ?? [];
+
 
 
   String get getTurma => turmaDescrisao == null || turmaDescrisao!.isEmpty

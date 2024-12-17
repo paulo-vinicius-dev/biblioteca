@@ -50,20 +50,20 @@ func modelosUsuarioParaViewUsuario(modelos ...modelos.Usuario) []ViewUsuario {
 		views = append(
 			views,
 			ViewUsuario{
-				IdDoUsuario: m.IdDoUsuario,
-				Login: m.Login,
-				Cpf: m.Cpf,
-				Senha: m.Senha,
-				Nome: m.Nome,
-				Email: m.Email,
-				Telefone: m.Telefone,
+				IdDoUsuario:      m.IdDoUsuario,
+				Login:            m.Login,
+				Cpf:              m.Cpf,
+				Senha:            m.Senha,
+				Nome:             m.Nome,
+				Email:            m.Email,
+				Telefone:         m.Telefone,
 				DataDeNascimento: m.DataDeNascimento,
-				Permissao: m.Permissao,
-				Ativo: m.Ativo,
-				Turma: m.Turma.IdTurma,
-				TurmaDescrisao: fmt.Sprintf("%s %s %s", m.Turma.Serie.Descricao, m.Turma.Descricao, m.Turma.Turno.Descricao),
-				Serie: m.Turma.Serie.IdSerie,
-				Turno: m.Turma.Turno.IdTurno,
+				Permissao:        m.Permissao,
+				Ativo:            m.Ativo,
+				Turma:            m.Turma.IdTurma,
+				TurmaDescrisao:   fmt.Sprintf("%s %s %s", m.Turma.Serie.Descricao, m.Turma.Descricao, m.Turma.Turno.Descricao),
+				Serie:            m.Turma.Serie.IdSerie,
+				Turno:            m.Turma.Turno.IdTurno,
 			},
 		)
 		if m.Turma.IdTurma == 0 {
@@ -169,7 +169,6 @@ func Usuario(resposta http.ResponseWriter, requisicao *http.Request) {
 			fmt.Fprintf(resposta, "Algum campo necessário para o cadastro não foi fornecido")
 			return
 		}
-
 		var novoUsuario modelos.Usuario
 		novoUsuario.Login = requisicaoUsuario.Login
 		novoUsuario.Cpf = requisicaoUsuario.Cpf

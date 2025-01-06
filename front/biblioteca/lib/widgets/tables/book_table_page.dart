@@ -3,6 +3,7 @@
 import 'package:biblioteca/tem_tabela/book_data.dart';
 import 'package:biblioteca/tem_tabela/book_model.dart';
 import 'package:biblioteca/utils/routes.dart';
+import 'package:biblioteca/widgets/tables/exemplar_table_page.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 
@@ -41,9 +42,9 @@ class BookTablePageState extends State<BookTablePage> {
     return Material(
       child: Column(
         children: [
-
           // Barra de navegação
-           const BreadCrumb(breadcrumb:['Início','Livros'], icon: Icons.menu_book_outlined),
+          const BreadCrumb(
+              breadcrumb: ['Início', 'Livros'], icon: Icons.menu_book_outlined),
 
           // Corpo da página
           SingleChildScrollView(
@@ -244,7 +245,15 @@ class BookTablePageState extends State<BookTablePage> {
                                   ),
                                   const SizedBox(width: 3),
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (ctx) => ExemplaresPage(
+                                                  bookName: book.nome,
+                                                  exemplares:
+                                                      book.exemplares)));
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color.fromARGB(
                                           255, 128, 128, 128),

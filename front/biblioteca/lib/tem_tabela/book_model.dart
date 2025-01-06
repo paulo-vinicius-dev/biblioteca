@@ -7,7 +7,7 @@ class Book {
   final String editora;
   final String dataPublicacao;
 
-  final List<Exemplar>? exemplares;
+  final List<Exemplar> exemplares;
 
   Book({
     required this.codigo,

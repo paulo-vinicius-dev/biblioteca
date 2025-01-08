@@ -12,6 +12,7 @@ type ErroBancoExemplar int
 
 const (
 	ErroBancoExemplarNenhum = iota
+	ErroBancoExemplarMudouLivro
 	ErroBancoExemplarLivroInexistente
 )
 
@@ -198,4 +199,35 @@ where l.id_livro = $1`
 		return []modelos.ExemplarLivro{}, false
 	}
 	return exemplaresAchados, true
+}
+
+func AtulizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados) ErroBancoExemplar {	
+	// Se tentar mudar o livro do exemplar
+	// vamos retornar um erro.
+	// Pensar melhor sobre o que acontesce se mudar o
+	// exemplar.
+	if exemplarComDadosAtualizadados.Livro.Id != exemplarComDadosAntigos.Livro.Id {
+		return ErroBancoExemplarMudouLivro
+	}
+
+
+	conecao := PegarConexao()
+	textoQuery := "update exemplar_livro set cativo = $1, status = $2, estado = $3, ativo = $4"
+	if _, erroQuery := conexao.Query(
+		context.Background(),
+		textoQuery,
+		exemplarComDadosAtualizados.Cativo,
+		exemplarComDadosAtualizados.Status,
+		exemplarComDadosAtualizados.Estado,
+		exemplarComDadosAtualizados.Ativo,
+	); erroQuery != nil {
+		panic("Um erro desconhecido acontesceu na atualização do exemplar")
+	}
+	return ErroBancoExemplarNenhum
+}
+
+func ExcluirExemplar(exemplarASerExecluido modelos.Exemplar) ErroBancoExemplar {
+	exemplarDesativado := exemplarASerExcluido
+	exemplarDesativado.Ativo = false
+	return AtualizarExemplar(exemplarASerExcluido, exemplarDesativado)	
 }

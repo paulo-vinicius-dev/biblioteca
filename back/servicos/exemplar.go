@@ -12,14 +12,18 @@ const (
 	ErroServicoExemplarLivroInexistente
 	ErroServicoExemplarStatusInvalido
 	ErroServicoExemplarEstadoInvalido
+	ErroServicoExemplarMudouLivro
 )
 
 func erroBancoExemplarParaErroServicoExemplar(erro banco.ErroBancoExemplar) ErroServicoExemplar {
 	switch erro {
 	case banco.ErroBancoExemplarLivroInexistente:
 		return ErroServicoExemplarLivroInexistente
+	case banco.ErroBancoExemplarMudouLivro:
+		return ErroServicoExemplarMudouLivro
 	default:
 		return ErroServicoExemplarNenhum
+
 	}
 }
 
@@ -36,6 +40,10 @@ func CadastrarExemplar(novoExemplar modelos.ExemplarLivro) (modelos.ExemplarLivr
 	return novoExemplar, erroBancoExemplarParaErroServicoExemplar(erro)
 }
 
-func PesquisarUsuario(exemplar modelos.ExemplarLivro) []modelos.ExemplarLivro {
+func PesquisarExemplares(exemplar modelos.ExemplarLivro) []modelos.ExemplarLivro {
 	return banco.BuscarExemplares(exemplar)
+}
+
+func AtualizarExemplar(exemplarComDadosAtualizados modelos.ExemplarLivro) (modelos.ExemplarLivro, ErroServicoExemplar){
+	// Faça isso
 }

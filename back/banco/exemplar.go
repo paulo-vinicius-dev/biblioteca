@@ -201,17 +201,17 @@ where l.id_livro = $1`
 	return exemplaresAchados, true
 }
 
-func AtulizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados) ErroBancoExemplar {	
+func AtualizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados modelos.ExemplarLivro) ErroBancoExemplar {	
 	// Se tentar mudar o livro do exemplar
 	// vamos retornar um erro.
 	// Pensar melhor sobre o que acontesce se mudar o
 	// exemplar.
-	if exemplarComDadosAtualizadados.Livro.Id != exemplarComDadosAntigos.Livro.Id {
+	if exemplarComDadosAtualizados.Livro.IdDoLivro != exemplarComDadosAntigos.Livro.IdDoLivro {
 		return ErroBancoExemplarMudouLivro
 	}
 
 
-	conecao := PegarConexao()
+	conexao := PegarConexao()
 	textoQuery := "update exemplar_livro set cativo = $1, status = $2, estado = $3, ativo = $4"
 	if _, erroQuery := conexao.Query(
 		context.Background(),
@@ -226,7 +226,7 @@ func AtulizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados) Erro
 	return ErroBancoExemplarNenhum
 }
 
-func ExcluirExemplar(exemplarASerExecluido modelos.Exemplar) ErroBancoExemplar {
+func DeletarExemplar(exemplarASerExcluido modelos.ExemplarLivro) ErroBancoExemplar {
 	exemplarDesativado := exemplarASerExcluido
 	exemplarDesativado.Ativo = false
 	return AtualizarExemplar(exemplarASerExcluido, exemplarDesativado)	

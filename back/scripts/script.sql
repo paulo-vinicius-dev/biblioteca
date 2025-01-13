@@ -1,7 +1,7 @@
 -- Criação do scheme caso não exista! :)
 -- Há duas formas de usar o banco de dados criando um schema ou um banco separado, escolha o que mais for fácil para você
 -- USANDO SCHEMA:
-DROP SCHEMA biblioteca CASCADE; -- (Cuidado ao usar esse comando)
+--DROP SCHEMA biblioteca CASCADE; -- (Cuidado ao usar esse comando)
 CREATE SCHEMA biblioteca; -- CASO QUEIRA USAR UM SCHEMA (MAIS FÁCIL, só que pode causar erros caso você possua outros schemas no mesmo banco com tabelas com o mesmo nome das utilizadas nesse script)
 SET search_path TO biblioteca; -- Usado somente se você escolher criar um schema
 

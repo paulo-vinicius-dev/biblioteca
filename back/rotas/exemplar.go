@@ -1,12 +1,14 @@
 package rotas
 
-//import "biblioteca/modelos"
+import "biblioteca/modelos"
 import "biblioteca/servicos"
 import "net/http"
+import "encoding/json"
+import "io"
 import "fmt"
 
 func erroServicoExemplarParaErroHttp(erro servicos.ErroServicoExemplar, resposta http.ResponseWriter) {
-	switch(erro){
+	switch erro{
 	case servicos.ErroServicoExemplarLivroInexistente:
 		resposta.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(resposta, "Livro não encontrado")
@@ -24,6 +26,10 @@ func erroServicoExemplarParaErroHttp(erro servicos.ErroServicoExemplar, resposta
 	case servicos.ErroServicoExemplarSemPermissao:
 		resposta.WriteHeader(http.StatusForbidden)
 		fmt.Fprintf(resposta, "Não é possível mudar o livro do exemplar")
+	case servicos.ErroServicoExemplarSessaoInvalida:
+		resposta.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(resposta, "Este usuário não está autorizado(logado). Sessão inválida?")
+		return
 	}
 }
 
@@ -43,19 +49,102 @@ type ViewExemplarLivro struct {
 	SiglaPais     string
 }
 
+func modelosExemplarLivroParaViewExemplarLivro(exemplares ...modelos.ExemplarLivro) []ViewExemplarLivro {
+	views := make([]ViewExemplarLivro, len(exemplares))
+	//essa função não deveria poder falhar nesse contexto, por isso ignoramos o erro
+	paises := servicos.PegarTodosOsPaises() // creio que isso será mais rápido do que a consulta individual
+	for _, exemplar := range exemplares {
+		views = append(
+			views,
+			ViewExemplarLivro {
+				IdDoExemplarLivro: exemplar.IdDoExemplarLivro,
+				Cativo           : exemplar.Cativo,
+				Status           : exemplar.Status ,
+				Estado           : exemplar.Estado,
+				Ativo            : exemplar.Ativo,
+				IdDoLivro        : exemplar.Livro.IdDoLivro,
+				Isbn             : exemplar.Livro.Isbn,
+				Titulo           : exemplar.Livro.Titulo,
+				AnoPublicacao    : exemplar.Livro.AnoPublicacao,
+				Editora          : exemplar.Livro.Editora,
+				IdDoPais         : exemplar.Livro.Pais,
+				NomePais         : paises[exemplar.Livro.Pais].Nome,
+				SiglaPais        : paises[exemplar.Livro.Pais].Sigla,
+			},
+		)
+	}
+	return views
+}
 
 
-
-type RespostaLivro struct {
+type respostaExemplar struct {
 	exemplares []ViewExemplarLivro
 }
 
-type RequisicaoExemplar struct {
-	IdDoUsuario       int
+type requisicaoExemplar struct {
+	IdDaSessao        uint64
+	LoginDoUsuario    string
 	IdDoExemplarLivro int
-	Livro             int
+	IdLivro             int
 	Cativo            bool
 	Status            int
 	Estado            int
 	Ativo             bool
+}
+
+
+func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
+	corpoDaRequisicao, erro := io.ReadAll(requisicao.Body)
+
+	if erro == nil {
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "A requisição para a rota de exemplar foi mal feita")
+		return
+	}
+
+	var requisicaoExemplar requisicaoExemplar
+	if json.Unmarshal(corpoDaRequisicao, &requisicaoExemplar) != nil {
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "A requisição para a rota de exemplar foi mal feita")
+		return
+	}
+
+
+	if len(requisicaoExemplar.LoginDoUsuario) == 0 {
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "A requisição para a rota de exemplar foi mal feita")
+		return
+
+	}
+
+	switch requisicao.Method {
+	case "POST":
+		novoExemplar, erro :=  servicos.CriarExemplar(
+			requisicaoExemplar.IdDaSessao,
+			requisicaoExemplar.LoginDoUsuario,
+			modelos.ExemplarLivro{
+				IdDoExemplarLivro: requisicaoExemplar.IdDoExemplarLivro,
+				Cativo:  requisicaoExemplar.Cativo,
+				Status:  requisicaoExemplar.Status,
+				Estado:  requisicaoExemplar.Estado,
+				Ativo:   requisicaoExemplar.Ativo,
+				Livro:   modelos.Livro{
+					IdDoLivro: requisicaoExemplar.IdLivro,
+				},
+			},
+		)
+		if erro != servicos.ErroServicoExemplarNenhum {
+			erroServicoExemplarParaErroHttp(erro, resposta)
+			return
+		}
+		respostaExemplar := respostaExemplar{
+			exemplares: modelosExemplarLivroParaViewExemplarLivro(novoExemplar),
+		}
+
+		respostaExemplarJson, _ := json.Marshal(&respostaExemplar)
+		fmt.Fprintf(resposta, "%s", respostaExemplarJson)
+		return
+	}
+
+		
 }

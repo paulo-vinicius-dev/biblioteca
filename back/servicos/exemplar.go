@@ -16,7 +16,8 @@ const (
 	ErroServicoExemplarEstadoInvalido
 	ErroServicoExemplarMudouLivro
 	ErroServicoExemplarExemplarInexistente
-	ErroServicoExemplarSemPermissao	
+	ErroServicoExemplarSemPermissao
+	ErroServicoExemplarSessaoInvalida
 )
 
 func erroBancoExemplarParaErroServicoExemplar(erro banco.ErroBancoExemplar) ErroServicoExemplar {
@@ -31,8 +32,10 @@ func erroBancoExemplarParaErroServicoExemplar(erro banco.ErroBancoExemplar) Erro
 	}
 }
 
-func CadastrarExemplar(idDaSessao uint64, novoExemplar modelos.ExemplarLivro) (modelos.ExemplarLivro, ErroServicoExemplar) {
-
+func CriarExemplar(idDaSessao uint64,loginDoUsuarioCriador string,  novoExemplar modelos.ExemplarLivro) (modelos.ExemplarLivro, ErroServicoExemplar) {
+	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioCriador) != sessao.VALIDO {
+		return modelos.ExemplarLivro{}, ErroServicoExemplarSessaoInvalida
+	}
 	permissaoDoUsuarioQueEstaCadastrando := sessao.PegarSessaoAtual()[idDaSessao].Permissao
 
 	// NOTA: USAR A PERMISSÃO DOS LIVROS AQUI NÃO É UM ERRO
@@ -56,7 +59,10 @@ func PesquisarExemplares(exemplar modelos.ExemplarLivro) []modelos.ExemplarLivro
 	return banco.BuscarExemplares(exemplar)
 }
 
-func AtualizarExemplar(idDaSessao uint64, exemplarComDadosAtualizados modelos.ExemplarLivro) (modelos.ExemplarLivro, ErroServicoExemplar){
+func AtualizarExemplar(idDaSessao uint64, loginDoUsuarioRequerente string,exemplarComDadosAtualizados modelos.ExemplarLivro) (modelos.ExemplarLivro, ErroServicoExemplar){
+	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioRequerente) != sessao.VALIDO {
+		return modelos.ExemplarLivro{}, ErroServicoExemplarSessaoInvalida
+	}
 	permissaoDoUsuarioQueEstaAtualizando := sessao.PegarSessaoAtual()[idDaSessao].Permissao	
 	if permissaoDoUsuarioQueEstaAtualizando & utilidades.PermissaoAtualizarLivro != utilidades.PermissaoAtualizarLivro {
 		return modelos.ExemplarLivro{}, ErroServicoExemplarSemPermissao
@@ -77,7 +83,10 @@ func AtualizarExemplar(idDaSessao uint64, exemplarComDadosAtualizados modelos.Ex
 
 }
 
-func DeletarExemplar(idDaSessao uint64, idDoExemplar int) (modelos.ExemplarLivro, ErroServicoExemplar) {
+func DeletarExemplar(idDaSessao uint64,loginDoUsuarioRequerente string ,idDoExemplar int) (modelos.ExemplarLivro, ErroServicoExemplar) {
+	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioRequerente) != sessao.VALIDO {
+		return modelos.ExemplarLivro{}, ErroServicoExemplarSessaoInvalida
+	}
 	permissaoDoUsuarioQueEstaDeletando := sessao.PegarSessaoAtual()[idDaSessao].Permissao	
 	if permissaoDoUsuarioQueEstaDeletando & utilidades.PermissaoDeletarLivro != utilidades.PermissaoDeletarLivro {
 		return modelos.ExemplarLivro{}, ErroServicoExemplarSemPermissao

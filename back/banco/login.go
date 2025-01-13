@@ -2,6 +2,7 @@ package banco
 
 import (
 	"context"
+	"fmt"
 )
 
 func PegarLoginESenhaDoBanco(loginDoUsuario string) (string, string, bool) {
@@ -17,5 +18,6 @@ func PegarLoginESenhaDoBanco(loginDoUsuario string) (string, string, bool) {
 		return login, senha, false
 	}
 
+	fmt.Println(erro)
 	panic("Erro inesperado no login. Provelmente é um bug!")
 }

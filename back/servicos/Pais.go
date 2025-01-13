@@ -22,3 +22,8 @@ func erroBancoPaisParaErroServicoPais(erro banco.ErroBancoPais) ErroServicoPais 
 func PegarPaisPeloId(idDoPais int) (modelos.Pais, bool) {
 	return banco.PegarPaisPeloId(idDoPais)
 }
+
+// vai retornar um hashmap tendo como chave o id do pais e como elemento o modelo.Pais
+func PegarTodosOsPaises() map[int]modelos.Pais {
+	return banco.PegarTodosOsPaises()
+}

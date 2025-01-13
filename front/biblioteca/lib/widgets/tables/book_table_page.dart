@@ -255,7 +255,7 @@ class BookTablePageState extends State<BookTablePage> {
                                                   ExemplaresPage(
                                                       bookName: book.nome,
                                                       exemplares:
-                                                          book.exemplares!)));
+                                                          book.exemplares)));
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color.fromARGB(

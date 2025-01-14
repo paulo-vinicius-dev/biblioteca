@@ -25,7 +25,7 @@ func erroServicoExemplarParaErroHttp(erro servicos.ErroServicoExemplar, resposta
 		fmt.Fprintf(resposta, "Exemplar não encontrado")
 	case servicos.ErroServicoExemplarSemPermissao:
 		resposta.WriteHeader(http.StatusForbidden)
-		fmt.Fprintf(resposta, "Não é possível mudar o livro do exemplar")
+		fmt.Fprintf(resposta, "Usuário não tem permissão o suficiente para realizar essa ação")
 	case servicos.ErroServicoExemplarSessaoInvalida:
 		resposta.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprintf(resposta, "Este usuário não está autorizado(logado). Sessão inválida?")
@@ -96,7 +96,7 @@ type requisicaoExemplar struct {
 func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 	corpoDaRequisicao, erro := io.ReadAll(requisicao.Body)
 
-	if erro == nil {
+	if erro != nil {
 		resposta.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(resposta, "A requisição para a rota de exemplar foi mal feita")
 		return

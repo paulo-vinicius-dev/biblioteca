@@ -176,6 +176,20 @@ func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 		fmt.Fprintf(resposta, "%s", respostaExemplarJson)
 		return
 
+	case "DELETE":
+		exemplarExcluido, erro := servicos.DeletarExemplar(requisicaoExemplar.IdDaSessao, requisicaoExemplar.LoginDoUsuario, requisicaoExemplar.IdDoExemplarLivro)
+
+		if erro != servicos.ErroServicoExemplarNenhum {
+			erroServicoExemplarParaErroHttp(erro, resposta)
+			return
+		}
+
+		respostaExemplar := respostaExemplar{
+			Exemplares: modelosExemplarLivroParaViewExemplarLivro(exemplarExcluido),
+		}	
+		respostaExemplarJson, _ := json.Marshal(&respostaExemplar)
+		fmt.Fprintf(resposta, "%s", respostaExemplarJson)
+		return
 
 	}
 

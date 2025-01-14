@@ -55,8 +55,11 @@ func CriarExemplar(idDaSessao uint64,loginDoUsuarioCriador string,  novoExemplar
 	return novoExemplar, erroBancoExemplarParaErroServicoExemplar(erro)
 }
 
-func PesquisarExemplares(exemplar modelos.ExemplarLivro) []modelos.ExemplarLivro {
-	return banco.BuscarExemplares(exemplar)
+func PesquisarExemplares(idDaSessao uint64, loginDoUsuarioPesquisador string, exemplar modelos.ExemplarLivro) ([]modelos.ExemplarLivro, ErroServicoExemplar) {
+	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioPesquisador) != sessao.VALIDO {
+		return []modelos.ExemplarLivro{}, ErroServicoExemplarSessaoInvalida
+	}
+	return banco.BuscarExemplares(exemplar), ErroServicoExemplarNenhum
 }
 
 func AtualizarExemplar(idDaSessao uint64, loginDoUsuarioRequerente string,exemplarComDadosAtualizados modelos.ExemplarLivro) (modelos.ExemplarLivro, ErroServicoExemplar){

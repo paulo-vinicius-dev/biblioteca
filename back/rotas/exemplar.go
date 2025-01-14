@@ -93,6 +93,20 @@ type requisicaoExemplar struct {
 	Ativo             bool
 }
 
+// Nota: Essa função não retorna o modelo com todos os dados
+func requisicaoExemplarParaModeloExemplar(requisicao requisicaoExemplar) modelos.ExemplarLivro {
+	return modelos.ExemplarLivro {
+		IdDoExemplarLivro: requisicao.IdDoExemplarLivro,
+		Cativo: requisicao.Cativo,
+		Status: requisicao.Status,
+		Estado: requisicao.Estado,
+		Ativo:  requisicao.Ativo,
+		Livro:  modelos.Livro{
+			IdDoLivro: requisicao.IdDoLivro,
+		},
+	}
+}
+
 func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 	corpoDaRequisicao, erro := io.ReadAll(requisicao.Body)
 
@@ -121,16 +135,7 @@ func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 		novoExemplar, erro := servicos.CriarExemplar(
 			requisicaoExemplar.IdDaSessao,
 			requisicaoExemplar.LoginDoUsuario,
-			modelos.ExemplarLivro{
-				IdDoExemplarLivro: requisicaoExemplar.IdDoExemplarLivro,
-				Cativo:            requisicaoExemplar.Cativo,
-				Status:            requisicaoExemplar.Status,
-				Estado:            requisicaoExemplar.Estado,
-				Ativo:             requisicaoExemplar.Ativo,
-				Livro: modelos.Livro{
-					IdDoLivro: requisicaoExemplar.IdDoLivro,
-				},
-			},
+			requisicaoExemplarParaModeloExemplar(requisicaoExemplar),
 		)
 		if erro != servicos.ErroServicoExemplarNenhum {
 			erroServicoExemplarParaErroHttp(erro, resposta)
@@ -140,6 +145,19 @@ func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 			Exemplares: modelosExemplarLivroParaViewExemplarLivro(novoExemplar),
 		}
 
+		respostaExemplarJson, _ := json.Marshal(&respostaExemplar)
+		fmt.Fprintf(resposta, "%s", respostaExemplarJson)
+		return
+	case "GET":
+		exemplaresAchados, erro := servicos.PesquisarExemplares(requisicaoExemplar.IdDaSessao, requisicaoExemplar.LoginDoUsuario, requisicaoExemplarParaModeloExemplar(requisicaoExemplar))
+		if erro != servicos.ErroServicoExemplarNenhum {
+			erroServicoExemplarParaErroHttp(erro, resposta)
+			return
+
+		}
+		respostaExemplar := respostaExemplar{
+			Exemplares: modelosExemplarLivroParaViewExemplarLivro(exemplaresAchados...),
+		}	
 		respostaExemplarJson, _ := json.Marshal(&respostaExemplar)
 		fmt.Fprintf(resposta, "%s", respostaExemplarJson)
 		return

@@ -245,6 +245,10 @@ INSERT INTO exemplar_livro (id_exemplar_livro, livro, cativo, status, estado) VA
 (2, 2, TRUE, 1, 2),   -- Exemplar de Harry Potter
 (3, 3, FALSE, 2, 3);  -- Exemplar de A Game of Thrones
 
+-- Poque as vezes o postgres ferra a sequência do serial
+-- estou colacando a sequencia para avançar mais um apartir do max(id)
+-- eu sei isso já deveria ser automático, mas eu deu pal no meu pc. :(
+select setval((select pg_get_serial_sequence('exemplar_livro', 'id_exemplar_livro')), (select max(id_exemplar_livro) from exemplar_livro) + 1);
 
 
 

@@ -23,7 +23,7 @@ func CadastrarExemplar(novoExemplar modelos.ExemplarLivro) (modelos.ExemplarLivr
 		return modelos.ExemplarLivro{}, ErroBancoExemplarLivroInexistente
 	}
 	novoExemplar.Livro = livro
-	textoDaQuery := "insert into exemplar_livro values(livro, cativo, status, estado, ativo) ($1, $2, $3, $4, $5)"
+	textoDaQuery := "insert into exemplar_livro(id_exemplar_livro, livro, cativo, status, estado, ativo) values (default, $1, $2, $3, $4, $5)"
 	_, erro := conexao.Exec(
 		context.Background(),
 		textoDaQuery,
@@ -38,6 +38,8 @@ func CadastrarExemplar(novoExemplar modelos.ExemplarLivro) (modelos.ExemplarLivr
 		panic("Um erro inesperado acontesceu. Provavelmente é um bug")
 	}
 
+	textoDaQuery = "select max(id_exemplar_livro) from exemplar_livro"
+	conexao.QueryRow(context.Background(), textoDaQuery).Scan(&novoExemplar.IdDoExemplarLivro)
 	return novoExemplar, ErroBancoExemplarNenhum
 }
 
@@ -201,7 +203,7 @@ where l.id_livro = $1`
 	return exemplaresAchados, true
 }
 
-func AtualizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados modelos.ExemplarLivro) ErroBancoExemplar {	
+func AtualizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados modelos.ExemplarLivro) ErroBancoExemplar {
 	// Se tentar mudar o livro do exemplar
 	// vamos retornar um erro.
 	// Pensar melhor sobre o que acontesce se mudar o
@@ -209,7 +211,6 @@ func AtualizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados mode
 	if exemplarComDadosAtualizados.Livro.IdDoLivro != exemplarComDadosAntigos.Livro.IdDoLivro {
 		return ErroBancoExemplarMudouLivro
 	}
-
 
 	conexao := PegarConexao()
 	textoQuery := "update exemplar_livro set cativo = $1, status = $2, estado = $3, ativo = $4"
@@ -229,5 +230,5 @@ func AtualizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados mode
 func DeletarExemplar(exemplarASerExcluido modelos.ExemplarLivro) ErroBancoExemplar {
 	exemplarDesativado := exemplarASerExcluido
 	exemplarDesativado.Ativo = false
-	return AtualizarExemplar(exemplarASerExcluido, exemplarDesativado)	
+	return AtualizarExemplar(exemplarASerExcluido, exemplarDesativado)
 }

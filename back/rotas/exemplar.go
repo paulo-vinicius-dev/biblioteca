@@ -1,14 +1,16 @@
 package rotas
 
-import "biblioteca/modelos"
-import "biblioteca/servicos"
-import "net/http"
-import "encoding/json"
-import "io"
-import "fmt"
+import (
+	"biblioteca/modelos"
+	"biblioteca/servicos"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
 
 func erroServicoExemplarParaErroHttp(erro servicos.ErroServicoExemplar, resposta http.ResponseWriter) {
-	switch erro{
+	switch erro {
 	case servicos.ErroServicoExemplarLivroInexistente:
 		resposta.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(resposta, "Livro não encontrado")
@@ -35,63 +37,61 @@ func erroServicoExemplarParaErroHttp(erro servicos.ErroServicoExemplar, resposta
 
 type ViewExemplarLivro struct {
 	IdDoExemplarLivro int
-	Cativo        bool
-	Status        int 
-	Estado        int
-	Ativo         bool
-	IdDoLivro     int
-	Isbn          string
-	Titulo        string
-	AnoPublicacao string
-	Editora       string
-	IdDoPais      int
-	NomePais      string
-	SiglaPais     string
+	Cativo            bool
+	Status            int
+	Estado            int
+	Ativo             bool
+	IdDoLivro         int
+	Isbn              string
+	Titulo            string
+	AnoPublicacao     string
+	Editora           string
+	IdDoPais          int
+	NomePais          string
+	SiglaPais         string
 }
 
 func modelosExemplarLivroParaViewExemplarLivro(exemplares ...modelos.ExemplarLivro) []ViewExemplarLivro {
-	views := make([]ViewExemplarLivro, len(exemplares))
+	views := make([]ViewExemplarLivro, 0, len(exemplares))
 	//essa função não deveria poder falhar nesse contexto, por isso ignoramos o erro
 	paises := servicos.PegarTodosOsPaises() // creio que isso será mais rápido do que a consulta individual
 	for _, exemplar := range exemplares {
 		views = append(
 			views,
-			ViewExemplarLivro {
+			ViewExemplarLivro{
 				IdDoExemplarLivro: exemplar.IdDoExemplarLivro,
-				Cativo           : exemplar.Cativo,
-				Status           : exemplar.Status ,
-				Estado           : exemplar.Estado,
-				Ativo            : exemplar.Ativo,
-				IdDoLivro        : exemplar.Livro.IdDoLivro,
-				Isbn             : exemplar.Livro.Isbn,
-				Titulo           : exemplar.Livro.Titulo,
-				AnoPublicacao    : exemplar.Livro.AnoPublicacao,
-				Editora          : exemplar.Livro.Editora,
-				IdDoPais         : exemplar.Livro.Pais,
-				NomePais         : paises[exemplar.Livro.Pais].Nome,
-				SiglaPais        : paises[exemplar.Livro.Pais].Sigla,
+				Cativo:            exemplar.Cativo,
+				Status:            exemplar.Status,
+				Estado:            exemplar.Estado,
+				Ativo:             exemplar.Ativo,
+				IdDoLivro:         exemplar.Livro.IdDoLivro,
+				Isbn:              exemplar.Livro.Isbn,
+				Titulo:            exemplar.Livro.Titulo,
+				AnoPublicacao:     exemplar.Livro.AnoPublicacao,
+				Editora:           exemplar.Livro.Editora,
+				IdDoPais:          exemplar.Livro.Pais,
+				NomePais:          paises[exemplar.Livro.Pais].Nome,
+				SiglaPais:         paises[exemplar.Livro.Pais].Sigla,
 			},
 		)
 	}
 	return views
 }
 
-
 type respostaExemplar struct {
-	exemplares []ViewExemplarLivro
+	Exemplares []ViewExemplarLivro
 }
 
 type requisicaoExemplar struct {
 	IdDaSessao        uint64
 	LoginDoUsuario    string
 	IdDoExemplarLivro int
-	IdLivro             int
+	IdDoLivro         int
 	Cativo            bool
 	Status            int
 	Estado            int
 	Ativo             bool
 }
-
 
 func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 	corpoDaRequisicao, erro := io.ReadAll(requisicao.Body)
@@ -109,7 +109,6 @@ func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 		return
 	}
 
-
 	if len(requisicaoExemplar.LoginDoUsuario) == 0 {
 		resposta.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(resposta, "A requisição para a rota de exemplar foi mal feita")
@@ -119,17 +118,17 @@ func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	switch requisicao.Method {
 	case "POST":
-		novoExemplar, erro :=  servicos.CriarExemplar(
+		novoExemplar, erro := servicos.CriarExemplar(
 			requisicaoExemplar.IdDaSessao,
 			requisicaoExemplar.LoginDoUsuario,
 			modelos.ExemplarLivro{
 				IdDoExemplarLivro: requisicaoExemplar.IdDoExemplarLivro,
-				Cativo:  requisicaoExemplar.Cativo,
-				Status:  requisicaoExemplar.Status,
-				Estado:  requisicaoExemplar.Estado,
-				Ativo:   requisicaoExemplar.Ativo,
-				Livro:   modelos.Livro{
-					IdDoLivro: requisicaoExemplar.IdLivro,
+				Cativo:            requisicaoExemplar.Cativo,
+				Status:            requisicaoExemplar.Status,
+				Estado:            requisicaoExemplar.Estado,
+				Ativo:             requisicaoExemplar.Ativo,
+				Livro: modelos.Livro{
+					IdDoLivro: requisicaoExemplar.IdDoLivro,
 				},
 			},
 		)
@@ -138,7 +137,7 @@ func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 			return
 		}
 		respostaExemplar := respostaExemplar{
-			exemplares: modelosExemplarLivroParaViewExemplarLivro(novoExemplar),
+			Exemplares: modelosExemplarLivroParaViewExemplarLivro(novoExemplar),
 		}
 
 		respostaExemplarJson, _ := json.Marshal(&respostaExemplar)
@@ -146,5 +145,4 @@ func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 		return
 	}
 
-		
 }

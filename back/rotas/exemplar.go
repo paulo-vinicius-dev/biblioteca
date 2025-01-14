@@ -161,6 +161,24 @@ func Exemplar(resposta http.ResponseWriter, requisicao *http.Request) {
 		respostaExemplarJson, _ := json.Marshal(&respostaExemplar)
 		fmt.Fprintf(resposta, "%s", respostaExemplarJson)
 		return
+	case "PUT":
+		exemplarModificado, erro := servicos.AtualizarExemplar(requisicaoExemplar.IdDaSessao, requisicaoExemplar.LoginDoUsuario, requisicaoExemplarParaModeloExemplar(requisicaoExemplar))
+
+		if erro != servicos.ErroServicoExemplarNenhum {
+			erroServicoExemplarParaErroHttp(erro, resposta)
+			return
+		}
+
+		respostaExemplar := respostaExemplar{
+			Exemplares: modelosExemplarLivroParaViewExemplarLivro(exemplarModificado),
+		}	
+		respostaExemplarJson, _ := json.Marshal(&respostaExemplar)
+		fmt.Fprintf(resposta, "%s", respostaExemplarJson)
+		return
+
+
 	}
+
+	
 
 }

@@ -12,6 +12,7 @@ type ErroBancoExemplar int
 
 const (
 	ErroBancoExemplarNenhum = iota
+	ErroBancoExemplarMudouLivro
 	ErroBancoExemplarLivroInexistente
 )
 
@@ -22,7 +23,7 @@ func CadastrarExemplar(novoExemplar modelos.ExemplarLivro) (modelos.ExemplarLivr
 		return modelos.ExemplarLivro{}, ErroBancoExemplarLivroInexistente
 	}
 	novoExemplar.Livro = livro
-	textoDaQuery := "insert into exemplar_livro values(livro, cativo, status, estado, ativo) ($1, $2, $3, $4, $5)"
+	textoDaQuery := "insert into exemplar_livro(id_exemplar_livro, livro, cativo, status, estado, ativo) values (default, $1, $2, $3, $4, $5)"
 	_, erro := conexao.Exec(
 		context.Background(),
 		textoDaQuery,
@@ -37,6 +38,8 @@ func CadastrarExemplar(novoExemplar modelos.ExemplarLivro) (modelos.ExemplarLivr
 		panic("Um erro inesperado acontesceu. Provavelmente é um bug")
 	}
 
+	textoDaQuery = "select max(id_exemplar_livro) from exemplar_livro"
+	conexao.QueryRow(context.Background(), textoDaQuery).Scan(&novoExemplar.IdDoExemplarLivro)
 	return novoExemplar, ErroBancoExemplarNenhum
 }
 
@@ -63,7 +66,7 @@ func BuscarExemplares(exemplar modelos.ExemplarLivro) []modelos.ExemplarLivro {
 	l.id_livro,
 	l.isbn,
 	l.titulo,
-	l.ano_publicacao ,
+	to_char(l.ano_publicacao, 'yyyy-mm-dd'),
 	l.editora ,
 	l.pais ,
 	el.cativo,
@@ -116,7 +119,7 @@ func PegarExemplarPorId(id int) (modelos.ExemplarLivro, bool) {
 	l.id_livro,
 	l.isbn,
 	l.titulo,
-	l.ano_publicacao ,
+	to_char(l.ano_publicacao, 'yyyy-mm-dd'),
 	l.editora ,
 	l.pais ,
 	el.cativo,
@@ -155,7 +158,7 @@ func PegarExemplarPeloIdDoLivro(IdDoLivro int) ([]modelos.ExemplarLivro, bool) {
 	l.id_livro,
 	l.isbn,
 	l.titulo,
-	l.ano_publicacao ,
+	to_char(l.ano_publicacao, 'yyyy-mm-dd'),
 	l.editora ,
 	l.pais ,
 	el.cativo,
@@ -198,4 +201,34 @@ where l.id_livro = $1`
 		return []modelos.ExemplarLivro{}, false
 	}
 	return exemplaresAchados, true
+}
+
+func AtualizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados modelos.ExemplarLivro) ErroBancoExemplar {
+	// Se tentar mudar o livro do exemplar
+	// vamos retornar um erro.
+	// Pensar melhor sobre o que acontesce se mudar o
+	// exemplar.
+	if exemplarComDadosAtualizados.Livro.IdDoLivro != exemplarComDadosAntigos.Livro.IdDoLivro {
+		return ErroBancoExemplarMudouLivro
+	}
+
+	conexao := PegarConexao()
+	textoQuery := "update exemplar_livro set cativo = $1, status = $2, estado = $3, ativo = $4"
+	if _, erroQuery := conexao.Query(
+		context.Background(),
+		textoQuery,
+		exemplarComDadosAtualizados.Cativo,
+		exemplarComDadosAtualizados.Status,
+		exemplarComDadosAtualizados.Estado,
+		exemplarComDadosAtualizados.Ativo,
+	); erroQuery != nil {
+		panic("Um erro desconhecido acontesceu na atualização do exemplar")
+	}
+	return ErroBancoExemplarNenhum
+}
+
+func DeletarExemplar(exemplarASerExcluido modelos.ExemplarLivro) ErroBancoExemplar {
+	exemplarDesativado := exemplarASerExcluido
+	exemplarDesativado.Ativo = false
+	return AtualizarExemplar(exemplarASerExcluido, exemplarDesativado)
 }

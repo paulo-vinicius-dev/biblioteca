@@ -171,6 +171,7 @@ func Categoria(resposta http.ResponseWriter, requisicao *http.Request) {
 
 		if erro := servicoCategoria.DeletarCategoria(requisicaoCategoria.IdDaSessao, requisicaoCategoria.LoginDoUsuarioRequerente, requisicaoCategoria.Id); erro != servicoCategoria.ErroDeServicoDaCategoriaNenhum {
 			erroServicoCategoriaParaErrHttp(erro, resposta)
+			return
 		}
 
 		resposta.WriteHeader(http.StatusNoContent)

@@ -20,13 +20,13 @@ func Devolucao(resposta http.ResponseWriter, requisicao *http.Request) {
 	var requisicaoExemplar requisicaoExemplar
 	if json.Unmarshal(corpoDaRequisicao, &requisicaoExemplar) != nil {
 		resposta.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(resposta, "A requisição para a rota de exemplar foi mal feita")
+		fmt.Fprintf(resposta, "A requisição para a rota de devolução foi mal feita")
 		return
 	}
 
 	if len(requisicaoExemplar.LoginDoUsuario) == 0 {
 		resposta.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(resposta, "A requisição para a rota de exemplar foi mal feita")
+		fmt.Fprintf(resposta, "A requisição para a rota de devolução foi mal feita")
 		return
 
 	}

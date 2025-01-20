@@ -5,6 +5,7 @@ import (
 	"biblioteca/modelos"
 	"biblioteca/servicos/sessao"
 	"biblioteca/utilidades"
+	"fmt"
 )
 
 type ErroDeServicoDaCategoria int
@@ -51,6 +52,12 @@ func CriarCategoria(idDaSessao uint64, loginUsuarioCriador string, novaCategoria
 		return ErroDeServicoDaCategoriaSemPermisao
 	}
 
+	idCategoriaComAMesmaDescricao := PegarIdCategoria(novaCategoria.Descricao)
+
+	if idCategoriaComAMesmaDescricao != 0 {
+		return ErroDeServicoDaCategoriaDescricaoDuplicada
+	}
+
 	return erroDoBancoParaErroDeServicoDaCategoria(banco.CriarCategoria(novaCategoria))
 }
 
@@ -61,13 +68,13 @@ func BuscarCategoria(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBu
 
 	permissaoDoUsuarioBuscador := sessao.PegarSessaoAtual()[idDaSessao].Permissao
 
+	if permissaoDoUsuarioBuscador&utilidades.PermssaoLerUsuario != utilidades.PermssaoLerUsuario {
+		return nil, ErroDeServicoDaCategoriaSemPermisao
+	}
+
 	if textoDaBusca == "" {
 		categorias := banco.PegarTodasCategorias()
 		return categorias, ErroDeServicoDaCategoriaNenhum
-	}
-
-	if permissaoDoUsuarioBuscador&utilidades.PermssaoLerUsuario != utilidades.PermssaoLerUsuario {
-		return nil, ErroDeServicoDaCategoriaSemPermisao
 	}
 
 	categoriasEncontrados := banco.PesquisarCategoria(textoDaBusca)
@@ -87,6 +94,21 @@ func AtualizarCategoria(idDaSessao uint64, loginDoUsuarioRequerente string, cate
 		return categoriaComDadosAtualizados, ErroDeServicoDaCategoriaSemPermisao
 	}
 
+	_, achou := PegarCategoriaPeloId(categoriaComDadosAtualizados.IdDaCategoria)
+
+	if !achou {
+		return categoriaComDadosAtualizados, ErroDeServicoDaCategoriaInexistente
+	}
+
+	idCategoriaComAMesmaDescricao := PegarIdCategoria(categoriaComDadosAtualizados.Descricao)
+
+	fmt.Println(idCategoriaComAMesmaDescricao)
+
+	// Caso idCategoriaComAMesmaDescricao seja igual a 0 significa que não existem registros cadastrados
+	if idCategoriaComAMesmaDescricao != 0 && idCategoriaComAMesmaDescricao != categoriaComDadosAtualizados.IdDaCategoria {
+		return categoriaComDadosAtualizados, ErroDeServicoDaCategoriaDescricaoDuplicada
+	}
+
 	return categoriaComDadosAtualizados, erroDoBancoParaErroDeServicoDaCategoria(banco.AtualizarCategoria(categoriaComDadosAtualizados))
 }
 
@@ -99,6 +121,12 @@ func DeletarCategoria(idDaSessao uint64, loginDoUsuarioRequerente string, idDaCa
 
 	if permissaoDoUsuarioRequerente&utilidades.PermissaoDeletarUsuario != utilidades.PermissaoDeletarUsuario {
 		return ErroDeServicoDaCategoriaSemPermisao
+	}
+
+	_, achou := PegarCategoriaPeloId(idDaCategoriaQueDesejaExcluir)
+
+	if !achou {
+		return ErroDeServicoDaCategoriaInexistente
 	}
 
 	return erroDoBancoParaErroDeServicoDaCategoria(banco.ExcluirCategoria(idDaCategoriaQueDesejaExcluir))

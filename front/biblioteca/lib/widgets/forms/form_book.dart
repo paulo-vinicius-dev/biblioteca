@@ -9,7 +9,7 @@ class FormBook extends StatefulWidget {
 }
 
 class _FormBookState extends State<FormBook> {
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
   final TextEditingController _editoraController = TextEditingController();
@@ -73,7 +73,9 @@ class _FormBookState extends State<FormBook> {
     return Column(
       children: [
         // Barra de navegação
-        const BreadCrumb(breadcrumb: ['Início','Livros','Novo Livro'], icon: Icons.menu_book_outlined),
+        const BreadCrumb(
+            breadcrumb: ['Início', 'Livros', 'Novo Livro'],
+            icon: Icons.menu_book_outlined),
 
         // Formulário
         Padding(
@@ -138,6 +140,7 @@ class _FormBookState extends State<FormBook> {
                       // Data de Publicação
                       TextFormField(
                         controller: _dataPublicacaoController,
+                        keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           labelText: "Ano de Publicação",
                           border: OutlineInputBorder(),
@@ -145,6 +148,13 @@ class _FormBookState extends State<FormBook> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Preencha esse campo";
+                          }
+                          final testNum = int.tryParse(value);
+                          if (testNum == null) {
+                            return "Apenas numeros neste campo";
+                          }
+                          if (testNum > DateTime.now().year) {
+                            return "Confira se esta data está correta";
                           }
                           return null;
                         },
@@ -169,7 +179,8 @@ class _FormBookState extends State<FormBook> {
 
                       // Autores
                       Column(
-                        children: List.generate(_authorsControllers.length, (index) {
+                        children:
+                            List.generate(_authorsControllers.length, (index) {
                           return Column(
                             children: [
                               Row(
@@ -219,7 +230,8 @@ class _FormBookState extends State<FormBook> {
 
                       // Categorias
                       Column(
-                        children: List.generate(_categoriesControllers.length, (index) {
+                        children: List.generate(_categoriesControllers.length,
+                            (index) {
                           return Column(
                             children: [
                               Row(
@@ -289,6 +301,12 @@ class _FormBookState extends State<FormBook> {
                           const SizedBox(width: 16.0),
                           ElevatedButton(
                             onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                        "Erro ao preencher o formulario : $_dataPublicacaoController")));
+                              }
+
                               _tituloController.clear();
                               _isbnController.clear();
                               _editoraController.clear();
@@ -303,8 +321,10 @@ class _FormBookState extends State<FormBook> {
                               setState(() {
                                 _authorsControllers.clear();
                                 _categoriesControllers.clear();
-                                _authorsControllers.add(TextEditingController());
-                                _categoriesControllers.add(TextEditingController());
+                                _authorsControllers
+                                    .add(TextEditingController());
+                                _categoriesControllers
+                                    .add(TextEditingController());
                               });
                             },
                             style: ElevatedButton.styleFrom(

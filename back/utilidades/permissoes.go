@@ -11,6 +11,8 @@ const (
 	PermissaoCriarExemplar        = 0b10000000 
 	PermissaoAtualizarExemplar    = 0b100000000 
 	PermissaoDeletarExemplar      = 0b1000000000
+	//Usado para todo tipo de permissão em pais
+	PermissaoPais                 = 0b10000000000
 
 
 	PermissaoCrudUsuario = PermissaoDeletarUsuario | PermissaoAtualizarUsuario | PermssaoLerUsuario | PermissaoCriarUsuario

@@ -38,7 +38,6 @@ func CriarExemplar(idDaSessao uint64,loginDoUsuarioCriador string,  novoExemplar
 	}
 	permissaoDoUsuarioQueEstaCadastrando := sessao.PegarSessaoAtual()[idDaSessao].Permissao
 
-	// NOTA: USAR A PERMISSÃO DOS LIVROS AQUI NÃO É UM ERRO
 	if permissaoDoUsuarioQueEstaCadastrando & utilidades.PermissaoCriarExemplar != utilidades.PermissaoCriarExemplar {
 		return modelos.ExemplarLivro{}, ErroServicoExemplarSemPermissao
 	}

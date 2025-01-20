@@ -1,22 +1,93 @@
+import 'package:biblioteca/data/models/autor_model.dart';
+import 'package:biblioteca/data/models/sexo_model.dart';
+import 'package:biblioteca/data/providers/autor_provider.dart';
+import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
+import 'package:provider/provider.dart';
 
-const List<String> sexos = <String>['Masculino', 'Feminino', 'Outro'];
+const List<String> paises = <String>['Brasil', 'Estados Unidos', 'Reino Unido'];
 
 class FormAutor extends StatefulWidget {
-  const FormAutor({super.key});
+  const FormAutor({super.key, this.autor});
+  final Autor? autor;
 
   @override
   State<FormAutor> createState() => _FormAutorState();
 }
 
 class _FormAutorState extends State<FormAutor> {
+  bool isModoEdicao() {
+    return widget.autor != null;
+  }
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomeController = TextEditingController();
-  final TextEditingController _anoNascimentoController = TextEditingController();
-  final TextEditingController _nacionalidadeController = TextEditingController();
+  final TextEditingController _anoNascimentoController =
+      TextEditingController();
+  final TextEditingController _nacionalidadeController =
+      TextEditingController();
   final TextEditingController _sexoController = TextEditingController();
+
+  void btnSalvar(context) async {
+    AutorProvider provider = Provider.of<AutorProvider>(context, listen: false);
+    final Autor newAutor;
+    String? mensagem = '';
+
+    if (isModoEdicao()) {
+      newAutor = widget.autor!;
+
+      newAutor.nome = _nomeController.text;
+      newAutor.anoNascimento = int.tryParse(_anoNascimentoController.text);
+      newAutor.nacionalidade = _nacionalidadeController.text;
+      newAutor.sexoCodigo = _sexoController.text;
+
+      await provider.editAutor(newAutor);
+
+      mensagem = provider.hasErrors
+          ? "Ocorreu um erro ao tentar alterar este registro, por favor confira os dados inseridos"
+          : "Registro alterado com sucesso";
+    } else {
+      newAutor = Autor(
+          nome: _nomeController.text,
+          nacionalidadeCodigo: int.tryParse(_nacionalidadeController.text),
+          sexoCodigo: _sexoController.text,
+          anoNascimento: int.tryParse(_anoNascimentoController.text));
+
+      await provider.addAutor(newAutor);
+      
+      mensagem = provider.hasErrors
+          ? provider.error
+          : "Cadastro realizado com sucesso";
+
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content: Text(mensagem!),
+          backgroundColor: provider.hasErrors ? Colors.red : Colors.green),
+    );
+
+    if(!provider.hasErrors){
+      Navigator.pushNamedAndRemoveUntil(
+          context, AppRoutes.autores, ModalRoute.withName(AppRoutes.home));
+    }
+  }
+
+  @override
+  void initState() {
+    if (isModoEdicao()) {
+      _nomeController.text = widget.autor!.nome;
+      _anoNascimentoController.text = widget.autor!.anoNascimento != null
+          ? widget.autor!.anoNascimento.toString()
+          : '';
+      _nacionalidadeController.text = widget.autor!.nacionalidade;
+      _sexoController.text = widget.autor!.sexoCodigo!;
+    }
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -31,9 +102,10 @@ class _FormAutorState extends State<FormAutor> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-
         // Barra de navegação
-        const BreadCrumb(breadcrumb: ['Início','Autores','Novo Autor'], icon: Icons.menu_book_outlined),
+        const BreadCrumb(
+            breadcrumb: ['Início', 'Autores', 'Novo Autor'],
+            icon: Icons.menu_book_outlined),
         // Formulário
         Padding(
           padding: const EdgeInsets.all(16.0),
@@ -46,7 +118,6 @@ class _FormAutorState extends State<FormAutor> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-
                       // Nome
                       TextFormField(
                         controller: _nomeController,
@@ -57,7 +128,8 @@ class _FormAutorState extends State<FormAutor> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Preencha esse campo";
-                          } else if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$').hasMatch(value)) {
+                          } else if (!RegExp(r"^[a-zA-ZÀ-ÿ\s.'’]+$")
+                              .hasMatch(value)) {
                             return "O nome deve conter apenas letras";
                           }
                           return null;
@@ -74,7 +146,9 @@ class _FormAutorState extends State<FormAutor> {
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
-                          if (value != null && value.isNotEmpty && int.tryParse(value) == null) {
+                          if (value != null &&
+                              value.isNotEmpty &&
+                              int.tryParse(value) == null || int.parse(value!) > DateTime.now().year) {
                             return "Insira um ano válido";
                           }
                           return null;
@@ -83,17 +157,22 @@ class _FormAutorState extends State<FormAutor> {
                       const SizedBox(height: 20.0),
 
                       // Nacionalidade
-                      TextFormField(
-                        controller: _nacionalidadeController,
+                      DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
                           labelText: "Nacionalidade",
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) {
-                          if (value != null && value.isNotEmpty && !RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
-                            return "Insira uma nacionalidade válida";
-                          }
-                          return null;
+                        value: _nacionalidadeController.text.isEmpty
+                            ? null
+                            : _nacionalidadeController.text,
+                        items: paises.map((String pais) {
+                          return DropdownMenuItem<String>(
+                            value: pais,
+                            child: Text(pais),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          _nacionalidadeController.text = newValue!;
                         },
                       ),
                       const SizedBox(height: 20.0),
@@ -104,10 +183,13 @@ class _FormAutorState extends State<FormAutor> {
                           labelText: "Sexo",
                           border: OutlineInputBorder(),
                         ),
-                        items: sexos.map((String sexo) {
+                        value: _sexoController.text.isEmpty
+                            ? null
+                            : _sexoController.text,
+                        items: sexos.map((Sexo sexo) {
                           return DropdownMenuItem<String>(
-                            value: sexo,
-                            child: Text(sexo),
+                            value: sexo.codigo,
+                            child: Text(sexo.sexo),
                           );
                         }).toList(),
                         onChanged: (String? newValue) {
@@ -133,7 +215,9 @@ class _FormAutorState extends State<FormAutor> {
                               child: Text(
                                 "Cancelar",
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onInverseSurface,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onInverseSurface,
                                   fontSize: 18,
                                 ),
                               ),
@@ -145,11 +229,7 @@ class _FormAutorState extends State<FormAutor> {
                           ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text("Cadastro realizado com sucesso!"),
-                                      backgroundColor: Colors.green),
-                                );
+                                btnSalvar(context);
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -160,7 +240,8 @@ class _FormAutorState extends State<FormAutor> {
                               child: Text(
                                 "Salvar",
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                   fontSize: 18,
                                 ),
                               ),

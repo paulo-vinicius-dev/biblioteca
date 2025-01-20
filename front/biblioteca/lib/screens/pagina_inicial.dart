@@ -1,3 +1,4 @@
+import 'package:biblioteca/data/models/autor_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/auth_provider.dart';
 import 'package:biblioteca/screens/login.dart';
@@ -100,10 +101,10 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
   }
 
   void _sair(context) {
-    Navigator.pushNamed(
-        context, AppRoutes.login);
+    Navigator.pushNamed(context, AppRoutes.login);
   }
 
+ 
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider =
@@ -195,7 +196,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                         case '/devolucao':
                           page = const Devolucao();
                           break;
-                        case '/autores':
+                        case AppRoutes.autores:
                           page = const AuthorTablePage();
                           break;
                         case '/livros':
@@ -229,6 +230,11 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                         case '/novo_autor':
                           page = const FormAutor();
                           break;
+                        case AppRoutes.editarAutor:
+                        final autor = settings.arguments as Autor;
+                          return MaterialPageRoute(builder: (context) {
+                            return FormAutor(autor: autor);
+                          });
                         case '/novo_livro':
                           page = const FormBook();
                           break;

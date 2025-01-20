@@ -1,4 +1,5 @@
 import 'package:biblioteca/data/providers/auth_provider.dart';
+import 'package:biblioteca/data/providers/autor_provider.dart';
 import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/screens/login.dart';
@@ -31,8 +32,9 @@ class Myapp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider(),),
         ChangeNotifierProvider(create: (context) => MenuState()),
+         ChangeNotifierProvider(create: (context) => AutorProvider()),
         ProxyProvider<AuthProvider, UsuarioProvider>(
           create: (_) => UsuarioProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => UsuarioProvider(

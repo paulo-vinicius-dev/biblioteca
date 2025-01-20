@@ -31,6 +31,7 @@ func main() {
 	http.HandleFunc("/series", rotas.Series)
 	http.HandleFunc("/turmas", rotas.Turma)
 	http.HandleFunc("/exemplar", rotas.Exemplar)
+	http.HandleFunc("/categoria", rotas.Exemplar)
 	fmt.Printf("Api está rodando em http://%s:%s\n", ip, porta)
 	http.ListenAndServe(fmt.Sprintf(":%s", porta), nil)
 }

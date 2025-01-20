@@ -24,15 +24,15 @@ type requisicaoLivro struct {
 	TextoDeBusca             string   `validate:"optional"`
 }
 
-type respostaPesquisaLivro struct {
-	Id            int      `validate:"optional"`
-	Isbn          string   `validate:"optional"`
-	Titulo        string   `validate:"optional"`
-	AnoPublicacao string   `validate:"optional"`
-	Editora       string   `validate:"optional"`
-	Pais          int      `validate:"optional"`
-	NomeAutores   []string `validate:"optional"`
-}
+// type respostaPesquisaLivro struct {
+// 	Id            int      `validate:"optional"`
+// 	Isbn          string   `validate:"optional"`
+// 	Titulo        string   `validate:"optional"`
+// 	AnoPublicacao string   `validate:"optional"`
+// 	Editora       string   `validate:"optional"`
+// 	Pais          int      `validate:"optional"`
+// 	NomeAutores   []string `validate:"optional"`
+// }
 
 type respostaLivro struct {
 	LivrosAtingidos []modelos.Livro

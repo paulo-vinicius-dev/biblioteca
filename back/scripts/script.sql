@@ -1,8 +1,8 @@
 -- Criação do scheme caso não exista! :)
 -- Há duas formas de usar o banco de dados criando um schema ou um banco separado, escolha o que mais for fácil para você
 -- USANDO SCHEMA:
-DROP SCHEMA biblioteca CASCADE; -- (Cuidado ao usar esse comando)
-CREATE SCHEMA biblioteca; -- CASO QUEIRA USAR UM SCHEMA (MAIS FÁCIL, só que pode causar erros caso você possua outros schemas no mesmo banco com tabelas com o mesmo nome das utilizadas nesse script)
+--DROP SCHEMA biblioteca CASCADE; -- (Cuidado ao usar esse comando)
+--CREATE SCHEMA biblioteca; -- CASO QUEIRA USAR UM SCHEMA (MAIS FÁCIL, só que pode causar erros caso você possua outros schemas no mesmo banco com tabelas com o mesmo nome das utilizadas nesse script)
 SET search_path TO biblioteca; -- Usado somente se você escolher criar um schema
 
 -- CRIANDO BANCO:
@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS pais (
 	id_pais SMALLINT NOT NULL,
 	nome VARCHAR(255) NOT NULL UNIQUE,
 	sigla VARCHAR(2) NOT NULL UNIQUE,
+	ativo bool not null,
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
 	PRIMARY KEY(id_pais)
@@ -198,10 +199,10 @@ CREATE TABLE IF NOT EXISTS detalhe_emprestimo (
 );
 
 -- Tabela pais
-INSERT INTO pais (id_pais, nome, sigla) VALUES
-(1, 'Brasil', 'BR'),
-(2, 'Estados Unidos', 'US'),
-(3, 'Reino Unido', 'UK');
+INSERT INTO pais (id_pais, nome, sigla, ativo) VALUES
+(1, 'Brasil', 'BR', true),
+(2, 'Estados Unidos', 'US', true),
+(3, 'Reino Unido', 'UK', true);
 
 
 -- Tabela autor
@@ -245,6 +246,10 @@ INSERT INTO exemplar_livro (id_exemplar_livro, livro, cativo, status, estado) VA
 (2, 2, TRUE, 1, 2),   -- Exemplar de Harry Potter
 (3, 3, FALSE, 2, 3);  -- Exemplar de A Game of Thrones
 
+-- Poque as vezes o postgres ferra a sequência do serial
+-- estou colacando a sequencia para avançar mais um apartir do max(id)
+-- eu sei isso já deveria ser automático, mas eu deu pal no meu pc. :(
+select setval((select pg_get_serial_sequence('exemplar_livro', 'id_exemplar_livro')), (select max(id_exemplar_livro) from exemplar_livro) + 1);
 
 
 
@@ -306,8 +311,8 @@ INSERT INTO turma (id_turma, descricao, serie, turno) VALUES
 
 -- Tabela usuario
 INSERT INTO usuario (login, cpf, nome, email, telefone, data_nascimento, senha, permissoes) VALUES
-('admin','21747274046', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3',  b'1111'::bit::int), -- senhaAdmin
-('biblio','76784092066', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', '76cc71b64516994b050bdb5a79c50865654e551ae126492ee20d08047e841a86',  b'1111'::bit::int), --senhaBiblio
+('admin','21747274046', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3',  b'11111111111'::bit::int), -- senhaAdmin
+	('biblio','76784092066', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', '76cc71b64516994b050bdb5a79c50865654e551ae126492ee20d08047e841a86',  b'11111111111'::bit::int), --senhaBiblio
 ('joao','26843511040', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'bffeba2cd38fb42e180da0254a7893f6db46e3cb2a93ff5e9b5494ce789e1006',  b'1111'::bit::int); --senhaJoao
 
 update usuario set permissoes = 15 where id_usuario = 1;

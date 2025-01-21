@@ -3,17 +3,19 @@ package rotas
 import (
 	"biblioteca/modelos"
 	"biblioteca/servicos"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
 type RequisicaoPais struct {
-	IdDaSessao     int
+	IdDaSessao     uint64
 	LoginDoUsuario string
 	modelos.Pais
 }
 
-func requisicaoPaisParaModelosPais(requisicao RequisicaoPais) modelos.Pais {
+func requisicaoPaisParaModeloPais(requisicao RequisicaoPais) modelos.Pais {
 	return modelos.Pais{
 		requisicao.IdDoPais,
 		requisicao.Nome,
@@ -23,7 +25,7 @@ func requisicaoPaisParaModelosPais(requisicao RequisicaoPais) modelos.Pais {
 }
 
 type RespostaPais struct {
-	paises []modelos.Pais
+	Paises []modelos.Pais
 }
 
 func erroServicoPaisParaErroHttp(erro servicos.ErroServicoPais, resposta http.ResponseWriter) {
@@ -53,7 +55,6 @@ func erroServicoPaisParaErroHttp(erro servicos.ErroServicoPais, resposta http.Re
 
 }
 
-/*
 func Pais(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	corpoDaRequisicao, erro := io.ReadAll(requisicao.Body)
@@ -65,33 +66,37 @@ func Pais(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	}
 
-	var requisicaoPais requisicaoExemplar
+	var requisicaoPais RequisicaoPais
 	if json.Unmarshal(corpoDaRequisicao, &requisicaoPais) != nil {
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "A requisição para a rota de pais foi mal feita")
-			return
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "A requisição para a rota de pais foi mal feita")
+		return
 	}
 
 	if len(requisicaoPais.LoginDoUsuario) == 0 {
-			resposta.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(resposta, "A requisição para a rota de exemplar foi mal feita")
-			return
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "A requisição para a rota de exemplar foi mal feita")
+		return
 
 	}
 
 	paisDaRequisicao := requisicaoPaisParaModeloPais(requisicaoPais)
 	switch requisicao.Method {
-	case "POST":
-		novaPais, erro := servicos.CriarPais(requisicaoPais.IdDaSessao, requisicaoPais.LoginDoUsuario, paisDaRequisicao)
+	case "GET":
+		paisesEncontrados, erro := servicos.PesquisarPais(requisicaoPais.IdDaSessao, requisicaoPais.LoginDoUsuario, paisDaRequisicao)
 		if erro != servicos.ErroServicoPaisNenhum {
 
 			erroServicoPaisParaErroHttp(erro, resposta)
 			return
-
 		}
+		respostaPais := RespostaPais{
+			paisesEncontrados,
+		}
+		respostaTexto, _ := json.Marshal(respostaPais)
+		fmt.Fprintf(resposta, "%s", string(respostaTexto))
+	default:
+		resposta.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprintf(resposta, "Este método não está implementado!!")
 
-
-
-
+	}
 }
-*/

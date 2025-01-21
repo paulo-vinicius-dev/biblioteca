@@ -20,19 +20,6 @@ const (
 	ErroServicoPaisSiglaInvalida
 )
 
-func erroBancoPaisParaErroServicoPais(erro banco.ErroBancoPais) ErroServicoPais {
-	switch erro {
-	case banco.ErroBancoPaisInexistente:
-		return ErroServicoPaisInexistente
-	case banco.ErroBancoPaisExistente:
-		return ErroServicoPaisExistente
-	case banco.ErroBancoPaisNomeOuSiglaDuplicado:
-		return ErroServicoPaisNomeOuSiglaDuplicado
-	default:
-		return ErroServicoPaisNenhum
-	}
-}
-
 func PesquisarPais(idDaSessao uint64, loginDoUsuarioPesquisador string, pais modelos.Pais) ([]modelos.Pais, ErroServicoPais) {
 	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioPesquisador) != sessao.VALIDO {
 		return []modelos.Pais{}, ErroServicoPaisSessaoInvalida

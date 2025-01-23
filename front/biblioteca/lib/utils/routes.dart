@@ -5,8 +5,6 @@ class AppRoutes {
   static const pesquisarLivro = '/pesquisar_livro';
   static const emprestimo = '/emprestimo';
   static const devolucao = '/devolucao';
-  static const autores = '/autores';
-  static const novoAutor = '/novo_autor';
   static const livros = '/livros';
   static const novoLivro = '/novo_livro';
   static const relatorios = '/relatorios';
@@ -15,7 +13,10 @@ class AppRoutes {
   static const usuarios = '/usuarios';
   static const novoUsuario = '/novo_usuario';
   static const editarUsuario = '/editar_usuario';
-  
+
+  static const autores = '/autores';
+  static const novoAutor = '/novo_autor';
+  static const editarAutor = '/editar_autor';
 
   static const configuracoes = '/configuracoes';
 

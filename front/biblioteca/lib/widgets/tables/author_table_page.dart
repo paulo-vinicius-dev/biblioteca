@@ -1,10 +1,9 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:biblioteca/tem_tabela/author_data.dart';
-import 'package:biblioteca/tem_tabela/author_model.dart';
+import 'package:biblioteca/data/models/autor_model.dart';
+import 'package:biblioteca/data/providers/autor_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
+import 'package:provider/provider.dart';
 
 class AuthorTablePage extends StatefulWidget {
   const AuthorTablePage({super.key});
@@ -19,7 +18,27 @@ class AuthorTablePageState extends State<AuthorTablePage> {
   int currentPage = 1; // Página atual
 
   @override
+  void initState() {
+    Provider.of<AutorProvider>(context, listen: false).loadAutores();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    AutorProvider autorProvider = Provider.of<AutorProvider>(context);
+
+    if (autorProvider.isloading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (autorProvider.hasErrors) {
+      return Text(autorProvider.error!);
+    } else {
+      return tableAutor(context);
+    }
+  }
+
+  Material tableAutor(BuildContext context) {
+    List<Autor> authors = Provider.of<AutorProvider>(context).autores;
+
     int totalPages = (authors.length / rowsPerPage).ceil();
 
     // Calcula o índice inicial e final dos autores exibidos
@@ -29,7 +48,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
         : authors.length;
 
     // Seleciona os autores que serão exibidos na página atual
-    List<Author> paginatedAuthors = authors.sublist(startIndex, endIndex);
+    List<Autor> paginatedAuthors = authors.sublist(startIndex, endIndex);
 
     // Lógica para definir os botões de página (máximo 10 botões)
     int startPage = currentPage - 4 < 1 ? 1 : currentPage - 4;
@@ -42,13 +61,14 @@ class AuthorTablePageState extends State<AuthorTablePage> {
       child: Column(
         children: [
           // Barra de navegação
-          const BreadCrumb(breadcrumb: ["Início","Autores"], icon: Icons.menu_book_outlined),
+          const BreadCrumb(
+              breadcrumb: ["Início", "Autores"],
+              icon: Icons.menu_book_outlined),
 
           // Corpo da página
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
             child: Column(
-
               // Botão novo autor
               children: [
                 Row(
@@ -117,7 +137,6 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                     4: IntrinsicColumnWidth()
                   },
                   children: [
-
                     // Cabeçalho da tabela
                     const TableRow(
                       children: [
@@ -171,7 +190,10 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(author.anoNascimento.toString(),
+                              child: Text(
+                                  author.anoNascimento == null
+                                      ? ''
+                                      : author.anoNascimento.toString(),
                                   textAlign: TextAlign.left),
                             ),
                           ),
@@ -198,7 +220,78 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                               child: Row(
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      AutorProvider provider =
+                                          Provider.of<AutorProvider>(context, listen: false);
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title:
+                                                  const Text('Excluir Usuário'),
+                                              content: const Text(
+                                                  'Tem certeza que deseja excluir este Autor?'),
+                                              actions: [
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              128,
+                                                              128,
+                                                              128),
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 5),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                    ),
+                                                    child:
+                                                        const Text('Cancelar')),
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      provider.deleteAutor(
+                                                          author);
+                                                      setState(() {
+                                                        authors.remove(author);
+                                                      });
+                                                      Navigator.pop(context);
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 5),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                    ),
+                                                    child:
+                                                        const Text('Confirmar'))
+                                              ],
+                                            );
+                                          });
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,
                                       foregroundColor: Colors.white,
@@ -223,7 +316,11 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                   ),
                                   const SizedBox(width: 3),
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, AppRoutes.editarAutor,
+                                          arguments: author);
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
                                           const Color.fromARGB(255, 38, 42, 79),

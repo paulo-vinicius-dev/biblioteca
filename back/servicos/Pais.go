@@ -1,22 +1,36 @@
 package servicos
 
-import "biblioteca/modelos"
-import "biblioteca/banco"
+import (
+	"biblioteca/banco"
+	"biblioteca/modelos"
+	"biblioteca/servicos/sessao"
+	"biblioteca/utilidades"
+)
 
 type ErroServicoPais int
 
 const (
 	ErroServicoPaisNenhum = iota
 	ErroServicoPaisInexistente
+	ErroServicoPaisExistente
+	ErroServicoPaisNomeOuSiglaDuplicado
+	ErroServicoPaisSessaoInvalida
+	ErroServicoPaisSemPermissao
+	ErroServicoPaisNomeInvalido
+	ErroServicoPaisSiglaInvalida
 )
 
-func erroBancoPaisParaErroServicoPais(erro banco.ErroBancoPais) ErroServicoPais {
-	switch erro {
-	case banco.ErroBancoPaisInexistente:
-		return ErroServicoPaisInexistente
-	default:
-		return ErroServicoPaisNenhum
+func PesquisarPais(idDaSessao uint64, loginDoUsuarioPesquisador string, pais modelos.Pais) ([]modelos.Pais, ErroServicoPais) {
+	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioPesquisador) != sessao.VALIDO {
+		return []modelos.Pais{}, ErroServicoPaisSessaoInvalida
 	}
+	permissaoDoUsuario := sessao.PegarSessaoAtual()[idDaSessao].Permissao
+
+	if permissaoDoUsuario&utilidades.PermissaoPais != utilidades.PermissaoPais {
+		return []modelos.Pais{}, ErroServicoPaisSemPermissao
+	}
+
+	return banco.BuscarPaises(pais), ErroServicoPaisNenhum
 }
 
 func PegarPaisPeloId(idDoPais int) (modelos.Pais, bool) {

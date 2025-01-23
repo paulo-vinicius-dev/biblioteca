@@ -1,9 +1,12 @@
 package banco
 
-import "biblioteca/modelos"
-import "context"
-import pgx "github.com/jackc/pgx/v5"
-import "fmt"
+import (
+	"biblioteca/modelos"
+	"context"
+
+	pgx "github.com/jackc/pgx/v5"
+)
+
 type ErroBancoPais int
 
 const (
@@ -12,35 +15,6 @@ const (
 	ErroBancoPaisExistente
 	ErroBancoPaisNomeOuSiglaDuplicado
 )
-
-
-func CadastrarPais(novoPais modelos.Pais) (modelos.Pais, ErroBancoPais) {
-	conexao := PegarConexao()
-	_, achou := PegarPaisPeloId(novoPais.IdDoPais)
-	if !achou {
-		return modelos.Pais{}, ErroBancoPaisExistente
-	}
-
-	textoDaQuery := "insert into pais(nome, sigla, ativo) values($1, $1)"
-	_, erro := conexao.Exec(
-		context.Background(),
-		textoDaQuery,
-		novoPais.Nome,
-		novoPais.Sigla,
-		true,
-	)
-
-	if erro != nil {
-		fmt.Println(erro)
-		panic("Um erro inesperado acontesceu. Provavelmente é um bug")
-	}
-
-	textoDaQuery = "select max(id_pais) from pais"
-
-	conexao.QueryRow(context.Background(), textoDaQuery).Scan(&novoPais.IdDoPais)
-
-	return novoPais, ErroBancoPaisNenhum
-}
 
 func BuscarPaises(pais modelos.Pais) []modelos.Pais {
 	if pais.IdDoPais != 0 {
@@ -59,9 +33,9 @@ func BuscarPaises(pais modelos.Pais) []modelos.Pais {
 		if paises == nil {
 			return []modelos.Pais{}
 		}
-		// código meio paia	
+		// código meio paia
 		for _, pais := range paises {
-			paisesEncontrados = append(paisesEncontrados, pais)	
+			paisesEncontrados = append(paisesEncontrados, pais)
 		}
 		return paisesEncontrados
 	}
@@ -77,11 +51,11 @@ func BuscarPaises(pais modelos.Pais) []modelos.Pais {
 		[]any{
 			&paisTemporario.IdDoPais,
 			&paisTemporario.Nome,
-			&paisTemporario.Sigla, 
+			&paisTemporario.Sigla,
 			&paisTemporario.Ativo,
 		},
-		func () error {
-			paisesEncontrados = append(paisesEncontrados, paisTemporario)	
+		func() error {
+			paisesEncontrados = append(paisesEncontrados, paisTemporario)
 			return nil
 		},
 	)
@@ -90,39 +64,6 @@ func BuscarPaises(pais modelos.Pais) []modelos.Pais {
 	}
 
 	return paisesEncontrados
-}
-
-
-func AtualizarPais(paisComDadosAtualizados modelos.Pais) ErroBancoPais {
-	if _, achou := PegarPaisPeloId(paisComDadosAtualizados.IdDoPais); !achou {
-		return ErroBancoPaisInexistente 
-	}
-
-	for _, p := range BuscarPaises(modelos.Pais{Nome: paisComDadosAtualizados.Nome, Sigla: paisComDadosAtualizados.Sigla}) {
-		if p.IdDoPais != paisComDadosAtualizados.IdDoPais {
-			return ErroBancoPaisNomeOuSiglaDuplicado
-		}
-	}
-
-	conexao := PegarConexao()
-	textoQuery := "update pais set nome = $1, sigla = $2, ativo = $3"
-	if _, erroQuery := conexao.Query(
-		context.Background(),
-		textoQuery,
-		paisComDadosAtualizados.Nome,
-		paisComDadosAtualizados.Sigla,
-		paisComDadosAtualizados.Ativo,
-	); erroQuery != nil {
-		panic("Um erro desconhecido acontesceu na atualização do pais")
-	}
-	
-	return ErroBancoPaisNenhum
-
-}
-
-func DeletarPais(exemplarASerExcluido modelos.Pais)  ErroBancoPais {
-	exemplarASerExcluido.Ativo = false
-	return AtualizarPais(exemplarASerExcluido)
 }
 
 func PegarPaisPeloId(idDoPais int) (modelos.Pais, bool) {
@@ -135,14 +76,12 @@ func PegarPaisPeloId(idDoPais int) (modelos.Pais, bool) {
 		&pais.Sigla,
 		&pais.Ativo,
 	); erro != nil {
-		return pais, false 
+		return pais, false
 	}
 
 	return pais, true
 
 }
-
-
 
 func PegarTodosOsPaises() map[int]modelos.Pais {
 	conexao := PegarConexao()
@@ -158,10 +97,10 @@ func PegarTodosOsPaises() map[int]modelos.Pais {
 		[]any{
 			&paisTemporario.IdDoPais,
 			&paisTemporario.Nome,
-			&paisTemporario.Sigla, 
-			&paisTemporario.Ativo, 
+			&paisTemporario.Sigla,
+			&paisTemporario.Ativo,
 		},
-		func () error {
+		func() error {
 			paisesEncontrados[paisTemporario.IdDoPais] = paisTemporario
 			return nil
 		},

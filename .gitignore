@@ -62,3 +62,4 @@ instalador/biblioteca
 instalador/*.yaml
 instalador/instalador.exe
 instalador/instalador
+instalador/script.sql

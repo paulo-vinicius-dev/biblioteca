@@ -19,7 +19,9 @@ class AuthorTablePageState extends State<AuthorTablePage> {
 
   @override
   void initState() {
-    Provider.of<AutorProvider>(context, listen: false).loadAutores();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AutorProvider>(context, listen: false).loadAutores();
+    });
     super.initState();
   }
 

@@ -1,11 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:biblioteca/tem_tabela/book_data.dart';
-import 'package:biblioteca/tem_tabela/book_model.dart';
+import 'package:biblioteca/data/models/livro_model.dart';
+import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/widgets/tables/exemplar_table_page.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
+import 'package:provider/provider.dart';
 
 class BookTablePage extends StatefulWidget {
   const BookTablePage({super.key});
@@ -20,7 +21,30 @@ class BookTablePageState extends State<BookTablePage> {
   int currentPage = 1; // Página atual
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<LivroProvider>(context, listen: false).loadLivros();
+    });
+    
+  }
+
+  @override
   Widget build(BuildContext context) {
+    LivroProvider livroProvider = Provider.of<LivroProvider>(context);
+
+    if (livroProvider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (livroProvider.hasErrors) {
+      return Text(livroProvider.error!);
+    } else {
+      return tableLivro(context);
+    }
+  }
+
+  Material tableLivro(BuildContext context) {
+    List<Livro> books = Provider.of<LivroProvider>(context).livros;
+
     int totalPages = (books.length / rowsPerPage).ceil();
 
     // Calcula o índice inicial e final dos livros exibidos
@@ -30,7 +54,7 @@ class BookTablePageState extends State<BookTablePage> {
         : books.length;
 
     // Seleciona os livros que serão exibidos na página atual
-    List<Book> paginatedBooks = books.sublist(startIndex, endIndex);
+    List<Livro> paginatedBooks = books.sublist(startIndex, endIndex);
 
     // Lógica para definir os botões de página (máximo 10 botões)
     int startPage = currentPage - 4 < 1 ? 1 : currentPage - 4;
@@ -122,7 +146,7 @@ class BookTablePageState extends State<BookTablePage> {
                       children: [
                         Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Text('Nome',
+                            child: Text('Título',
                                 textAlign: TextAlign.left,
                                 style: TextStyle(fontWeight: FontWeight.bold))),
                         Padding(
@@ -160,7 +184,8 @@ class BookTablePageState extends State<BookTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(book.nome, textAlign: TextAlign.left),
+                              child:
+                                  Text(book.titulo, textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
@@ -182,7 +207,7 @@ class BookTablePageState extends State<BookTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(book.dataPublicacao,
+                              child: Text(book.anoPublicacao.toIso8601String(),
                                   textAlign: TextAlign.left),
                             ),
                           ),
@@ -244,15 +269,27 @@ class BookTablePageState extends State<BookTablePage> {
                                   ),
                                   const SizedBox(width: 3),
                                   ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
+                                    onPressed: () async {
+                                      try {
+                                        // Navegar para a página de Exemplares com os dados carregados
+                                        Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ExemplaresPage(
-                                                      bookName: book.nome,
-                                                      exemplares:
-                                                          book.exemplares)));
+                                            builder: (context) =>
+                                                ExemplaresPage(
+                                              bookName: book.titulo,
+                                              idLivro: book.idLivro,
+                                            ),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        // Tratar erro caso os exemplares não possam ser carregados
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text(
+                                              'Erro ao carregar exemplares: $e'),
+                                        ));
+                                      }
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color.fromARGB(

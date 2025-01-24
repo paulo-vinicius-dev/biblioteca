@@ -44,7 +44,7 @@ func Localicao(contexto ContextoUi) {
 				widget.NewEntryWithData(caminho),
 				widget.NewButton("Procurar", func() {
 					dialog.ShowFolderOpen(func(pasta fyne.ListableURI, erro error) {
-						if erro != nil {
+						if erro == nil {
 							caminho.Set(pasta.Path())
 							contexto.CaminhoDaInstalacao = pasta.Path()
 							Localicao(contexto)

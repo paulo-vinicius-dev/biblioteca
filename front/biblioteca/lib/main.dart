@@ -4,7 +4,6 @@ import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
-import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
@@ -39,7 +38,6 @@ class Myapp extends StatelessWidget {
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider(),),
         ChangeNotifierProvider(create: (context) => MenuState()),
         ChangeNotifierProvider(create: (context) => AutorProvider()),
-        ChangeNotifierProvider(create: (context) => LivroProvider()),
         ProxyProvider<AuthProvider, UsuarioProvider>(
           create: (_) => UsuarioProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => UsuarioProvider(
@@ -48,6 +46,11 @@ class Myapp extends StatelessWidget {
         ProxyProvider<AuthProvider, ExemplarProvider>(
           create: (_) => ExemplarProvider(0, ''),
           update: (_, authProvider, exemplarprovider) => ExemplarProvider(
+              authProvider.idDaSessao!, authProvider.usuarioLogado!),
+        ),
+        ProxyProvider<AuthProvider, LivroProvider>(
+          create: (_) => LivroProvider(0, ''),
+          update: (_, authProvider, exemplarprovider) => LivroProvider(
               authProvider.idDaSessao!, authProvider.usuarioLogado!),
         ),
       ],

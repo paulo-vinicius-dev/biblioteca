@@ -1,13 +1,17 @@
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/services/livro_service.dart';
 import 'package:flutter/material.dart';
-import 'package:biblioteca/data/models/exemplar_model.dart';
 
 class LivroProvider extends ChangeNotifier {
   final LivroService _livroService = LivroService();
   bool _isLoading = false;
   String? _error;
   List<Livro> _livros = [];
+  
+  final num idDaSessao;
+  final String usuarioLogado;
+
+  LivroProvider(this.idDaSessao, this.usuarioLogado);
 
   // Getters
   bool get isLoading => _isLoading;
@@ -22,40 +26,14 @@ class LivroProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final apiResponse = await _livroService.fetchLivros();
-      print('API Response Code: ${apiResponse.responseCode}');
-      print('API Response Body: ${apiResponse.body}');
-
-      if (apiResponse.responseCode == 200) {
-        _livros = apiResponse.body;
-      } else {
-        _error = apiResponse.body;
-      }
+      final livrosAtingidos = await _livroService.fetchLivros(idDaSessao, usuarioLogado);
+      print('Livros carregados: ${livrosAtingidos.livrosAtingidos}');
+      _livros = livrosAtingidos.livrosAtingidos;
     } catch (e) {
       _error = "Erro ao carregar os Livros:\n$e";
     } finally {
       _isLoading = false;
       notifyListeners();
-    }
-  }
-
-  Future<List<Exemplar>> loadExemplares(int idLivro) async {
-    try {
-      final apiResponse = await _livroService.fetchExemplares(idLivro);
-
-      if (apiResponse.responseCode == 200) {
-        // Garantir que a resposta é uma lista de exemplares
-        if (apiResponse.body is List) {
-          return List<Exemplar>.from(
-              apiResponse.body.map((x) => Exemplar.fromJson(x)));
-        } else {
-          throw Exception("Formato de dados incorreto para exemplares.");
-        }
-      } else {
-        throw Exception("Erro ao carregar exemplares: ${apiResponse.body}");
-      }
-    } catch (e) {
-      throw Exception('Erro ao carregar exemplares: $e');
     }
   }
 
@@ -66,13 +44,11 @@ class LivroProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final apiResponse = await _livroService.addLivro(livro);
-
-      if (apiResponse.responseCode > 299) {
-        _error = apiResponse.body;
-      } else {
-        _livros.add(livro);
-      }
+      // Chama o método de adicionar livro
+      await _livroService.addLivro(livro);
+      
+      // Caso o livro seja adicionado com sucesso, adicionamos à lista local
+      _livros.add(livro);
     } catch (e) {
       _error = "Erro ao inserir novo Livro:\n$e";
     } finally {
@@ -88,16 +64,13 @@ class LivroProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final apiResponse = await _livroService.alterLivro(livro);
+      // Chama o método de alterar livro
+      await _livroService.alterLivro(livro);
 
-      if (apiResponse.responseCode != 200) {
-        _error = apiResponse.body;
-      } else {
-        // Atualiza o livro na lista local
-        final index = _livros.indexWhere((l) => l.isbn == livro.isbn);
-        if (index != -1) {
-          _livros[index] = livro;
-        }
+      // Atualiza o livro na lista local
+      final index = _livros.indexWhere((l) => l.isbn == livro.isbn);
+      if (index != -1) {
+        _livros[index] = livro;
       }
     } catch (e) {
       _error = "Erro ao alterar o Livro:\n$e";
@@ -114,14 +87,11 @@ class LivroProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final apiResponse = await _livroService.deleteLivro(idLivro);
+      // Chama o método de deletar livro
+      await _livroService.deleteLivro(idLivro);
 
-      if (apiResponse.responseCode != 200) {
-        _error = apiResponse.body;
-      } else {
-        _livros.removeWhere(
-            (livro) => livro.idLivro == idLivro); // Remove pelo idLivro
-      }
+      // Remove o livro da lista local
+      _livros.removeWhere((livro) => livro.idLivro == idLivro);
     } catch (e) {
       _error = "Erro ao deletar o Livro:\n$e";
     } finally {

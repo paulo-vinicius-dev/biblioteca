@@ -1,16 +1,18 @@
-import 'package:biblioteca/data/models/api_response_model.dart';
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/services/api_service.dart';
-import 'package:biblioteca/data/models/exemplar_model.dart';
+import 'package:biblioteca/data/models/livros_resposta.dart';
+
 
 class LivroService {
   final ApiService _api = ApiService();
   final String apiRoute = 'livro';
 
-  // Retorna todos os livros
-  Future<ApiResponse> fetchLivros() async {
-    List<Livro> livros = [];
-    final Map<String, dynamic> body = {};
+  // Retorna todos os livros como um objeto LivrosAtingidos
+  Future<LivrosAtingidos> fetchLivros(num idDaSessao, String loginDoUsuarioRequerente) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuario": loginDoUsuarioRequerente,
+    };
 
     final response = await _api.requisicao(
       apiRoute,
@@ -19,42 +21,34 @@ class LivroService {
     );
 
     if (response.statusCode == 200) {
-      livros = List<Livro>.from(response.data.map((x) => Livro.fromJson(x)));
+      return LivrosAtingidos.fromJson(response.data); // Retorna a resposta como LivrosAtingidos
+    } else {
+      throw Exception('Erro ao carregar os livros: ${response.data}');
     }
-
-    return ApiResponse(
-      responseCode: response.statusCode!,
-      body: response.statusCode == 200 ? livros : response.data,
-    );
   }
 
-  Future<ApiResponse> fetchExemplares(int idLivro) async {
-    List<Exemplar> exemplares = [];
-    final Map<String, dynamic> body = {};
+    Future<LivrosAtingidos> searchExemplares(num idDaSessao,
+      String loginDoUsuarioRequerente, String textoDeBusca) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuario": loginDoUsuarioRequerente,
+    };
 
     final response = await _api.requisicao(
-      '$apiRoute/livro/$idLivro/exemplares', // Ajuste na rota, se necessário
+      apiRoute,
       'GET',
       body,
     );
 
-    if (response.statusCode == 200) {
-      if (response.data is List) {
-        exemplares =
-            List<Exemplar>.from(response.data.map((x) => Exemplar.fromJson(x)));
-      } else {
-        throw Exception("Formato de dados incorreto para exemplares.");
-      }
+    if (response.statusCode != 200) {
+      throw Exception(response.data);
     }
-
-    return ApiResponse(
-      responseCode: response.statusCode!,
-      body: response.statusCode == 200 ? exemplares : response.data,
-    );
+    return livrosAtingidosFromJson(response.data);
   }
 
+
   // Criar novo Livro
-  Future<ApiResponse> addLivro(Livro livro) async {
+  Future<void> addLivro(Livro livro) async {
     final Map<String, dynamic> body = livro.toJson();
 
     final response = await _api.requisicao(
@@ -63,14 +57,13 @@ class LivroService {
       body,
     );
 
-    return ApiResponse(
-      responseCode: response.statusCode!,
-      body: response.data,
-    );
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao adicionar livro: ${response.data}');
+    }
   }
 
   // Alterar Livro
-  Future<ApiResponse> alterLivro(Livro livro) async {
+  Future<void> alterLivro(Livro livro) async {
     final Map<String, dynamic> body = livro.toJson();
 
     final response = await _api.requisicao(
@@ -79,14 +72,13 @@ class LivroService {
       body,
     );
 
-    return ApiResponse(
-      responseCode: response.statusCode!,
-      body: response.data,
-    );
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao alterar livro: ${response.data}');
+    }
   }
 
   // Deletar Livro
-  Future<ApiResponse> deleteLivro(int id) async {
+  Future<void> deleteLivro(int id) async {
     final Map<String, dynamic> body = {
       "id": id,
     };
@@ -97,9 +89,8 @@ class LivroService {
       body,
     );
 
-    return ApiResponse(
-      responseCode: response.statusCode!,
-      body: response.data,
-    );
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao deletar livro: ${response.data}');
+    }
   }
 }

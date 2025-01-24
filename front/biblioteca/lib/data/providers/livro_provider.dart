@@ -91,7 +91,7 @@ class LivroProvider extends ChangeNotifier {
       await _livroService.deleteLivro(idLivro);
 
       // Remove o livro da lista local
-      _livros.removeWhere((livro) => livro.idLivro == idLivro);
+      _livros.removeWhere((livro) => livro.idDoLivro == idLivro);
     } catch (e) {
       _error = "Erro ao deletar o Livro:\n$e";
     } finally {

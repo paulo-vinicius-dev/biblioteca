@@ -1,9 +1,9 @@
-
 import 'package:biblioteca/data/models/emprestimos_model.dart';
+import 'package:biblioteca/data/models/exemplar_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
+import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
-import 'package:biblioteca/tem_tabela/book_data.dart';
-import 'package:biblioteca/tem_tabela/book_model.dart';
+
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:provider/provider.dart';
@@ -25,33 +25,43 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   bool showBooks = false;
   bool showLivrosEmprestados = false;
   int selectOption = -1;
-  Book? selectbook;
-  late Usuario? selectUser;  // Inicializado como null
-   // Lista de livros (precisa ser preenchida com dados reais)
+  Exemplar? selectbook;
+  Usuario? selectUser;
+  final formato = DateFormat('dd-MM-yyyy');
  
   late String dataDevolucao;
   late String dataEmprestimo;
 
   late List<Usuario>users;
-  
+  late List<Exemplar> exemplares;
   @override
   void initState() {
-    super.initState();
-    _searchController = TextEditingController();
-    _searchControllerBooks = TextEditingController();
-    _filteredUsers = [];
-    
-     WidgetsBinding.instance.addPostFrameCallback((_) {
+  super.initState();
+  _searchController = TextEditingController();
+  _searchControllerBooks = TextEditingController();
+  _filteredUsers = [];
+  
+  // Carregar usuários
+  WidgetsBinding.instance.addPostFrameCallback((_) {
     Provider.of<UsuarioProvider>(context, listen: false).loadUsuarios().then((_) {
       setState(() {
         users = Provider.of<UsuarioProvider>(context, listen: false).users;
       });
     }).catchError((error) {
-      
       print('Erro ao carregar usuários: $error');
     });
   });
-  }
+  
+  // Carregar exemplares
+  Provider.of<ExemplarProvider>(context, listen: false).loadExemplares().then((_) {
+    setState(() {
+      exemplares = Provider.of<ExemplarProvider>(context, listen: false).exemplares;
+     
+    });
+  }).catchError((error) {
+    print('Erro ao carregar exemplares: $error');
+  });
+}
   @override
   void dispose() {
     _searchController.dispose();
@@ -71,12 +81,19 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   }
 
   void searchBooks() {
-    showBooks = true;
-    final searchQuery = _searchControllerBooks.text.toLowerCase();
-    setState(() {
-    selectbook = booksEmprestimo.firstWhere(
-      (book) => book.codigo.toLowerCase().contains(searchQuery),
-    );
+  showBooks = true;
+    final searchQuery = _searchControllerBooks.text.trim();
+
+  setState(() {
+    // Tenta converter o texto da pesquisa para um número inteiro
+    final searchId = int.tryParse(searchQuery);
+    
+    // Verifica se a conversão foi bem-sucedida e se o exemplar foi encontrado
+    selectbook = searchId != null 
+      ? exemplares.firstWhere(
+          (exemplar) => exemplar.id == searchId,
+        )
+      : null; // Retorna null se o ID não for um número válido
   });
 }
  void getDate(){
@@ -89,7 +106,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
  }
 
 String renovar(String dataString) {
-  final formato = DateFormat('dd-MM-yyyy');
   final data = formato.parse(dataString);
   final novaData = data.add(const Duration(days: 7));
   return formato.format(novaData);
@@ -119,10 +135,9 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                   Table(
                     columnWidths: const {
                       0: FlexColumnWidth(0.10),
-                      1: FlexColumnWidth(0.10),
-                      2: FlexColumnWidth(0.20),
+                      1: FlexColumnWidth(0.20),
+                      2: FlexColumnWidth(0.15),
                       3: FlexColumnWidth(0.15),
-                      4: FlexColumnWidth(0.15),
                     },
                     border: TableBorder.all(color: const Color.fromARGB(255, 213, 213, 213)),
                     children: [
@@ -132,10 +147,6 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                              const Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Text('Codigo', textAlign: TextAlign.left,style:TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(7.0),
-                              child: Text('ISBN', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
                             const Padding(
                               padding: EdgeInsets.all(7.0),
@@ -156,10 +167,6 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(livro.codigo, textAlign: TextAlign.left,),
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(livro.isbn, textAlign: TextAlign.left,),
                             ),
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -243,6 +250,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                       padding: EdgeInsets.all(8.0),
                       child: Text('Nenhum usuário encontrado', style: TextStyle(fontSize: 16)),
                     )
+                  
                   else
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,7 +436,6 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                               2: FlexColumnWidth(0.20),
                                               3: FlexColumnWidth(0.15),
                                               4: FlexColumnWidth(0.15),
-                                              5: FlexColumnWidth(0.12),
                                     },
                                     border: TableBorder.all(color: const Color.fromARGB(255, 213, 213, 213)),
                                     children: [
@@ -438,10 +445,6 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                              Padding(
                                                   padding: EdgeInsets.all(8.0),
                                                   child: Text('Codigo', textAlign: TextAlign.left,style:TextStyle(fontWeight: FontWeight.bold)),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(7.0),
-                                              child: Text('ISBN', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
                                             ),
                                             Padding(
                                               padding: EdgeInsets.all(7.0),
@@ -465,10 +468,6 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                             Padding(
                                               padding: const EdgeInsets.all(7.0),
                                               child: Text(selectUser!.livrosEmprestados[x].codigo, textAlign: TextAlign.left),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.all(7.0),
-                                              child: Text(selectUser!.livrosEmprestados[x].isbn, textAlign: TextAlign.left),
                                             ),
                                             Padding(
                                               padding: const EdgeInsets.all(7.0),
@@ -569,11 +568,11 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                   ),
                                                   Padding(
                                                     padding: EdgeInsets.all(8.0),
-                                                    child: Text('ISBN', textAlign: TextAlign.left, style:TextStyle(fontWeight: FontWeight.bold)),
+                                                    child: Text('Titulo', textAlign: TextAlign.left, style:TextStyle(fontWeight: FontWeight.bold)),
                                                   ),
                                                   Padding(
                                                     padding: EdgeInsets.all(8.0),
-                                                    child: Text('Nome', textAlign: TextAlign.left, style:TextStyle(fontWeight: FontWeight.bold)),
+                                                    child: Text('Ano de Publicação', textAlign: TextAlign.left, style:TextStyle(fontWeight: FontWeight.bold)),
                                                   ),
                                                   Padding(
                                                     padding: EdgeInsets.all(8.0),
@@ -581,7 +580,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                   ),
                                                   Padding(
                                                     padding: EdgeInsets.all(8.0),
-                                                    child: Text('Data de Publicação', textAlign: TextAlign.left, style:TextStyle(fontWeight: FontWeight.bold)),
+                                                    child: Text('Cativo', textAlign: TextAlign.left, style:TextStyle(fontWeight: FontWeight.bold)),
                                                   ),
                                                   SizedBox.shrink()
                                                 ],
@@ -591,15 +590,15 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                   children: [
                                                     Padding(
                                                       padding: const EdgeInsets.all(8.0),
-                                                      child: Text(selectbook!.codigo, textAlign: TextAlign.left),
+                                                      child: Text(selectbook!.id.toString(), textAlign: TextAlign.left),
                                                     ),
                                                     Padding(
                                                       padding: const EdgeInsets.all(8.0),
-                                                      child: Text(selectbook!.isbn, textAlign: TextAlign.left),
+                                                      child: Text(selectbook!.titulo, textAlign: TextAlign.left),
                                                     ),
                                                     Padding(
                                                       padding: const EdgeInsets.all(8.0),
-                                                      child: Text(selectbook!.nome, textAlign: TextAlign.left),
+                                                      child: Text(DateFormat('dd-MM-yyyy').format(selectbook!.anoPublicacao), textAlign: TextAlign.left),
                                                     ),
                                                     Padding(
                                                       padding: const EdgeInsets.all(8.0),
@@ -607,7 +606,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                     ),
                                                     Padding(
                                                       padding: const EdgeInsets.all(8.0),
-                                                      child: Text(selectbook!.dataPublicacao, textAlign: TextAlign.left),
+                                                      child: Text(selectbook!.cativo?'Sim': 'Não', textAlign: TextAlign.left),
                                                     ),
                                                     Padding(
                                                       padding: const EdgeInsets.all(10.0),
@@ -620,7 +619,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                           showLivrosEmprestados = true;
                                                           getDate();
                                                           setState(() {
-                                                            users[users.indexOf(selectUser!)].livrosEmprestados.add(EmprestimosModel(selectbook!.codigo, selectbook!.isbn,selectbook!.nome, dataEmprestimo, dataDevolucao));
+                                                            users[users.indexOf(selectUser!)].livrosEmprestados.add(EmprestimosModel(selectbook!.id.toString(),selectbook!.titulo, dataEmprestimo, dataDevolucao));
                                                           });
                                                           msgConfirm(context, 'Empréstimo', selectUser!.livrosEmprestados.last);
                                                         },

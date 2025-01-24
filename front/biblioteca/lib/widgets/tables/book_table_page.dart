@@ -279,7 +279,7 @@ class BookTablePageState extends State<BookTablePage> {
                                             builder: (context) =>
                                                 ExemplaresPage(
                                               bookName: book.titulo,
-                                              idLivro: book.idLivro,
+                                              idLivro: book.idDoLivro,
                                             ),
                                           ),
                                         );

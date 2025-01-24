@@ -5,7 +5,7 @@ Livro livroFromJson(String str) => Livro.fromJson(json.decode(str));
 String livroToJson(Livro data) => json.encode(data.toJson());
 
 class Livro {
-  int idLivro;
+  int idDoLivro;
   String isbn;
   String titulo;
   DateTime anoPublicacao;
@@ -13,7 +13,7 @@ class Livro {
   int pais;
 
   Livro({
-    required this.idLivro,
+    required this.idDoLivro,
     required this.isbn,
     required this.titulo,
     required this.anoPublicacao,
@@ -22,7 +22,7 @@ class Livro {
   });
 
   factory Livro.fromJson(Map<String, dynamic> json) => Livro(
-        idLivro: json["idLivro"],
+        idDoLivro: json["idLivro"],
         isbn: json["isbn"],
         titulo: json["titulo"],
         anoPublicacao: DateTime.parse(json["ano_publicacao"]),
@@ -31,11 +31,11 @@ class Livro {
       );
 
   Map<String, dynamic> toJson() => {
-        "idLivro": idLivro,
+        "idLivro": idDoLivro,
         "isbn": isbn,
         "titulo": titulo,
         "ano_publicacao": anoPublicacao.toIso8601String(), 
         "editora": editora,
-        "pais": pais,
+        "pais": pais, 
       };
 }

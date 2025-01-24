@@ -55,7 +55,7 @@ class UsuarioService {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
-      "TextoDeBusca": "_"
+      "TextoDeBusca": ""
     };
 
     final response = await _api.requisicao(

@@ -11,7 +11,7 @@ class LivroService {
   Future<LivrosAtingidos> fetchLivros(num idDaSessao, String loginDoUsuarioBuscador) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
-      "loginDoUsuarioBuscador": loginDoUsuarioBuscador,
+      "LoginDoUsuarioRequerente": loginDoUsuarioBuscador,
     };
 
     final response = await _api.requisicao(
@@ -31,7 +31,8 @@ class LivroService {
       String loginDoUsuarioRequerente, String textoDeBusca) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
-      "loginDoUsuarioBuscador": loginDoUsuarioRequerente,
+      "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
+      "TextoDeBusca": textoDeBusca
     };
 
     final response = await _api.requisicao(

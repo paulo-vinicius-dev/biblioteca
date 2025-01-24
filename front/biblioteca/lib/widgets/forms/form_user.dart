@@ -180,26 +180,34 @@ class _FormUserState extends State<FormUser> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    const SizedBox(height: 30.0),
+                    // Informações de Acesso
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Informações de Acesso
                         getBlocoInformacoesDeAcesso(),
+                      ],
+                    ),
+                    const SizedBox(height: 30.0),
 
-                        // Espaçamento
-                        const SizedBox(width: 20.0),
-
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         // Informações Pessoais
                         getBlocoInformacoesPessoais(context),
+                      ],
+                    ),
+                    const SizedBox(height: 30.0),
 
-                        // Espaçamento
-                        const SizedBox(width: 20.0),
-
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         // Informações Acadêmicas
                         getBlocoInformacoesAcademicas(),
                       ],
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 30.0),
 
                     // Botões
                     Row(
@@ -273,101 +281,119 @@ class _FormUserState extends State<FormUser> {
           ),
           const SizedBox(height: 10.0),
 
-          // Nome
-          TextFormField(
-            controller: _nomeController,
-            decoration: const InputDecoration(
-              label: CampoObrigatorio(label: "Nome"),
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Preencha esse campo";
-              } else if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$').hasMatch(value)) {
-                return "O nome deve conter apenas letras";
-              }
-              return null;
-            },
+          // Row 1: Nome + Email + CPF
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _nomeController,
+                  decoration: const InputDecoration(
+                    label: CampoObrigatorio(label: "Nome"),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Preencha esse campo";
+                    } else if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$').hasMatch(value)) {
+                      return "O nome deve conter apenas letras";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(width: 10.0),
+              Expanded(
+                child: TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    label: CampoObrigatorio(label: "Email"),
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Preencha esse campo";
+                    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                        .hasMatch(value)) {
+                      return "Insira um email válido";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(width: 10.0),
+              Expanded(
+                child: TextFormField(
+                  controller: _cpfController,
+                  decoration: const InputDecoration(
+                    labelText: "CPF",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value != null &&
+                        value.isNotEmpty &&
+                        value.length != 11) {
+                      return "Insira um CPF válido";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10.0),
 
-          // Email
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(
-              label: CampoObrigatorio(label: "Email"),
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.emailAddress,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Preencha esse campo";
-              } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                return "Insira um email válido";
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 10.0),
-
-          // Telefone
-          TextFormField(
-            controller: _telefoneController,
-            decoration: const InputDecoration(
-              labelText: "Telefone",
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-              if (value != null && value.isNotEmpty && value.length != 11) {
-                return "Insira um telefone válido";
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 10.0),
-
-          //Data de Nascimento
-          TextFormField(
-            readOnly: true,
-            controller: _dateController,
-            decoration: const InputDecoration(
-              labelText: "Data de Nascimento",
-              border: OutlineInputBorder(),
-              suffixIcon: Icon(Icons.calendar_today),
-            ),
-            onTap: () async {
-              final DateTime? pickedDate = await showDatePicker(
-                context: context,
-                initialEntryMode: DatePickerEntryMode.input,
-                locale: const Locale('pt', 'BR'),
-                initialDate:
-                    isModoEdicao() ? widget.usuario!.dataDeNascimento : _today,
-                firstDate: DateTime(1900),
-                lastDate: _today,
-              );
-              if (pickedDate != null) {
-                setState(() {
-                  _dateController.text =
-                      DateFormat('d/M/y').format(pickedDate).toString();
-                });
-              }
-            },
-          ),
-          const SizedBox(height: 10.0),
-
-          // CPF
-          TextFormField(
-            controller: _cpfController,
-            decoration: const InputDecoration(
-              labelText: "CPF",
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-              if (value != null && value.isNotEmpty && value.length != 11) {
-                return "Insira um CPF válido";
-              }
-              return null;
-            },
+          // Row 2: Telefone + Data de Nascimento
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _telefoneController,
+                  decoration: const InputDecoration(
+                    labelText: "Telefone",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value != null &&
+                        value.isNotEmpty &&
+                        value.length != 11) {
+                      return "Insira um telefone válido";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(width: 10.0),
+              Expanded(
+                child: TextFormField(
+                  readOnly: true,
+                  controller: _dateController,
+                  decoration: const InputDecoration(
+                    labelText: "Data de Nascimento",
+                    border: OutlineInputBorder(),
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () async {
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialEntryMode: DatePickerEntryMode.input,
+                      locale: const Locale('pt', 'BR'),
+                      initialDate: isModoEdicao()
+                          ? widget.usuario!.dataDeNascimento
+                          : _today,
+                      firstDate: DateTime(1900),
+                      lastDate: _today,
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        _dateController.text =
+                            DateFormat('d/M/y').format(pickedDate).toString();
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -472,106 +498,120 @@ class _FormUserState extends State<FormUser> {
           ),
           const SizedBox(height: 10.0),
 
-          // Tipo de Usuário
-          DropdownButtonFormField<String>(
-            decoration: const InputDecoration(
-              label: CampoObrigatorio(label: "Tipo de Usuário"),
-              border: OutlineInputBorder(),
-            ),
-            value: _userTypeController.text,
-            items: usuarios.map((String userType) {
-              return DropdownMenuItem<String>(
-                value: userType,
-                child: Text(userType),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              _userTypeController.text = newValue!;
-              setState(() {});
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Selecione um tipo de usuário";
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 10.0),
-
-          // Login
-          TextFormField(
-            controller: _loginController,
-            decoration: const InputDecoration(
-              label: CampoObrigatorio(label: "Login "),
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Preencha esse campo";
-              } else if (!RegExp(r'^[a-zA-Z0-9._-]+$').hasMatch(value)) {
-                return "O login não deve conter caracteres especiais, exceto '.', '_' ou '-'";
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 10.0),
-
-          // Senha
-          TextFormField(
-            controller: _passwordController,
-            decoration: InputDecoration(
-              label: const CampoObrigatorio(label: "Senha"),
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _passwordVisible ? Icons.visibility : Icons.visibility_off,
+          // Row 1: Tipo de Usuário + Login
+          Row(
+            children: [
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(
+                    label: CampoObrigatorio(label: "Tipo de Usuário"),
+                    border: OutlineInputBorder(),
+                  ),
+                  value: _userTypeController.text,
+                  items: usuarios.map((String userType) {
+                    return DropdownMenuItem<String>(
+                      value: userType,
+                      child: Text(userType),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    _userTypeController.text = newValue!;
+                    setState(() {});
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Selecione um tipo de usuário";
+                    }
+                    return null;
+                  },
                 ),
-                onPressed: () {
-                  setState(() {
-                    _passwordVisible = !_passwordVisible;
-                  });
-                },
               ),
-            ),
-            obscureText: !_passwordVisible,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Preencha esse campo";
-              } else if (value.length < 8) {
-                return "A senha deve ter pelo menos 8 caracteres";
-              }
-              return null;
-            },
+              const SizedBox(width: 10.0),
+              Expanded(
+                child: TextFormField(
+                  controller: _loginController,
+                  decoration: const InputDecoration(
+                    label: CampoObrigatorio(label: "Login "),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Preencha esse campo";
+                    } else if (!RegExp(r'^[a-zA-Z0-9._-]+$').hasMatch(value)) {
+                      return "O login não deve conter caracteres especiais, exceto '.', '_' ou '-'";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10.0),
 
-          // Confirmar Senha
-          TextFormField(
-            decoration: InputDecoration(
-              label: const CampoObrigatorio(label: "Confirmar Senha"),
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _confirmPasswordVisible
-                      ? Icons.visibility
-                      : Icons.visibility_off,
+          // Row 2: Senha + Confirmar Senha
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    label: const CampoObrigatorio(label: "Senha"),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                  obscureText: !_passwordVisible,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Preencha esse campo";
+                    } else if (value.length < 8) {
+                      return "A senha deve ter pelo menos 8 caracteres";
+                    }
+                    return null;
+                  },
                 ),
-                onPressed: () {
-                  setState(() {
-                    _confirmPasswordVisible = !_confirmPasswordVisible;
-                  });
-                },
               ),
-            ),
-            obscureText: !_confirmPasswordVisible,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Preencha esse campo";
-              } else if (value != _passwordController.text) {
-                return "As senhas não são iguais";
-              }
-              return null;
-            },
+              const SizedBox(width: 10.0),
+              Expanded(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    label: const CampoObrigatorio(label: "Confirmar Senha"),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _confirmPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _confirmPasswordVisible = !_confirmPasswordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                  obscureText: !_confirmPasswordVisible,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Preencha esse campo";
+                    } else if (value != _passwordController.text) {
+                      return "As senhas não são iguais";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),

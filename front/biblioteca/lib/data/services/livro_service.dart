@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 import 'package:biblioteca/data/models/livro_model.dart';
-import 'package:biblioteca/data/services/api_service.dart';
 import 'package:biblioteca/data/models/livros_resposta.dart';
-
+import 'package:biblioteca/data/services/api_service.dart';
 
 class LivroService {
   final ApiService _api = ApiService();
   final String apiRoute = 'livro';
 
   // Retorna todos os livros como um objeto LivrosAtingidos
-  Future<LivrosAtingidos> fetchLivros(num idDaSessao, String loginDoUsuarioBuscador) async {
+  Future<LivrosAtingidos> fetchLivros(
+      num idDaSessao, String loginDoUsuarioBuscador) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuarioRequerente": loginDoUsuarioBuscador,
@@ -23,13 +23,15 @@ class LivroService {
     );
 
     if (response.statusCode! >= 200 && response.statusCode! < 299) {
-      return LivrosAtingidos.fromJson(jsonDecode(response.data)); // Retorna a resposta como LivrosAtingidos
+      print(response.data);
+      return LivrosAtingidos.fromJson(
+          jsonDecode(response.data)); // Retorna a resposta como LivrosAtingidos
     } else {
       throw Exception('Erro ao carregar os livros: ${response.data}');
     }
   }
 
-    Future<LivrosAtingidos> searchLivros(num idDaSessao,
+  Future<LivrosAtingidos> searchLivros(num idDaSessao,
       String loginDoUsuarioRequerente, String textoDeBusca) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
@@ -48,7 +50,6 @@ class LivroService {
     }
     return livrosAtingidosFromJson(response.data);
   }
-
 
   // Criar novo Livro
   Future<void> addLivro(Livro livro) async {

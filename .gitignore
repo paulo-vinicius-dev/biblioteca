@@ -52,3 +52,13 @@ back/__*
 /*.exe
 **/.env
 
+## gitignore do instalador
+instalador/bundle
+instalador/.dart_tool
+instalador/001.zip
+instalador/bd.tar.gz
+instalador/biblioteca.exe
+instalador/biblioteca
+instalador/*.yaml
+instalador/instalador.exe
+instalador/instalador

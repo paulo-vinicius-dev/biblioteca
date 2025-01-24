@@ -59,7 +59,6 @@ instalador/001.zip
 instalador/bd.tar.gz
 instalador/biblioteca.exe
 instalador/biblioteca
-instalador/*.yaml
 instalador/instalador.exe
 instalador/instalador
 instalador/script.sql

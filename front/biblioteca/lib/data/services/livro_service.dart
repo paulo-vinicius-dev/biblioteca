@@ -8,10 +8,10 @@ class LivroService {
   final String apiRoute = 'livro';
 
   // Retorna todos os livros como um objeto LivrosAtingidos
-  Future<LivrosAtingidos> fetchLivros(num idDaSessao, String loginDoUsuarioRequerente) async {
+  Future<LivrosAtingidos> fetchLivros(num idDaSessao, String loginDoUsuarioBuscador) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
-      "LoginDoUsuario": loginDoUsuarioRequerente,
+      "loginDoUsuarioBuscador": loginDoUsuarioBuscador,
     };
 
     final response = await _api.requisicao(
@@ -27,11 +27,11 @@ class LivroService {
     }
   }
 
-    Future<LivrosAtingidos> searchExemplares(num idDaSessao,
+    Future<LivrosAtingidos> searchLivros(num idDaSessao,
       String loginDoUsuarioRequerente, String textoDeBusca) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
-      "LoginDoUsuario": loginDoUsuarioRequerente,
+      "loginDoUsuarioBuscador": loginDoUsuarioRequerente,
     };
 
     final response = await _api.requisicao(

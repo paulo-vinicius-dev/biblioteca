@@ -65,11 +65,12 @@ class _BreadCrumbItemState extends State<BreadCrumbItem> {
            onTap: () {
             if(widget.isFirst) context.read<MenuState>().expandedIndex = 0;
             final routeName = widget.name;
-            Navigator.of(context).popUntil((route) {
-              final shouldStop = widget.breadcrumb.last == routeName;
-              if (!shouldStop) widget.breadcrumb.removeLast();
-              return shouldStop;
-            });
+            final List<String> breadcrumbModificavel = List.from(widget.breadcrumb);
+              Navigator.of(context).popUntil((route) {
+                final shouldStop = breadcrumbModificavel.last == routeName;
+                if (!shouldStop) breadcrumbModificavel.removeLast();
+                return shouldStop;
+              });
           },
           onHover: (hovering) {
             setState(() {

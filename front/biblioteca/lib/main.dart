@@ -1,5 +1,6 @@
 import 'package:biblioteca/data/providers/auth_provider.dart';
 import 'package:biblioteca/data/providers/autor_provider.dart';
+import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
@@ -43,6 +44,11 @@ class Myapp extends StatelessWidget {
         ProxyProvider<AuthProvider, UsuarioProvider>(
           create: (_) => UsuarioProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => UsuarioProvider(
+              authProvider.idDaSessao!, authProvider.usuarioLogado!),
+        ),
+        ProxyProvider<AuthProvider, ExemplarProvider>(
+          create: (_) => ExemplarProvider(0, ''),
+          update: (_, authProvider, exemplarprovider) => ExemplarProvider(
               authProvider.idDaSessao!, authProvider.usuarioLogado!),
         ),
       ],

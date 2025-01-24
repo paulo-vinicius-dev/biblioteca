@@ -3,7 +3,6 @@ import 'package:biblioteca/data/services/livro_service.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/data/models/exemplar_model.dart';
 
-
 class LivroProvider extends ChangeNotifier {
   final LivroService _livroService = LivroService();
   bool _isLoading = false;
@@ -24,8 +23,8 @@ class LivroProvider extends ChangeNotifier {
 
     try {
       final apiResponse = await _livroService.fetchLivros();
-        print('API Response Code: ${apiResponse.responseCode}');
-        print('API Response Body: ${apiResponse.body}');
+      print('API Response Code: ${apiResponse.responseCode}');
+      print('API Response Body: ${apiResponse.body}');
 
       if (apiResponse.responseCode == 200) {
         _livros = apiResponse.body;
@@ -43,10 +42,17 @@ class LivroProvider extends ChangeNotifier {
   Future<List<Exemplar>> loadExemplares(int idLivro) async {
     try {
       final apiResponse = await _livroService.fetchExemplares(idLivro);
+
       if (apiResponse.responseCode == 200) {
-        return apiResponse.body; // Retorna a lista de exemplares
+        // Garantir que a resposta é uma lista de exemplares
+        if (apiResponse.body is List) {
+          return List<Exemplar>.from(
+              apiResponse.body.map((x) => Exemplar.fromJson(x)));
+        } else {
+          throw Exception("Formato de dados incorreto para exemplares.");
+        }
       } else {
-        throw Exception('Erro ao carregar exemplares');
+        throw Exception("Erro ao carregar exemplares: ${apiResponse.body}");
       }
     } catch (e) {
       throw Exception('Erro ao carregar exemplares: $e');

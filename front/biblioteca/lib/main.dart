@@ -4,7 +4,7 @@ import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
-import 'package:biblioteca/data/providers/exemplar_provider.dart';
+import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
@@ -40,7 +40,6 @@ class Myapp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => MenuState()),
         ChangeNotifierProvider(create: (context) => AutorProvider()),
         ChangeNotifierProvider(create: (context) => LivroProvider()),
-        ChangeNotifierProvider(create: (context) => ExemplarProvider()),
         ProxyProvider<AuthProvider, UsuarioProvider>(
           create: (_) => UsuarioProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => UsuarioProvider(

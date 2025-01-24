@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Para acessar o ExemplarProvider
 import 'package:biblioteca/data/models/exemplar_model.dart'; // Certifique-se de que o modelo está correto
-import 'package:biblioteca/data/providers/exemplar_provider.dart'; // Supondo que você tenha um provider para buscar exemplares
+import 'package:biblioteca/data/providers/exemplares_provider.dart'; // Supondo que você tenha um provider para buscar exemplares
 
 class ExemplaresPage extends StatefulWidget {
   final String bookName;
@@ -18,9 +18,7 @@ class ExemplaresPage extends StatefulWidget {
 }
 
 class _ExemplaresPageState extends State<ExemplaresPage> {
-  late List<Exemplar> exemplares; // Lista de exemplares
   bool isLoading = true; // Controle de loading
-  String errorMessage = ''; // Mensagem de erro
 
   @override
   void initState() {
@@ -30,8 +28,9 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
   }
 
   Future<void> _loadExemplares() async {
-    final provider = Provider.of<ExemplarProvider>(context, listen: false); // Usando o provider
-    await provider.loadExemplares(widget.idLivro); // Carregando os exemplares
+    final provider = Provider.of<ExemplarProvider>(context,
+        listen: false); // Usando o provider
+    await provider.loadExemplares(); // Carregando os exemplares
     setState(() {
       isLoading = false;
     });
@@ -52,8 +51,6 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
           children: [
             if (isLoading)
               const CircularProgressIndicator() // Mostra o loading enquanto carrega
-            else if (exemplarProvider.hasErrors)
-              Text(exemplarProvider.error ?? 'Erro desconhecido') // Exibe erro se houver
             else
               SingleChildScrollView(
                 child: Column(
@@ -112,43 +109,69 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                         ),
 
                         // Linhas da tabela
-                        for (int i = 0; i < exemplarProvider.exemplares.length; i++)
+                        for (int i = 0;
+                            i < exemplarProvider.exemplares.length;
+                            i++)
                           TableRow(
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text('000${i + 1}'),
+                                child: Text(
+                                    '${exemplarProvider.exemplares[i].id}'), // Código Exemplar agora é o id
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(exemplarProvider.exemplares[i].codigoExemplar),
+                                child:
+                                    Text(exemplarProvider.exemplares[i].isbn),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: DropdownButton<String>(
-                                  value: exemplarProvider.exemplares[i].estado,
+                                  value: exemplarProvider.exemplares[i].estado
+                                      .toString(),
                                   onChanged: (newValue) {
                                     setState(() {
                                       exemplarProvider.exemplares[i] = Exemplar(
-                                        idExemplar: exemplarProvider.exemplares[i].idExemplar,
-                                        idLivro: exemplarProvider.exemplares[i].idLivro,
-                                        codigoExemplar: exemplarProvider.exemplares[i].codigoExemplar,
-                                        estado: newValue ?? '',
+                                        id: exemplarProvider.exemplares[i].id,
+                                        cativo: exemplarProvider
+                                            .exemplares[i].cativo,
+                                        statusCodigo: exemplarProvider
+                                            .exemplares[i].statusCodigo,
+                                        estado: int.parse(newValue ??
+                                            '0'), // Convertendo para inteiro
+                                        ativo: exemplarProvider
+                                            .exemplares[i].ativo,
+                                        idLivro: exemplarProvider
+                                            .exemplares[i].idLivro,
+                                        isbn:
+                                            exemplarProvider.exemplares[i].isbn,
+                                        titulo: exemplarProvider
+                                            .exemplares[i].titulo,
+                                        anoPublicacao: exemplarProvider
+                                            .exemplares[i].anoPublicacao,
+                                        editora: exemplarProvider
+                                            .exemplares[i].editora,
+                                        idPais: exemplarProvider
+                                            .exemplares[i].idPais,
+                                        nomePais: exemplarProvider
+                                            .exemplares[i].nomePais,
+                                        siglaPais: exemplarProvider
+                                            .exemplares[i].siglaPais,
                                       );
                                     });
                                   },
                                   items: const [
                                     DropdownMenuItem(
-                                      value: 'Bom',
+                                      value: '0',
+                                      child: Text('Selecionar'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: '1',
                                       child: Text('Bom'),
                                     ),
                                     DropdownMenuItem(
-                                      value: 'Danificado',
+                                      value: '2',
                                       child: Text('Danificado'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'Selecionar',
-                                      child: Text('Selecionar'),
                                     ),
                                   ],
                                 ),

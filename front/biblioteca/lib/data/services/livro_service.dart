@@ -33,13 +33,18 @@ class LivroService {
     final Map<String, dynamic> body = {};
 
     final response = await _api.requisicao(
-      '$apiRoute/livro/$idLivro',
+      '$apiRoute/livro/$idLivro/exemplares', // Ajuste na rota, se necessário
       'GET',
       body,
     );
 
     if (response.statusCode == 200) {
-      exemplares = List<Exemplar>.from(response.data.map((x) => Exemplar.fromJson(x)));
+      if (response.data is List) {
+        exemplares =
+            List<Exemplar>.from(response.data.map((x) => Exemplar.fromJson(x)));
+      } else {
+        throw Exception("Formato de dados incorreto para exemplares.");
+      }
     }
 
     return ApiResponse(
@@ -47,7 +52,6 @@ class LivroService {
       body: response.statusCode == 200 ? exemplares : response.data,
     );
   }
-
 
   // Criar novo Livro
   Future<ApiResponse> addLivro(Livro livro) async {

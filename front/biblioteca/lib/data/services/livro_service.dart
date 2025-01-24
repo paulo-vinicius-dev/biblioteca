@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/services/api_service.dart';
 import 'package:biblioteca/data/models/livros_resposta.dart';
@@ -20,8 +22,8 @@ class LivroService {
       body,
     );
 
-    if (response.statusCode == 200) {
-      return LivrosAtingidos.fromJson(response.data); // Retorna a resposta como LivrosAtingidos
+    if (response.statusCode! >= 200 && response.statusCode! < 299) {
+      return LivrosAtingidos.fromJson(jsonDecode(response.data)); // Retorna a resposta como LivrosAtingidos
     } else {
       throw Exception('Erro ao carregar os livros: ${response.data}');
     }

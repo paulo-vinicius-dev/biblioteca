@@ -30,7 +30,7 @@ class LivroProvider extends ChangeNotifier {
       print('Livros carregados: ${livrosAtingidos.livrosAtingidos}');
       _livros = livrosAtingidos.livrosAtingidos;
     } catch (e) {
-      _error = "Erro ao carregar os Livros:\n$e";
+      _error = "Provider: Erro ao carregar os Livros:\n$e";
     } finally {
       _isLoading = false;
       notifyListeners();

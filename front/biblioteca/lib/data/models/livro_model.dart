@@ -11,8 +11,6 @@ class Livro {
   DateTime anoPublicacao;
   String editora;
   int pais;
-  DateTime dataCriacao;  
-  DateTime dataAtualizacao;
 
   Livro({
     required this.idLivro,
@@ -21,8 +19,6 @@ class Livro {
     required this.anoPublicacao,
     required this.editora,
     required this.pais,
-    required this.dataCriacao,
-    required this.dataAtualizacao,
   });
 
   factory Livro.fromJson(Map<String, dynamic> json) => Livro(
@@ -32,8 +28,6 @@ class Livro {
         anoPublicacao: DateTime.parse(json["ano_publicacao"]),
         editora: json["editora"],
         pais: json["pais"],
-        dataCriacao: DateTime.parse(json["data_criacao"]),
-        dataAtualizacao: DateTime.parse(json["data_atualizacao"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -43,7 +37,5 @@ class Livro {
         "ano_publicacao": anoPublicacao.toIso8601String(), 
         "editora": editora,
         "pais": pais,
-        "data_criacao": dataCriacao.toIso8601String(),  
-        "data_atualizacao": dataAtualizacao.toIso8601String(),  
       };
 }

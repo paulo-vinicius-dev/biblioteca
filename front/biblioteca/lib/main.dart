@@ -20,8 +20,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'dart:io';
 
 void main() {
+
+  // iniciando o banco de dados caso o front venha do instalador
+  final caminhoPgCtl = Platform.isWindows ? r'.\postgres\bin\pg_ctl.exe' : './postgres/bin/pg_ctl';
+  if (File(caminhoPgCtl).existsSync()) {
+    Process.start(caminhoPgCtl, ["start"]);
+  }
+
+  // rodando a api caso o front venha do instalador
+  final caminhoApi = Platform.isWindows ? r'.\api.exe' : './api'; // se o front foi instalado apartir do instalador o front e back vão estar no mesmo diretório
+  if (File(caminhoApi).existsSync()) {
+    Process.start(caminhoApi, List.empty());
+  }
   Provider.debugCheckInvalidValueType = null;
   runApp(const Myapp());
 }

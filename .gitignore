@@ -55,11 +55,14 @@ back/__*
 ## gitignore do instalador
 instalador/bundle
 instalador/.dart_tool
-instalador/001.zip
-instalador/bd.tar.gz
+instalador/*.zip
+instalador/*.tar.gz
+instalador/.tar
+instalador/.gz
 instalador/biblioteca.exe
 instalador/biblioteca
 instalador/*.yaml
 instalador/instalador.exe
 instalador/instalador
 instalador/script.sql
+instalador/.env

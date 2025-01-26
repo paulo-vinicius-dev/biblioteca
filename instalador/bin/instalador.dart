@@ -6,69 +6,61 @@ void compilar_back() {
 	print("Compilando o back...");
 	Process.runSync('go', ['build','-C', Platform.isWindows ? r'..\back' : '../back']);
 	var back = File(Platform.isWindows ? r"..\back\biblioteca.exe" : "../back/biblioteca");
-	var copia = back.copySync(Platform.isWindows ? "biblioteca.exe" : "biblioteca");
+	var copia = back.copySync(Platform.isWindows ? r"pallasys\api.exe" : "pallasys/api");
 	back.deleteSync();
 	print("Terminou de compilar o back...");
 
 }
 
-void criar_bundle() {
-	var bundle = 'bundle';
-	var data = Platform.isWindows ? r'bundle\data' : "bundle/data";
-	var lib = Platform.isWindows ? r'bundle\lib' : "bundle/lib";
-	Directory(bundle).createSync();
+void criar_pallasys() {
+	var pallasys = 'pallasys';
+	var data = Platform.isWindows ? r'pallasys\data' : "pallasys/data";
+	var lib = Platform.isWindows ? r'pallasys\lib' : "pallasys/lib";
+	Directory(pallasys).createSync();
 	Directory(data).createSync();
 	Directory(lib).createSync();
 }
 
+void copiarPasta(String ondeColocar, Directory dir) {
+  final separador = Platform.isWindows ? r'\' : "/";
+  
+  dir.listSync().forEach((elemento)  {
+    final stat = elemento.statSync();
+    if (stat.type == FileSystemEntityType.file) {
+      File(elemento.path).copySync(ondeColocar + separador + elemento.path.split(separador).last);
+    } else {
+      final novaPasta = Directory(ondeColocar + separador + elemento.path.split(separador).last);
+      novaPasta.createSync();
+      copiarPasta(novaPasta.path, Directory(elemento.path));
+    }
+  });
+  
+
+}
+
 void compilar_front() async {
 	print("Começando a compilar o front...");
-	criar_bundle();
 	var pasta_instalador = Directory.current.path;
 	Directory.current = new Directory(Platform.isWindows ? r'..\front\biblioteca\' : "../front/biblioteca"); 
 	Process.runSync('flutter',  ['build',Platform.isWindows ? 'windows' : 'linux'], runInShell: true);
-	var data = Directory(Platform.isWindows ? r'build\windows\x64\runner\Release\data' : "build/linux/x64/release/bundle/data").listSync().whereType<File>();
-	var exec = File(Platform.isWindows ? r'build\windows\x64\runner\Release\biblioteca.exe' : "build/linux/x64/release/bundle/biblioteca");
-	var separador = Platform.isWindows ? r'\' : '/';
-	exec.copySync(
-		Platform.isWindows ? 
-		pasta_instalador + separador + 'bundle' + separador + 'biblioteca.exe'
-		:
-		pasta_instalador + separador + 'bundle' + separador + 'biblioteca'
-	);	
-	data.forEach((f) {
-	var nome_arquivo = f.path.split(separador).last;
-		f.copySync(pasta_instalador + separador + 'bundle' + separador + 'data' + separador +  nome_arquivo);
-	});
-	if (Platform.isWindows) {
-		var lib = File(r'build\windows\x64\runner\Release\flutter_windows.dll');
-		lib.copySync(pasta_instalador + separador + 'bundle' + separador + 'flutter_windows.dll');	
-	} else {
-		var lib = Directory("build/linux/x64/release/bundle/lib").listSync().whereType<File>();
-		lib.forEach((f) {
-		var nome_arquivo = f.path.split(separador).last;
-		f.copySync(pasta_instalador + separador + 'bundle' + separador + 'lib' + separador +  nome_arquivo);
-	});
-	}
-	
-	
+	final pastaRelease = Directory(Platform.isWindows ? r'build\windows\x64\runner\Release\' : "build/linux/x64/release/bundle/");
+  final separador = Platform.isWindows ? r'\' : "/";
+  copiarPasta(pasta_instalador + separador + 'pallasys', pastaRelease);
 	Directory.current = new Directory(pasta_instalador); 
-
-
 	print("Terminou de compilar o front...");
 }
 
 Future<void> criarZip() async {
   print('Começando a fazer o zip...');
-  var zip = File(Platform.isWindows ? Directory.current.path +  r"\001.zip" : Directory.current.path + "/001.zip").openSync(mode: FileMode.write);
+  var zip = File(Platform.isWindows ? Directory.current.path +  r"\frontback.zip" : Directory.current.path + "/frontback.zip").openSync(mode: FileMode.write);
   zip.flushSync();
 
   
   var pacotao = ZipFileEncoder();
-  pacotao.create(Platform.isWindows ? Directory.current.path +  r"\001.zip" : Directory.current.path + "/001.zip");
+  pacotao.create(Platform.isWindows ? Directory.current.path +  r"\frontback.zip" : Directory.current.path + "/frontback.zip");
   zip.closeSync();
-  await pacotao.addFile(File(Platform.isWindows ? "biblioteca.exe" : "biblioteca"));
-  await pacotao.addDirectory(Directory('bundle'));
+  //await pacotao.addFile(File(Platform.isWindows ? "biblioteca.exe" : "biblioteca"));
+  await pacotao.addDirectory(Directory('pallasys'));
   pacotao.closeSync();
   print('Terminando de zipar...');
 
@@ -101,6 +93,7 @@ void copiar_script() {
 }
 
 Future<void> main() async {
+  criar_pallasys();
 	compilar_back();
 	compilar_front();
   await criarZip();

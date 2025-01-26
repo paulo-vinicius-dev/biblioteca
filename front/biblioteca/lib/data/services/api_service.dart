@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:biblioteca/utils/config.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiService {
@@ -9,7 +10,14 @@ class ApiService {
   final Map<String, String> _headers = {'Content-Type': 'application/json'};
 
   String _getBaseUrl() {
-    final String porta = dotenv.env['PORTA_API'] ?? '9090';
+  
+      if(!dotenv.isEveryDefined(['PORTA_API'])) {
+      FlutterError.reportError(FlutterErrorDetails(
+          exception:
+              Exception("Variável de ambiente 'PORTA_API' não foi definida")));
+    }
+      
+      final String porta = dotenv.env['PORTA_API']!;
 
     return "http://localhost:$porta";
   }

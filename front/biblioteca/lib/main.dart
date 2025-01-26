@@ -37,8 +37,12 @@ void main() async {
     Process.start(caminhoApi, List.empty());
   }
 
-  //Carregando variáveis de ambiente
-  await dotenv.load(fileName: ".env");
+    //Carregando variáveis de ambiente
+  try{
+    await dotenv.load(fileName: ".env");
+  }on EmptyEnvFileError{
+    print("O arquivo .env não existe ou está vazio");
+  }
   Provider.debugCheckInvalidValueType = null;
   runApp(const Myapp());
 }

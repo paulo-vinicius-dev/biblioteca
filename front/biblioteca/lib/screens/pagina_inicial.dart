@@ -1,7 +1,6 @@
 import 'package:biblioteca/data/models/autor_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/auth_provider.dart';
-import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
@@ -77,7 +76,10 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           title: const Text("Sair",
                               style: TextStyle(fontSize: 12.4)),
                           onTap: () {
-                            _onPageSelected('/sair');
+                            Navigator.pop(context);
+                            Provider.of<AuthProvider>(context, listen: false)
+                                .logout();
+                            Navigator.pushNamed(context, AppRoutes.login);
                           },
                         )
                       ],
@@ -100,16 +102,14 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
     });
   }
 
-  void _sair(context) {
-    Navigator.pushNamed(context, AppRoutes.login);
-  }
-
- 
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider =
         Provider.of<AuthProvider>(context, listen: false);
-    // capitalize(nomeDoUsuario);
+
+    if (authProvider.usuarioLogado == null && !mounted) {
+        Navigator.pop(context);
+    }
     return Scaffold(
       body: Row(
         children: [
@@ -214,11 +214,6 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                         case '/configuracoes':
                           page = const Configuracoes();
                           break;
-                        case '/sair':
-                          authProvider.logout();
-                          _sair(context);
-                          page = const TelaLogin();
-                          break;
                         case '/novo_usuario':
                           page = const FormUser();
                           break;
@@ -231,7 +226,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           page = const FormAutor();
                           break;
                         case AppRoutes.editarAutor:
-                        final autor = settings.arguments as Autor;
+                          final autor = settings.arguments as Autor;
                           return MaterialPageRoute(builder: (context) {
                             return FormAutor(autor: autor);
                           });

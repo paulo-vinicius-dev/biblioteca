@@ -9,6 +9,7 @@
 .buildlog/
 .history
 .svn/
+.env
 /front/biblioteca/migrate_working_dir/
 
 # IntelliJ related

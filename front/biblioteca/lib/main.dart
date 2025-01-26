@@ -21,8 +21,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
 
   // iniciando o banco de dados caso o front venha do instalador
   final caminhoPgCtl = Platform.isWindows ? r'.\postgres\bin\pg_ctl.exe' : './postgres/bin/pg_ctl';
@@ -35,6 +36,9 @@ void main() {
   if (File(caminhoApi).existsSync()) {
     Process.start(caminhoApi, List.empty());
   }
+
+  //Carregando variáveis de ambiente
+  await dotenv.load(fileName: ".env");
   Provider.debugCheckInvalidValueType = null;
   runApp(const Myapp());
 }

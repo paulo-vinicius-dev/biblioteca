@@ -226,7 +226,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                   children: [
                    Flexible(
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(
+                        constraints: const BoxConstraints(
                           maxWidth: 800,
                           maxHeight: 40,
                           minWidth: 200
@@ -364,7 +364,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                       border: Border.all(
                                         color:  const Color.fromARGB(97, 104, 104, 104)
                                       ),
-                                      color:   Color.fromARGB(255, 214, 214, 214)
+                                      color:   const Color.fromARGB(255, 214, 214, 214)
                                     ),
                                     child: Text(
                                       "Usuário Selecionado",
@@ -447,7 +447,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                       border: Border.all(
                                         color:  const Color.fromARGB(97, 104, 104, 104)
                                       ),
-                                      color:   Color.fromARGB(255, 214, 214, 214)
+                                      color:   const Color.fromARGB(255, 214, 214, 214)
                                     ),
                                     child: Text(
                                       "Livros Emprestados",
@@ -546,7 +546,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                   children: [
                                     Flexible(
                                       child: ConstrainedBox(
-                                        constraints: BoxConstraints(
+                                        constraints: const BoxConstraints(
                                         maxWidth: 800,
                                         maxHeight: 40,
                                         minWidth: 200

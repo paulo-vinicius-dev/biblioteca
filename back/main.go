@@ -7,18 +7,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/joho/godotenv"
 )
 
 func main() {
 
-	ip := "localhost"
-	porta := "9090"
-
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Erro ao carregar variáveis de ambiente!")
 	}
+	ip := "localhost"
+	porta := os.Getenv("PORTA_API")
 	servicos.InicializarServicoEmail()
 	banco.Inicializar()
 	defer banco.Finalizar()

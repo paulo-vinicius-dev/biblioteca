@@ -25,7 +25,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   bool showBooks = false;
   bool showLivrosEmprestados = false;
   int selectOption = -1;
-  Exemplar? selectbook;
+  Exemplar? selectbook = null;
   Usuario? selectUser;
 
  
@@ -90,16 +90,13 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   showBooks = true;
     final searchQuery = _searchControllerBooks.text.trim();
 
-  setState(() {
-    // Tenta converter o texto da pesquisa para um número inteiro
+  setState(() { 
     final searchId = int.tryParse(searchQuery);
-    
-    // Verifica se a conversão foi bem-sucedida e se o exemplar foi encontrado
     selectbook = searchId != null 
       ? exemplares.firstWhere(
           (exemplar) => exemplar.id == searchId,
         )
-      : null; // Retorna null se o ID não for um número válido
+      : null; 
   });
 }
  void getDate(){

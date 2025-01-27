@@ -25,7 +25,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   bool showBooks = false;
   bool showLivrosEmprestados = false;
   int selectOption = -1;
-  Exemplar? selectbook;
+  Exemplar? selectbook = null;
   Usuario? selectUser;
 
  
@@ -88,18 +88,32 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
 
   void searchBooks() {
   showBooks = true;
-    final searchQuery = _searchControllerBooks.text.trim();
+  final searchQuery = _searchControllerBooks.text.trim();
 
-  setState(() {
-    // Tenta converter o texto da pesquisa para um número inteiro
+  setState(() { 
+    if (searchQuery.isEmpty) {
+      // Limpa a seleção se o campo estiver vazio
+      selectbook = null;
+      return;
+    }
+
     final searchId = int.tryParse(searchQuery);
-    
-    // Verifica se a conversão foi bem-sucedida e se o exemplar foi encontrado
-    selectbook = searchId != null 
-      ? exemplares.firstWhere(
+    if (searchId != null) {
+      try {
+        selectbook = exemplares.firstWhere(
           (exemplar) => exemplar.id == searchId,
-        )
-      : null; // Retorna null se o ID não for um número válido
+        );
+      } catch (e) {
+        selectbook = null;
+      }
+     } 
+    //Caso aceite busca de exemplar pelo nome
+    //else {
+    //   // Caso não seja um número, busca por outro critério (ex: nome)
+    //   selectbook = exemplares.firstWhere(
+    //     (exemplar) => exemplar.titulo.toLowerCase().contains(searchQuery.toLowerCase()),
+    //   );
+    // }
   });
 }
  void getDate(){
@@ -116,101 +130,178 @@ String renovar(String dataString) {
   final novaData = data.add(const Duration(days: 7));
   return formato.format(novaData);
 }
-Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro){
+Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro) {
   return showDialog(
     context: context,
     builder: (BuildContext context) {
       return Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(15),
         ),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 6, left: 10, right: 10, bottom: 14),
-          child: SizedBox(
-            width: 800,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  width: double.infinity,
-                  color: const Color.fromRGBO(38, 42, 79, 1),
-                  child: Text('Confirmação De $msg', textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: Colors.white),),
-                ),
-                const SizedBox(height: 20,),
-                  Table(
-                    columnWidths: const {
-                      0: FlexColumnWidth(0.10),
-                      1: FlexColumnWidth(0.20),
-                      2: FlexColumnWidth(0.15),
-                      3: FlexColumnWidth(0.15),
-                    },
-                    border: TableBorder.all(color: const Color.fromARGB(255, 213, 213, 213)),
-                    children: [
-                      TableRow(
-                          decoration: const BoxDecoration(color: Color.fromARGB(255, 223, 223, 223)),
-                          children: [
-                             const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Codigo', textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(7.0),
-                              child: Text('Nome', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(7.0),
-                              child: Text('Devolução Prevista', textAlign: TextAlign.center, style:TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(7.0),
-                              child: Text('Situação $msg', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ]
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Stack(
+            children: [
+              Container(
+                width: 800,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Cabeçalho
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      width: double.infinity,
+                      color: const Color.fromRGBO(38, 42, 79, 1),
+                      child: Text(
+                        'Confirmação de $msg',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
-                        TableRow(
-                          decoration: const BoxDecoration(color: Color.fromARGB(255, 233, 235, 238)),
-                          children: [
-                            Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(livro.codigo, textAlign: TextAlign.center,),
+                      ),
+                    ),
+                    // Corpo do diálogo
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                      child: Column(
+                        children: [
+                          // Tabela de informações
+                          Table(
+                            columnWidths: const {
+                              0: FlexColumnWidth(0.08),
+                              1: FlexColumnWidth(0.25),
+                              2: FlexColumnWidth(0.20),
+                              3: FlexColumnWidth(0.20),
+                            },
+                            border: TableBorder.all(
+                              color: const Color.fromARGB(255, 213, 213, 213),
                             ),
-                            Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(livro.nome, textAlign: TextAlign.left,),
+                            children: [
+                              // Linha de Cabeçalho
+                              TableRow(
+                                decoration: const BoxDecoration(
+                                  color: Color.fromARGB(255, 223, 223, 223),
+                                ),
+                                children: const [
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Código',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Nome',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Devolução Prevista',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Situação',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Linha de Dados
+                              TableRow(
+                                decoration: const BoxDecoration(
+                                  color: Color.fromARGB(255, 233, 235, 238),
+                                ),
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      livro.codigo,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      livro.nome,
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      livro.dataDevolucao,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      '$msg Realizado!',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          // Botão de Confirmação
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green[400],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
                             ),
-                            Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(livro.dataDevolucao, textAlign: TextAlign.center),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Fecha o diálogo
+                            },
+                            child: const Text(
+                              'Confirmar',
+                              style: TextStyle(color: Colors.white),
                             ),
-                            Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text('$msg Realizado!', textAlign: TextAlign.center,style:const TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ]
-                        )
-                    ]
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                     backgroundColor: Colors.green[400],
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))
-                  ),
+              ),
+              // Botão Fechar
+              Positioned(
+                right: 0,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.red),
                   onPressed: () {
                     Navigator.of(context).pop(); // Fecha o diálogo
                   },
-                  child: const Text('Confirmar',style: TextStyle(color: Colors.white),),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );
     },
   );
 }
+
 
   @override
   Widget build(BuildContext context) {
@@ -468,7 +559,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                       1: FlexColumnWidth(0.26),
                                       2: FlexColumnWidth(0.16),
                                       3: FlexColumnWidth(0.16),
-                                      4: FlexColumnWidth(0.13),
+                                      4: FlexColumnWidth(0.15),
                                       
                                     },
                                     border: TableBorder.all(color: const Color.fromARGB(97, 104, 104, 104)),
@@ -550,7 +641,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                     Flexible(
                                       child: ConstrainedBox(
                                         constraints: const BoxConstraints(
-                                        maxWidth: 800,
+                                        maxWidth: 900,
                                         maxHeight: 40,
                                         minWidth: 200
                                        ),
@@ -583,7 +674,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                   if (selectbook == null)
                                     const Padding(
                                       padding: EdgeInsets.all(8.0),
-                                      child: Text('Nenhum livro encontrado', style: TextStyle(fontSize: 16)),
+                                      child: Text('Nenhum exemplar encontrado', style: TextStyle(fontSize: 16)),
                                     )
                                   else
                                     Column(

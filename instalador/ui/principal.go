@@ -180,16 +180,26 @@ func inicializar(contexto ContextoUi) {
 
 	if runtime.GOOS == "windows" {
 		erro = exec.Command(
-
+			"powershell",
 			path.Join(caminhoBinarioPostgres, "pg_ctl.exe"),
 			"start",
-		).Start()
+			fmt.Sprintf("-D %s", caminhoPastaBanco),
+		).Run()
 	} else {
 		erro = exec.Command(
 			path.Join(caminhoBinarioPostgres, "pg_ctl"),
 			"start",
-		).Start()
+			fmt.Sprintf("-D %s", caminhoPastaBanco),
+		).Run()
 	}
+
+	fmt.Printf(
+		"%s %s %s %s \n",
+		"powershell",
+		path.Join(caminhoBinarioPostgres, "pg_ctl.exe"),
+		"start",
+		fmt.Sprintf("-D %s", caminhoPastaBanco),
+	)
 
 	if erro != nil {
 		fmt.Println("Não foi possível startar o servidor")
@@ -201,27 +211,38 @@ func inicializar(contexto ContextoUi) {
 	script.Write(contexto.Script)
 	script.Close()
 
-	nomeBanco := os.Getenv("DB_URL")[strings.LastIndex(os.Getenv("DB_URL"), "%3D"):]
+	nomeBanco := os.Getenv("DB_URL")[strings.LastIndex(os.Getenv("DB_URL"), "%3D")+3:]
 
 	if runtime.GOOS == "windows" {
-		erro = exec.Command(
+		saida, erro = exec.Command(
 			"powershell",
 			path.Join(caminhoBinarioPostgres, "psql.exe"),
 			fmt.Sprintf("-U %s", nomeUsuario),
-			fmt.Sprintf("-U %s", nomeBanco),
+			fmt.Sprintf("-d %s", nomeBanco),
 			fmt.Sprintf("-a -f %s", caminhoScript),
 			`-c '\q'`,
-		).Start()
+		).Output()
 	} else {
-		erro = exec.Command(
+		saida, erro = exec.Command(
 			path.Join(caminhoBinarioPostgres, "psql"),
 			fmt.Sprintf("-U %s", nomeUsuario),
-			fmt.Sprintf("-U %s", nomeBanco),
+			fmt.Sprintf("-d %s", nomeBanco),
 			fmt.Sprintf("-a -f %s", caminhoScript),
 			`-c '\q'`,
-		).Start()
+		).Output()
 	}
 
+	fmt.Printf(
+		"%s %s %s %s %s %s \n",
+		"powershell",
+		path.Join(caminhoBinarioPostgres, "psql.exe"),
+		fmt.Sprintf("-U %s", nomeUsuario),
+		fmt.Sprintf("-d %s", nomeBanco),
+		fmt.Sprintf("-f %s", caminhoScript),
+		`-c '\q'`,
+	)
+
+	fmt.Println("Saida:", string(saida))
 	if erro != nil {
 		fmt.Println("falha ao executar o script")
 		fmt.Println(erro)
@@ -241,15 +262,17 @@ func inicializar(contexto ContextoUi) {
 
 	if runtime.GOOS == "windows" {
 		erro = exec.Command(
-
+			"powershell",
 			path.Join(caminhoBinarioPostgres, "pg_ctl.exe"),
 			"stop",
-		).Start()
+			fmt.Sprintf("-D %s", caminhoPastaBanco),
+		).Run()
 	} else {
 		erro = exec.Command(
 			path.Join(caminhoBinarioPostgres, "pg_ctl"),
 			"stop",
-		).Start()
+			fmt.Sprintf("-D %s", caminhoPastaBanco),
+		).Run()
 	}
 
 	if erro != nil {

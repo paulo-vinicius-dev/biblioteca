@@ -5,6 +5,7 @@ import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
+import 'package:biblioteca/screens/pesquisar_livro.dart';
 import 'package:biblioteca/screens/redefinir_senha.dart';
 
 import 'package:biblioteca/screens/tela_emprestimo.dart';

@@ -24,16 +24,6 @@ class Home extends StatelessWidget {
 
 
 
-class PesquisarLivro extends StatelessWidget {
-  const PesquisarLivro({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Tela de Pesquisar Livro"),
-    );
-  }
-}
 
 class Emprestimo extends StatelessWidget {
   const Emprestimo({super.key});

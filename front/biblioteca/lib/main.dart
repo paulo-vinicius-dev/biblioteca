@@ -3,6 +3,7 @@ import 'package:biblioteca/data/providers/autor_provider.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
+import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/pesquisar_livro.dart';
@@ -16,6 +17,7 @@ import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:biblioteca/widgets/forms/form_user.dart';
+import 'package:biblioteca/widgets/tables/book_table_page.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -77,7 +79,7 @@ class Myapp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider(),),
         ChangeNotifierProvider(create: (context) => MenuState()),
-         ChangeNotifierProvider(create: (context) => AutorProvider()),
+        ChangeNotifierProvider(create: (context) => AutorProvider()),
         ProxyProvider<AuthProvider, UsuarioProvider>(
           create: (_) => UsuarioProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => UsuarioProvider(
@@ -86,6 +88,11 @@ class Myapp extends StatelessWidget {
         ProxyProvider<AuthProvider, ExemplarProvider>(
           create: (_) => ExemplarProvider(0, ''),
           update: (_, authProvider, exemplarprovider) => ExemplarProvider(
+              authProvider.idDaSessao!, authProvider.usuarioLogado!),
+        ),
+        ProxyProvider<AuthProvider, LivroProvider>(
+          create: (_) => LivroProvider(0, ''),
+          update: (_, authProvider, exemplarprovider) => LivroProvider(
               authProvider.idDaSessao!, authProvider.usuarioLogado!),
         ),
       ],
@@ -117,12 +124,13 @@ class Myapp extends StatelessWidget {
           AppRoutes.usuarios: (ctx) => const UserTablePage(),
           AppRoutes.novoUsuario: (ctx) => const FormUser(),
           AppRoutes.editarUsuario: (ctx) => const FormUser(),
+          AppRoutes.livros: (context) => const BookTablePage(),
 
           //paginas temporarias para teste
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
           AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
           AppRoutes.devolucao: (context) => const Devolucao(),
-          AppRoutes.livros: (context) => const Livros(),
+          
           AppRoutes.relatorios: (context) => const Relatorios(),
           AppRoutes.nadaConsta: (context) => const NadaConsta(),
           AppRoutes.configuracoes: (context) => const Configuracoes(),

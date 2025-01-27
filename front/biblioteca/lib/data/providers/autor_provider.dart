@@ -47,7 +47,6 @@ class AutorProvider extends ChangeNotifier {
         _error = apiResponse.body;
       } else {
         _autores.add(autor);
-        print(_autores.toString());
       }
     } catch (e) {
       _error = "Erro ao inserir novo Autor:\n$e";

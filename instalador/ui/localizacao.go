@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"os"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
@@ -17,11 +19,12 @@ func Localicao(contexto ContextoUi) {
 	}
 
 	proximo := widget.NewButton("Próximo", func() {
-
+		Principal(contexto)
 	})
 	if contexto.CaminhoDaInstalacao == "" {
 		proximo.Disable()
 	}
+
 	parteDeBaixo := container.New(
 		layout.NewGridLayoutWithColumns(3),
 		layout.NewSpacer(),
@@ -33,6 +36,17 @@ func Localicao(contexto ContextoUi) {
 			proximo,
 		),
 	)
+	entradaCaminho := widget.NewEntryWithData(caminho)
+	entradaCaminho.OnChanged = func(novoValor string) {
+		pastaDaInstalacao, erro := os.Open(contexto.CaminhoDaInstalacao)
+		if erro == nil {
+			pastaDaInstalacao.Close()
+			proximo.Enable()
+		} else {
+			entradaCaminho.SetValidationError(erro)
+			proximo.Disable()
+		}
+	}
 	conteudoPrincipal := container.New(
 		layout.NewGridLayoutWithRows(3),
 		widget.NewLabel("Por favor procure o caminho de instalação do programa"),
@@ -41,7 +55,7 @@ func Localicao(contexto ContextoUi) {
 			widget.NewLabel("Caminho da instalação:"),
 			container.New(
 				layout.NewGridLayoutWithColumns(2),
-				widget.NewEntryWithData(caminho),
+				entradaCaminho,
 				widget.NewButton("Procurar", func() {
 					dialog.ShowFolderOpen(func(pasta fyne.ListableURI, erro error) {
 						if erro == nil {

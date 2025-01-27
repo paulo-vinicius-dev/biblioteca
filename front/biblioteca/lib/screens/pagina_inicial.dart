@@ -1,6 +1,7 @@
 import 'package:biblioteca/data/models/autor_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/auth_provider.dart';
+import 'package:biblioteca/screens/pesquisar_livro.dart';
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';

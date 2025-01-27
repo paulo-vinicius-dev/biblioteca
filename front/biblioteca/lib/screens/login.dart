@@ -6,19 +6,31 @@ class TelaLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: SizedBox(
-          width: 500,
-          child: Card(
-            elevation: 3,
-            child: Padding(
-              padding: EdgeInsets.all(40.0),
-              child: FormLogin(),
+    return Scaffold(
+        body: Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [ Color(0xFF8CA6DF), Color(0xFF3A4CA6), Color(0xFF262A4F)],
             ),
           ),
         ),
-      ),
-    );
+        const Center(
+          child: SizedBox(
+            width: 500,
+            child: Card(
+              elevation: 3,
+              child: Padding(
+                padding: EdgeInsets.all(40.0),
+                child: FormLogin(),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ));
   }
 }

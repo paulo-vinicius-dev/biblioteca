@@ -91,9 +91,26 @@ class _FormLoginState extends State<FormLogin> {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Image.asset(
-            AppAssets.logo,
-            scale: 1.5,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+            children: [
+              Image.asset(
+                AppAssets.logo,
+                scale: 2.5,
+              ),
+              Container(
+                width: 2,
+                height: 70,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+              Image.asset(
+                AppAssets.logoEscola,
+                scale: 2.5,
+              )
+            ],
           ),
           const SizedBox(
             height: 20,

@@ -1,5 +1,6 @@
 import 'package:biblioteca/data/models/login_model.dart';
 import 'package:biblioteca/data/providers/auth_provider.dart';
+import 'package:biblioteca/data/providers/login_provider.dart';
 import 'package:biblioteca/data/services/auth_service.dart';
 import 'package:biblioteca/utils/assets.dart';
 import 'package:biblioteca/utils/routes.dart';
@@ -166,7 +167,7 @@ class _FormLoginState extends State<FormLogin> {
           const SizedBox(height: 20),
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.redefinirSenha);
+              Provider.of<LoginProvider>(context, listen: false).setModo(ModoLogin.redefinirSenha);
             },
             child: Text(
               'Esqueceu sua senha?',

@@ -1,7 +1,9 @@
+import 'package:biblioteca/data/providers/login_provider.dart';
 import 'package:biblioteca/data/services/redefinir_senha_service.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FormRedefinirSenhaCodigo extends StatefulWidget {
   const FormRedefinirSenhaCodigo({super.key});
@@ -61,7 +63,8 @@ class _FormRedefinirSenhaCodigoState extends State<FormRedefinirSenhaCodigo> {
               onPressed: () {
                 service.redefinirSenha(
                     _codigoController.text, _novaSenhaController.text);
-                Navigator.pushNamed(context, AppRoutes.login);
+                
+        Provider.of<LoginProvider>(context, listen: false).setModo(ModoLogin.login);
               },
               style: AppTheme.btnPrimary(context),
               child: Text(

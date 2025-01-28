@@ -8,11 +8,9 @@ import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/pesquisar_livro.dart';
-import 'package:biblioteca/screens/redefinir_senha.dart';
 
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 
-import 'package:biblioteca/screens/redefinir_senha_codigo.dart';
 
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
@@ -122,7 +120,6 @@ class Myapp extends StatelessWidget {
         routes: {
           AppRoutes.login: (ctx) => const TelaLogin(),
           AppRoutes.home: (ctx) => const TelaPaginaIncial(),
-          AppRoutes.redefinirSenha: (ctx) => const TelaRedefinirSenha(),
           AppRoutes.usuarios: (ctx) => const UserTablePage(),
           AppRoutes.novoUsuario: (ctx) => const FormUser(),
           AppRoutes.editarUsuario: (ctx) => const FormUser(),
@@ -137,7 +134,6 @@ class Myapp extends StatelessWidget {
           AppRoutes.nadaConsta: (context) => const NadaConsta(),
           AppRoutes.configuracoes: (context) => const Configuracoes(),
 
-          AppRoutes.codigoRedefinirSenha: (context) => const TelaRedefinirSenhaCodigo(),
         },
       ),
     );

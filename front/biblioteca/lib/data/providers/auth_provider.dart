@@ -13,8 +13,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   void logout() {
-    _idDaSessao = null;
-    usuarioLogado = null;
+    _idDaSessao = 0;
+    usuarioLogado = '';
     notifyListeners();
   }
 }

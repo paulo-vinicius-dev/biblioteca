@@ -85,6 +85,7 @@ class Myapp extends StatelessWidget {
           create: (_) => UsuarioProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => UsuarioProvider(
               authProvider.idDaSessao!, authProvider.usuarioLogado!),
+          dispose: (_, usuarioProvider) => usuarioProvider.dispose(),
         ),
         ProxyProvider<AuthProvider, ExemplarProvider>(
           create: (_) => ExemplarProvider(0, ''),

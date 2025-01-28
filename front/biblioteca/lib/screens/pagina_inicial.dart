@@ -148,7 +148,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "authProvider.usuarioLogado!",
+                        authProvider.usuarioLogado!,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium

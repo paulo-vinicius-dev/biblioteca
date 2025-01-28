@@ -16,8 +16,6 @@ class AuthorTablePageState extends State<AuthorTablePage> {
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
-  //Segura a gambiarra
-  bool deletou = false;
 
   @override
   void initState() {
@@ -27,14 +25,16 @@ class AuthorTablePageState extends State<AuthorTablePage> {
     super.initState();
   }
 
+  _delete(author) async {
+    print('ta tentando deletar');
+    await Provider.of<AutorProvider>(context, listen: false)
+        .deleteAutor(author);
+  }
+
   @override
   Widget build(BuildContext context) {
     AutorProvider autorProvider = Provider.of<AutorProvider>(context);
     List<Autor> autores = context.watch<AutorProvider>().autores;
-
-    if (deletou) {
-      Navigator.pushNamed(context, AppRoutes.autores);
-    }
 
     if (autorProvider.isloading) {
       return const Center(child: CircularProgressIndicator());
@@ -98,7 +98,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                         foregroundColor:
                             const WidgetStatePropertyAll(Colors.white),
                         padding: WidgetStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.all(15.0), // Padding personalizado
+                          const EdgeInsets.all(15.0),
                         ),
                       ),
                     )
@@ -241,7 +241,8 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                               actions: [
                                                 ElevatedButton(
                                                     onPressed: () {
-                                                      Navigator.pop(dialogContext);
+                                                      Navigator.pop(
+                                                          dialogContext);
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
@@ -268,11 +269,9 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                                         const Text('Cancelar')),
                                                 //Aqui é o botão excluir inferno
                                                 ElevatedButton(
-                                                    onPressed: () async {
-                                                      await Provider.of<AutorProvider>(context,
-                                              listen: false).deleteAutor(author);
-                                                      Navigator
-                                                          .pop(dialogContext);
+                                                    onPressed: () {
+                                                      _delete(author);
+                                                      Navigator.pop(dialogContext);
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(

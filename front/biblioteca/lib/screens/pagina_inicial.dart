@@ -115,15 +115,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
     AuthProvider authProvider =
         Provider.of<AuthProvider>(context, listen: false);
 
-    if (authProvider.usuarioLogado == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.login,
-          (route) => false,
-        );
-      });
-    }
+   
     return Scaffold(
       body: Row(
         children: [
@@ -148,7 +140,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        authProvider.usuarioLogado!,
+                        authProvider.usuarioLogado,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium

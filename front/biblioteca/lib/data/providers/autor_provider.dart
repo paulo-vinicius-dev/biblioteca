@@ -85,6 +85,8 @@ class AutorProvider extends ChangeNotifier {
 
       if (apiResponse.responseCode != 200) {
         _error = apiResponse.body;
+      }else{
+        _autores.removeWhere((a) => a.id == autor.id);
       }
     } catch (e) {
       _error = "Erro ao deletar o Autor:\n$e";

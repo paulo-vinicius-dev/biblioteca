@@ -16,6 +16,7 @@ import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:biblioteca/widgets/forms/form_user.dart';
+import 'package:biblioteca/widgets/tables/author_table_page.dart';
 import 'package:biblioteca/widgets/tables/book_table_page.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:flutter/material.dart';
@@ -124,6 +125,7 @@ class Myapp extends StatelessWidget {
           AppRoutes.novoUsuario: (ctx) => const FormUser(),
           AppRoutes.editarUsuario: (ctx) => const FormUser(),
           AppRoutes.livros: (context) => const BookTablePage(),
+          AppRoutes.autores: (context) => const AuthorTablePage(),
 
           //paginas temporarias para teste
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),

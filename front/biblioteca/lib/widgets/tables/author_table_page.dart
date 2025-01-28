@@ -16,6 +16,8 @@ class AuthorTablePageState extends State<AuthorTablePage> {
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
+  //Segura a gambiarra
+  bool deletou = false;
 
   @override
   void initState() {
@@ -28,18 +30,23 @@ class AuthorTablePageState extends State<AuthorTablePage> {
   @override
   Widget build(BuildContext context) {
     AutorProvider autorProvider = Provider.of<AutorProvider>(context);
+    List<Autor> autores = context.watch<AutorProvider>().autores;
+
+    if (deletou) {
+      Navigator.pushNamed(context, AppRoutes.autores);
+    }
 
     if (autorProvider.isloading) {
       return const Center(child: CircularProgressIndicator());
     } else if (autorProvider.hasErrors) {
       return Text(autorProvider.error!);
     } else {
-      return tableAutor(context);
+      return tableAutor(context, autores);
     }
   }
 
-  Material tableAutor(BuildContext context) {
-    List<Autor> authors = Provider.of<AutorProvider>(context).autores;
+  Material tableAutor(BuildContext context, List<Autor> autores) {
+    List<Autor> authors = autores;
 
     int totalPages = (authors.length / rowsPerPage).ceil();
 
@@ -223,11 +230,9 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      AutorProvider provider =
-                                          Provider.of<AutorProvider>(context, listen: false);
                                       showDialog(
                                           context: context,
-                                          builder: (context) {
+                                          builder: (dialogContext) {
                                             return AlertDialog(
                                               title:
                                                   const Text('Excluir Usuário'),
@@ -236,8 +241,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                               actions: [
                                                 ElevatedButton(
                                                     onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
+                                                      Navigator.pop(dialogContext);
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
@@ -262,14 +266,13 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                                     ),
                                                     child:
                                                         const Text('Cancelar')),
+                                                //Aqui é o botão excluir inferno
                                                 ElevatedButton(
-                                                    onPressed: () {
-                                                      provider.deleteAutor(
-                                                          author);
-                                                      setState(() {
-                                                        authors.remove(author);
-                                                      });
-                                                      Navigator.pop(context);
+                                                    onPressed: () async {
+                                                      await Provider.of<AutorProvider>(context,
+                                              listen: false).deleteAutor(author);
+                                                      Navigator
+                                                          .pop(dialogContext);
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(

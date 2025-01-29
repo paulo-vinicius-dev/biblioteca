@@ -27,7 +27,6 @@ class LivroProvider extends ChangeNotifier {
 
     try {
       final livrosAtingidos = await _livroService.fetchLivros(idDaSessao, usuarioLogado);
-      print('Livros carregados: ${livrosAtingidos.livrosAtingidos}');
       _livros = livrosAtingidos.livrosAtingidos;
     } catch (e) {
       _error = "Provider: Erro ao carregar os Livros:\n$e";

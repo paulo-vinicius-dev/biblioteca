@@ -27,8 +27,8 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   int selectOption = -1;
   Exemplar? selectbook;
   Usuario? selectUser;
-
- 
+  late ExemplarProvider providerExemplar;
+  late UsuarioProvider providerUsers;
   late String dataDevolucao;
   late String dataEmprestimo;
 
@@ -39,28 +39,23 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   super.initState();
   _searchController = TextEditingController();
   _searchControllerBooks = TextEditingController();
+  providerExemplar= Provider.of<ExemplarProvider>(context, listen: false);
+  providerUsers = Provider.of<UsuarioProvider>(context, listen: false);
   _filteredUsers = [];
   
   // Carregar usuários
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    Provider.of<UsuarioProvider>(context, listen: false).loadUsuarios().then((_) {
-      setState(() {
-        users = Provider.of<UsuarioProvider>(context, listen: false).users;
+  if(providerUsers.users.isEmpty){
+      Provider.of<UsuarioProvider>(context, listen: false).loadUsuarios().then((_) {
+        setState(() {
+        });
       });
-    }).catchError((error) {
-      print('Erro ao carregar usuários: $error');
-    });
-  });
-  
-  
-  Provider.of<ExemplarProvider>(context, listen: false).loadExemplares().then((_) {
-    setState(() {
-      exemplares = Provider.of<ExemplarProvider>(context, listen: false).exemplares;
-     
-    });
-  }).catchError((error) {
-    print('Erro ao carregar exemplares: $error');
-  });
+    }
+    if(providerExemplar.exemplares.isEmpty){
+      Provider.of<ExemplarProvider>(context, listen: false).loadExemplares().then((_) {
+        setState(() {
+        });
+      });
+    }
 }
   @override
   void dispose() {
@@ -301,10 +296,10 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
     },
   );
 }
-
-
   @override
   Widget build(BuildContext context) {
+    exemplares = providerExemplar.exemplares;
+    users = providerUsers.users;
     return Material(
       child: Column(
         children: [

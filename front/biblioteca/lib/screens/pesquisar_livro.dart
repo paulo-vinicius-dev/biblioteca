@@ -20,29 +20,29 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
   late List<Livro> filteredBooks = [];
   late Livro? selectBook = null;
   late bool search = false;
-  late ExemplarProvider provider;
+  late ExemplarProvider providerExemplar;
+  late LivroProvider providerLivro;
   late List<Exemplar> exemplares;
   late List<Exemplar> filteredExemplares;
 
   @override
-  void initState() {
-    provider = Provider.of<ExemplarProvider>(context, listen: false);
+  void initState(){
+    super.initState();
+    providerExemplar = Provider.of<ExemplarProvider>(context, listen: false);
+    providerLivro = Provider.of<LivroProvider>(context, listen: false);
     _searchController = TextEditingController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    if(providerLivro.livros.isEmpty){
       Provider.of<LivroProvider>(context, listen: false).loadLivros().then((_) {
         setState(() {
-          livros = Provider.of<LivroProvider>(context, listen: false).livros;
-          
         });
       });
+    }
+    if(providerExemplar.exemplares.isEmpty){
       Provider.of<ExemplarProvider>(context, listen: false).loadExemplares().then((_) {
         setState(() {
-          exemplares = provider.exemplares;
         });
       });
-    });
-
-    super.initState();
+    }
   }
   void SearchExemplares(int idDoLivro){
     filteredExemplares = exemplares.where((exemplar)=> exemplar.idLivro == idDoLivro).toList();
@@ -62,6 +62,8 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
 
   @override
   Widget build(BuildContext context) {
+    livros = providerLivro.livros;
+    exemplares = providerExemplar.exemplares;
     return Material(
       child: Column(
         children: [
@@ -259,7 +261,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                           left: 8.0,
                                         ),
                                         child: Text(
-                                          '${provider.QtdExemplaresLivro(filteredBooks[x].idDoLivro)}',
+                                          '${providerExemplar.QtdExemplaresLivro(filteredBooks[x].idDoLivro)}',
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
@@ -424,7 +426,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         Padding(
                                            padding:EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                           child: Text(
-                                            '${provider.QtdExemplaresLivro(selectBook!.idDoLivro)}',
+                                            '${providerExemplar.QtdExemplaresLivro(selectBook!.idDoLivro)}',
                                             textAlign: TextAlign.center,
                                           ),
                                         ),

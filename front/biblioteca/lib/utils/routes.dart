@@ -1,5 +1,6 @@
 class AppRoutes {
   static const login = '/';
+  static const logout = '/logout';
   static const home = '/home';
   static const redefinirSenha = '/redefinir_senha';
   static const pesquisarLivro = '/pesquisar_livro';

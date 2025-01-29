@@ -121,6 +121,7 @@ class Myapp extends StatelessWidget {
         //home: const TelaPaginaIncial(),
         routes: {
           AppRoutes.login: (ctx) => const TelaLogin(),
+          AppRoutes.logout: (ctx) => const Myapp(),
           AppRoutes.home: (ctx) => const TelaPaginaIncial(),
           AppRoutes.usuarios: (ctx) => const UserTablePage(),
           AppRoutes.novoUsuario: (ctx) => const FormUser(),

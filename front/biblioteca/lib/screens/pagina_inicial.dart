@@ -85,7 +85,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                                 .logout();
                             Navigator.pushNamedAndRemoveUntil(
                               context,
-                              AppRoutes.login,
+                              AppRoutes.logout,
                               (route) => false,
                             );
                           },

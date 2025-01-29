@@ -2,6 +2,7 @@ import 'dart:convert';
 
 
 import 'package:biblioteca/data/models/emprestimos_model.dart';
+import 'package:biblioteca/utils/config.dart';
 
 
 Usuario usuarioFromJson(String str) => Usuario.fromJson(json.decode(str));
@@ -64,7 +65,7 @@ class Usuario {
       ? 'N/A'
       : turmaDescrisao!.split(' ').last;
 
-  String get getTipoDeUsuario => permissao == 15
+  String get getTipoDeUsuario => permissao == AppConfig.maxPermissoes
       ? TipoDeUsuario.bibliotecario
       : (turma == 0 ? TipoDeUsuario.funcionario : TipoDeUsuario.aluno);
 

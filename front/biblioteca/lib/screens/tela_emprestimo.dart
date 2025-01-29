@@ -363,7 +363,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                       children: [
                         if (selectUser == null)
                           SizedBox(
-                            width: 1050,
+                            width: 1100,
                             child: Table(
                               border: TableBorder.all(color: const Color.fromARGB(97, 104, 104, 104)),
                               columnWidths: const {
@@ -448,7 +448,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                           ),
                         if (selectUser != null)
                           SizedBox(
-                            width: 1050,
+                            width: 1100,
                             child: Column(
                               children: [
                                 Container(
@@ -680,11 +680,11 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                     Column(
                                       children: [
                                         SizedBox(
-                                          width: 1050,
+                                          width: 1100,
                                           child: Table(
                                             border: TableBorder.all(color: const Color.fromARGB(97, 104, 104, 104)),
                                             columnWidths: const {
-                                              0: FlexColumnWidth(0.08),
+                                              0: FlexColumnWidth(0.10),
                                               1: FlexColumnWidth(0.25),
                                               2: FlexColumnWidth(0.14),
                                               3: FlexColumnWidth(0.15),
@@ -697,7 +697,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                 children: [
                                                   Padding(
                                                     padding: EdgeInsets.all(8.0),
-                                                    child: Text('Codigo', textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold)),
+                                                    child: Text('Tombamento', textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold)),
                                                   ),
                                                   Padding(
                                                     padding: EdgeInsets.all(8.0),

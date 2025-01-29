@@ -1,4 +1,5 @@
 import 'package:biblioteca/data/models/autor_model.dart';
+import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/auth_provider.dart';
 import 'package:biblioteca/screens/pesquisar_livro.dart';
@@ -10,6 +11,7 @@ import 'package:biblioteca/widgets/forms/form_book.dart';
 import 'package:biblioteca/widgets/forms/form_author.dart';
 import 'package:biblioteca/widgets/tables/author_table_page.dart';
 import 'package:biblioteca/widgets/tables/book_table_page.dart';
+import 'package:biblioteca/widgets/tables/exemplar_table_page.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:biblioteca/widgets/navegacao/menu_navegacao.dart';
 import 'package:biblioteca/utils/theme.dart';
@@ -25,6 +27,7 @@ class TelaPaginaIncial extends StatefulWidget {
 
 class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
   String _selectedRoute = '/inicio';
+
 
   bool _isExpanded = false;
   OverlayEntry? _overlayEntry;
@@ -77,10 +80,14 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           title: const Text("Sair",
                               style: TextStyle(fontSize: 12.4)),
                           onTap: () {
-                            Navigator.pop(context);
+                            _overlayEntry?.remove();
                             Provider.of<AuthProvider>(context, listen: false)
                                 .logout();
-                            Navigator.pushNamed(context, AppRoutes.login);
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              AppRoutes.login,
+                              (route) => false,
+                            );
                           },
                         )
                       ],
@@ -108,9 +115,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
     AuthProvider authProvider =
         Provider.of<AuthProvider>(context, listen: false);
 
-    if (authProvider.usuarioLogado == null && !mounted) {
-        Navigator.pop(context);
-    }
+   
     return Scaffold(
       body: Row(
         children: [
@@ -135,7 +140,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        authProvider.usuarioLogado!,
+                        authProvider.usuarioLogado,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
@@ -233,6 +238,10 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           });
                         case '/novo_livro':
                           page = const FormBook();
+                          break;
+                        case AppRoutes.exemplares:
+                          final book = settings.arguments as Livro;
+                          page = ExemplaresPage(book: book);
                           break;
                         default:
                           page = const Home();

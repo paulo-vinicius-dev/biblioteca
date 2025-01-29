@@ -8,16 +8,15 @@ import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/pesquisar_livro.dart';
-import 'package:biblioteca/screens/redefinir_senha.dart';
 
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 
-import 'package:biblioteca/screens/redefinir_senha_codigo.dart';
 
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:biblioteca/widgets/forms/form_user.dart';
+import 'package:biblioteca/widgets/tables/author_table_page.dart';
 import 'package:biblioteca/widgets/tables/book_table_page.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:flutter/material.dart';
@@ -30,9 +29,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 void main() async {
 
   // iniciando o banco de dados caso o front venha do instalador
-  final caminhoPgCtl = Platform.isWindows ? Directory.current.path +  r'\postgres\bin\pg_ctl.exe' : Directory.current.path + '/postgres/bin/pg_ctl';
-  final pastaBanco = Platform.isWindows ? Directory.current.path + r'\postgres\banco' : Directory.current.path + '/postgres/banco';
-  Process? processoApi = null;
+  final caminhoPgCtl = Platform.isWindows ? Directory.current.path +  r'\postgres\bin\pg_ctl.exe' : '${Directory.current.path}/postgres/bin/pg_ctl';
+  final pastaBanco = Platform.isWindows ? Directory.current.path + r'\postgres\banco' : '${Directory.current.path}/postgres/banco';
+  Process? processoApi;
   if (File(caminhoPgCtl).existsSync()) {
     if (Platform.isWindows) {
       Process.runSync("powershell ", [caminhoPgCtl, "start", "-D", pastaBanco]);
@@ -85,17 +84,18 @@ class Myapp extends StatelessWidget {
         ProxyProvider<AuthProvider, UsuarioProvider>(
           create: (_) => UsuarioProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => UsuarioProvider(
-              authProvider.idDaSessao!, authProvider.usuarioLogado!),
+              authProvider.idDaSessao, authProvider.usuarioLogado),
+          dispose: (_, usuarioProvider) => usuarioProvider.dispose(),
         ),
         ProxyProvider<AuthProvider, ExemplarProvider>(
           create: (_) => ExemplarProvider(0, ''),
           update: (_, authProvider, exemplarprovider) => ExemplarProvider(
-              authProvider.idDaSessao!, authProvider.usuarioLogado!),
+              authProvider.idDaSessao, authProvider.usuarioLogado),
         ),
         ProxyProvider<AuthProvider, LivroProvider>(
           create: (_) => LivroProvider(0, ''),
           update: (_, authProvider, exemplarprovider) => LivroProvider(
-              authProvider.idDaSessao!, authProvider.usuarioLogado!),
+              authProvider.idDaSessao, authProvider.usuarioLogado),
         ),
       ],
       child: MaterialApp(
@@ -122,11 +122,11 @@ class Myapp extends StatelessWidget {
         routes: {
           AppRoutes.login: (ctx) => const TelaLogin(),
           AppRoutes.home: (ctx) => const TelaPaginaIncial(),
-          AppRoutes.redefinirSenha: (ctx) => const TelaRedefinirSenha(),
           AppRoutes.usuarios: (ctx) => const UserTablePage(),
           AppRoutes.novoUsuario: (ctx) => const FormUser(),
           AppRoutes.editarUsuario: (ctx) => const FormUser(),
           AppRoutes.livros: (context) => const BookTablePage(),
+          AppRoutes.autores: (context) => const AuthorTablePage(),
 
           //paginas temporarias para teste
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
@@ -137,7 +137,6 @@ class Myapp extends StatelessWidget {
           AppRoutes.nadaConsta: (context) => const NadaConsta(),
           AppRoutes.configuracoes: (context) => const Configuracoes(),
 
-          AppRoutes.codigoRedefinirSenha: (context) => const TelaRedefinirSenhaCodigo(),
         },
       ),
     );

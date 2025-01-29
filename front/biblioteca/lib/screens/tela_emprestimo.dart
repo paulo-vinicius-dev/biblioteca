@@ -25,7 +25,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   bool showBooks = false;
   bool showLivrosEmprestados = false;
   int selectOption = -1;
-  Exemplar? selectbook = null;
+  Exemplar? selectbook;
   Usuario? selectUser;
 
  
@@ -180,11 +180,11 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                             ),
                             children: [
                               // Linha de Cabeçalho
-                              TableRow(
-                                decoration: const BoxDecoration(
+                              const TableRow(
+                                decoration: BoxDecoration(
                                   color: Color.fromARGB(255, 223, 223, 223),
                                 ),
-                                children: const [
+                                children: [
                                   Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text(

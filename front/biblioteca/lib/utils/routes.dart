@@ -5,7 +5,10 @@ class AppRoutes {
   static const pesquisarLivro = '/pesquisar_livro';
   static const emprestimo = '/emprestimo';
   static const devolucao = '/devolucao';
+
   static const livros = '/livros';
+  static const exemplares = '/exemplares';
+
   static const novoLivro = '/novo_livro';
   static const relatorios = '/relatorios';
   static const nadaConsta = '/nada_consta';

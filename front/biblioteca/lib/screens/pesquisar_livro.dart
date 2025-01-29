@@ -41,6 +41,8 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
         });
       });
     });
+
+    super.initState();
   }
   void SearchExemplares(int idDoLivro){
     filteredExemplares = exemplares.where((exemplar)=> exemplar.idLivro == idDoLivro).toList();

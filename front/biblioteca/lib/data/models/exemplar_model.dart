@@ -1,3 +1,11 @@
+class TipoDeStatus {
+  static const disponivel = "Disponível";
+  static const emprestado = "Emprestado";
+}
+class TipoEstado{
+  static const bom ="Bom";
+  static const danificado ="Danificado";
+}
 class Exemplar {
   final int id;
   final bool cativo;
@@ -29,6 +37,13 @@ class Exemplar {
     required this.siglaPais,
   });
 
+  String get getStatus => statusCodigo == 1
+      ? TipoDeStatus.disponivel
+      : TipoDeStatus.emprestado;
+  String get getEstado => statusCodigo == 1
+      ? TipoEstado.bom
+      : TipoEstado.danificado;
+  
   factory Exemplar.fromJson(Map<String, dynamic> json) {
     return Exemplar(
       id: json['IdDoExemplarLivro'],

@@ -25,7 +25,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   bool showBooks = false;
   bool showLivrosEmprestados = false;
   int selectOption = -1;
-  Exemplar? selectbook = null;
+  Exemplar? selectbook;
   Usuario? selectUser;
 
  

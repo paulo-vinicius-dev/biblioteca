@@ -41,11 +41,8 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
     // Acessando os dados do provider
     final exemplarProvider = Provider.of<ExemplarProvider>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Exemplares - ${widget.bookName}'),
-      ),
-      body: Padding(
+    return Material(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -117,7 +114,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                    '${exemplarProvider.exemplares[i].id}'), // Código Exemplar agora é o id
+                                    '${exemplarProvider.exemplares[i].id}'),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -137,8 +134,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                             .exemplares[i].cativo,
                                         statusCodigo: exemplarProvider
                                             .exemplares[i].statusCodigo,
-                                        estado: int.parse(newValue ??
-                                            '0'), // Convertendo para inteiro
+                                        estado: int.parse(newValue!),
                                         ativo: exemplarProvider
                                             .exemplares[i].ativo,
                                         idLivro: exemplarProvider
@@ -180,7 +176,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    // Adicione a lógica de edição aqui
+                                    
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:

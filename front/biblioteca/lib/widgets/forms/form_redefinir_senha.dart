@@ -14,28 +14,40 @@ class FormRedefinirSenha extends StatefulWidget {
 class _FormRedefinirSenhaState extends State<FormRedefinirSenha> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool showTelaCodigo = false;
-
-  RedefinirSenhaService service = RedefinirSenhaService();
-
-  void _resetPassword() {
-    if (_formKey.currentState?.validate() ?? false) {
-      service.enviarEmail(_emailController.text);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-          "O link de recuperação de senha foi enviado para o email '${_emailController.text}', verifique sua caixa de entrada",
-          textAlign: TextAlign.center,
-        )),
-      );
-
-      
-        Provider.of<LoginProvider>(context, listen: false).setModo(ModoLogin.recuperarCodigo);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    
+
+    void resetPassword(context) async {
+      
+      await Provider.of<LoginProvider>(context, listen: false).enviarEmailDeRecuperacao(_emailController.text);
+      String error = Provider.of<LoginProvider>(context, listen: false).error;
+      if (error.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error,
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (_formKey.currentState!.validate()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "O link de recuperação de senha foi enviado para o email '${_emailController.text}', verifique sua caixa de entrada",
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Provider.of<LoginProvider>(context, listen: false)
+            .setModo(ModoLogin.recuperarCodigo);
+      }
+    }
+
     return Form(
       key: _formKey,
       child: Column(
@@ -71,6 +83,8 @@ class _FormRedefinirSenhaState extends State<FormRedefinirSenha> {
                   .hasMatch(email)) {
                 return 'Insira um email válido';
               }
+
+
               return null;
             },
           ),
@@ -78,7 +92,9 @@ class _FormRedefinirSenhaState extends State<FormRedefinirSenha> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _resetPassword,
+              onPressed: () {
+                resetPassword(context);
+              },
               style: AppTheme.btnPrimary(context),
               child: Text(
                 'Enviar',
@@ -90,7 +106,8 @@ class _FormRedefinirSenhaState extends State<FormRedefinirSenha> {
           TextButton(
             onPressed: () {
               // Voltar à tela de login
-        Provider.of<LoginProvider>(context, listen: false).setModo(ModoLogin.login);
+              Provider.of<LoginProvider>(context, listen: false)
+                  .setModo(ModoLogin.login);
             },
             child: const Text('Voltar para o Login'),
           ),

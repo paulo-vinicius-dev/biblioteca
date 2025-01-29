@@ -77,14 +77,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                             Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Text(
-                                'Código Exemplar',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                'Situação',
+                                'ISBN',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -106,9 +99,8 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                         ),
 
                         // Linhas da tabela
-                        for (int i = 0;
-                            i < exemplarProvider.exemplares.length;
-                            i++)
+                        for (int i = 0;i < exemplarProvider.exemplares.length; i++)
+                          if(exemplarProvider.exemplares[i].id == widget.idLivro)
                           TableRow(
                             children: [
                               Padding(
@@ -168,6 +160,10 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                     DropdownMenuItem(
                                       value: '2',
                                       child: Text('Danificado'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: '3',
+                                      child: Text('Gasoso'),
                                     ),
                                   ],
                                 ),

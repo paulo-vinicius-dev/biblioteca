@@ -1,13 +1,14 @@
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/services/livro_service.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+
 
 class LivroProvider extends ChangeNotifier {
   final LivroService _livroService = LivroService();
   bool _isLoading = false;
   String? _error;
   List<Livro> _livros = [];
-  
+
   final num idDaSessao;
   final String usuarioLogado;
 
@@ -19,21 +20,38 @@ class LivroProvider extends ChangeNotifier {
   bool get hasErrors => _error != null;
   List<Livro> get livros => [..._livros];
 
+  // Clear errors
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
+
   // Carregar todos os livros
   Future<void> loadLivros() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
+    print("Loading livros...");
 
     try {
       final livrosAtingidos = await _livroService.fetchLivros(idDaSessao, usuarioLogado);
-      _livros = livrosAtingidos.livrosAtingidos;
+      print("Livros fetched: ${livrosAtingidos.livrosAtingidos.length}");
+      if (!listEquals(_livros, livrosAtingidos.livrosAtingidos)) {
+        _livros = livrosAtingidos.livrosAtingidos;
+      }
     } catch (e) {
       _error = "Provider: Erro ao carregar os Livros:\n$e";
+      print("Error loading livros: $e");
     } finally {
       _isLoading = false;
       notifyListeners();
+      print("Loading complete.");
     }
+  }
+
+  // Refresh livros
+  Future<void> refreshLivros() async {
+    await loadLivros();
   }
 
   // Adicionar um novo livro
@@ -43,10 +61,11 @@ class LivroProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Chama o método de adicionar livro
+      if (_livros.any((l) => l.isbn == livro.isbn)) {
+        throw Exception("Livro com ISBN ${livro.isbn} já existe.");
+      }
+
       await _livroService.addLivro(livro);
-      
-      // Caso o livro seja adicionado com sucesso, adicionamos à lista local
       _livros.add(livro);
     } catch (e) {
       _error = "Erro ao inserir novo Livro:\n$e";
@@ -63,14 +82,13 @@ class LivroProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Chama o método de alterar livro
-      await _livroService.alterLivro(livro);
-
-      // Atualiza o livro na lista local
       final index = _livros.indexWhere((l) => l.isbn == livro.isbn);
-      if (index != -1) {
-        _livros[index] = livro;
+      if (index == -1) {
+        throw Exception("Livro com ISBN ${livro.isbn} não encontrado.");
       }
+
+      await _livroService.alterLivro(livro);
+      _livros[index] = livro;
     } catch (e) {
       _error = "Erro ao alterar o Livro:\n$e";
     } finally {
@@ -86,10 +104,11 @@ class LivroProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Chama o método de deletar livro
-      await _livroService.deleteLivro(idLivro);
+      if (!_livros.any((livro) => livro.idDoLivro == idLivro)) {
+        throw Exception("Livro com ID $idLivro não encontrado.");
+      }
 
-      // Remove o livro da lista local
+      await _livroService.deleteLivro(idLivro);
       _livros.removeWhere((livro) => livro.idDoLivro == idLivro);
     } catch (e) {
       _error = "Erro ao deletar o Livro:\n$e";

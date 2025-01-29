@@ -24,27 +24,34 @@ class BookTablePageState extends State<BookTablePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<LivroProvider>(context, listen: false).loadLivros();
+      Provider.of<LivroProvider>(context, listen: false).loadLivros().then((_) {
+        setState(() {});
+      });
     });
-    
   }
 
   @override
   Widget build(BuildContext context) {
-    LivroProvider livroProvider = Provider.of<LivroProvider>(context);
-
+    LivroProvider livroProvider =
+        Provider.of<LivroProvider>(context, listen: true);
+    print(livroProvider.isLoading);
     if (livroProvider.isLoading) {
+      print("está carregando");
+      while (livroProvider.isLoading) {}
       return const Center(child: CircularProgressIndicator());
     } else if (livroProvider.hasErrors) {
+      print("deu erro");
       return Text(livroProvider.error!);
     } else {
+      print("deu certo");
+      print(context.read<LivroProvider>().livros);
       return tableLivro(context);
     }
   }
 
   Material tableLivro(BuildContext context) {
     List<Livro> books = Provider.of<LivroProvider>(context).livros;
-
+    print("livros da tabela: ${books.toString()}");
     int totalPages = (books.length / rowsPerPage).ceil();
 
     // Calcula o índice inicial e final dos livros exibidos
@@ -69,7 +76,7 @@ class BookTablePageState extends State<BookTablePage> {
           // Barra de navegação
           const BreadCrumb(
               breadcrumb: ['Início', 'Livros'], icon: Icons.menu_book_outlined),
-          
+
           // Corpo da página
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),

@@ -67,12 +67,16 @@ class _FormLoginState extends State<FormLogin> {
 
         if (_login!.aceito) {
           _authProvider.login(_login!.idSessao, login);
-          Navigator.pushReplacementNamed(context, AppRoutes.home);
+          Future.delayed(
+            Duration(milliseconds: 200),
+            () => Navigator.pushReplacementNamed(context, AppRoutes.home),
+          );
         } else {
           showError('Usuário e/ou senha incorretos.');
         }
       });
     } catch (e) {
+      print("$e");
       showError('Ops! Algo de errado não está certo, volte mais tarde');
     }
   }
@@ -94,7 +98,6 @@ class _FormLoginState extends State<FormLogin> {
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-
             children: [
               Image.asset(
                 AppAssets.logo,
@@ -167,7 +170,8 @@ class _FormLoginState extends State<FormLogin> {
           const SizedBox(height: 20),
           TextButton(
             onPressed: () {
-              Provider.of<LoginProvider>(context, listen: false).setModo(ModoLogin.redefinirSenha);
+              Provider.of<LoginProvider>(context, listen: false)
+                  .setModo(ModoLogin.redefinirSenha);
             },
             child: Text(
               'Esqueceu sua senha?',

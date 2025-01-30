@@ -28,7 +28,6 @@ class TelaPaginaIncial extends StatefulWidget {
 class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
   String _selectedRoute = '/inicio';
 
-
   bool _isExpanded = false;
   OverlayEntry? _overlayEntry;
 
@@ -112,10 +111,14 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider authProvider =
-        Provider.of<AuthProvider>(context, listen: false);
 
-   
+    return paginaInicialContent(context);
+  }
+
+  Scaffold paginaInicialContent(BuildContext context) {
+
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       body: Row(
         children: [
@@ -140,7 +143,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        authProvider.usuarioLogado,
+                        authProvider.usuario.nome,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
@@ -150,7 +153,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                                 color: const Color.fromRGBO(40, 40, 49, 30)),
                       ),
                       Text(
-                        "Admin",
+                        authProvider.usuario.getTipoDeUsuario,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium

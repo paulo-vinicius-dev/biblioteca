@@ -4,8 +4,7 @@ import (
 	//"log"
 	"biblioteca/modelos"
 	"context"
-
-	pgx "github.com/jackc/pgx/v5"
+	"fmt"
 )
 
 type ErroBancoLivro int
@@ -106,43 +105,74 @@ func CriarLivro(novoLivro modelos.Livro, nomeAutores []string, nomeCategorias []
 	return ErroNenhum
 }
 
-func PesquisarLivro(busca string) []modelos.Livro {
+func PesquisarLivro(busca string) []modelos.LivroResposta {
 	conexao := PegarConexao()
 	busca = "%" + busca + "%"
 	textoQuery := "select id_livro, isbn, titulo, to_char(ano_publicacao, 'yyyy-mm-dd'), editora, pais from livro where isbn like $1 or titulo like $1 or ano_publicacao::varchar like $1 or editora like $1 or pais::varchar like $1"
 	linhas, erro := conexao.Query(context.Background(), textoQuery, busca)
 	if erro != nil {
-		return []modelos.Livro{}
+		return []modelos.LivroResposta{}
 	}
+
 	var livroTemporario modelos.Livro
-	livrosEncontrados := make([]modelos.Livro, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicacao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
-		livrosEncontrados = append(livrosEncontrados, livroTemporario)
-		return nil
-	})
-	if erro != nil {
-		return []modelos.Livro{}
+	livrosEncontrados := make([]modelos.LivroResposta, 0)
+	for linhas.Next() {
+		var livroRespostaTemporario modelos.LivroResposta
+		linhas.Scan(&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicacao, &livroTemporario.Editora, &livroTemporario.Pais)
+		fmt.Println("Pais: ", livroTemporario.Pais)
+		paisLivro, _ := PegarPaisPeloId(livroTemporario.Pais)
+		categorias, _ := PegarCategoriasAssociadosAoLivro(livroTemporario.IdDoLivro)
+		autores, _ := PegarAutoresAssociadosAoLivro(livroTemporario.IdDoLivro)
+
+		livroRespostaTemporario = modelos.LivroResposta{
+			IdDoLivro:     livroTemporario.IdDoLivro,
+			Isbn:          livroTemporario.Isbn,
+			Titulo:        livroTemporario.Titulo,
+			AnoPublicacao: livroTemporario.AnoPublicacao,
+			Editora:       livroTemporario.Editora,
+			Pais:          paisLivro,
+			Categorias:    categorias,
+			Autores:       autores,
+		}
+
+		livrosEncontrados = append(livrosEncontrados, livroRespostaTemporario)
 	}
+
 	return livrosEncontrados
 }
 
-func PegarTodosLivros() []modelos.Livro {
+func PegarTodosLivros() []modelos.LivroResposta {
 	conexao := PegarConexao()
 	textoQuery := "select id_livro, isbn, titulo, to_char(ano_publicacao, 'yyyy-mm-dd'), editora, pais from livro"
 	linhas, erro := conexao.Query(context.Background(), textoQuery)
 	if erro != nil {
-		return []modelos.Livro{}
+		return []modelos.LivroResposta{}
 	}
 
 	var livroTemporario modelos.Livro
-	livrosEncontrados := make([]modelos.Livro, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicacao, &livroTemporario.Editora, &livroTemporario.Pais}, func() error {
-		livrosEncontrados = append(livrosEncontrados, livroTemporario)
-		return nil
-	})
-	if erro != nil {
-		return []modelos.Livro{}
+	livrosEncontrados := make([]modelos.LivroResposta, 0)
+	for linhas.Next() {
+		var livroRespostaTemporario modelos.LivroResposta
+		linhas.Scan(&livroTemporario.IdDoLivro, &livroTemporario.Isbn, &livroTemporario.Titulo, &livroTemporario.AnoPublicacao, &livroTemporario.Editora, &livroTemporario.Pais)
+
+		paisLivro, _ := PegarPaisPeloId(livroTemporario.Pais)
+		categorias, _ := PegarCategoriasAssociadosAoLivro(livroTemporario.IdDoLivro)
+		autores, _ := PegarAutoresAssociadosAoLivro(livroTemporario.IdDoLivro)
+
+		livroRespostaTemporario = modelos.LivroResposta{
+			IdDoLivro:     livroTemporario.IdDoLivro,
+			Isbn:          livroTemporario.Isbn,
+			Titulo:        livroTemporario.Titulo,
+			AnoPublicacao: livroTemporario.AnoPublicacao,
+			Editora:       livroTemporario.Editora,
+			Pais:          paisLivro,
+			Categorias:    categorias,
+			Autores:       autores,
+		}
+
+		livrosEncontrados = append(livrosEncontrados, livroRespostaTemporario)
 	}
+
 	return livrosEncontrados
 }
 
@@ -326,4 +356,59 @@ func IsbnDuplicado(cpf string) bool {
 	} else {
 		panic("Erro ao procurar por isbn duplicado. Provavelmente é um bug")
 	}
+}
+
+func PegarAutoresAssociadosAoLivro(idLivro int) ([]modelos.AutorResposta, error) {
+	conexao := PegarConexao()
+	consulta := `
+		SELECT 
+			a.id_autor,
+			a.nome, 
+			a.ano_nascimento,
+			a.nacionalidade as nacionalidade_codigo,
+			p.nome,
+			a.sexo as codigo_sexo,
+			CASE 
+				WHEN a.sexo = 'M' THEN 'Masculino' 
+				WHEN a.sexo = 'F' THEN 'feminino'
+			END 
+		FROM autor a
+		LEFT JOIN pais p ON a.nacionalidade = p.id_pais
+		INNER JOIN livro_autor la ON a.id_autor = la.id_autor
+		WHERE la.id_livro = $1
+	`
+	linhas, erroQuery := conexao.Query(context.Background(), consulta, idLivro)
+	if erroQuery != nil {
+		panic("Um erro aconteceu ao tentar pegar os autores associados ao livro")
+	}
+	var autores []modelos.AutorResposta
+	for linhas.Next() {
+		var autor modelos.AutorResposta
+		linhas.Scan(&autor.ID, &autor.Nome, &autor.AnoNascimento, &autor.NacionalidadeCodigo, &autor.Nacionalidade, &autor.SexoCodigo, &autor.Sexo)
+		autores = append(autores, autor)
+	}
+
+	return autores, nil
+}
+
+func PegarCategoriasAssociadosAoLivro(idLivro int) ([]modelos.Categoria, error) {
+	conexao := PegarConexao()
+	consulta := `
+		SELECT c.id_categoria, c.descricao 
+		FROM categoria c
+		INNER JOIN livro_categoria lc ON c.id_categoria = lc.id_categoria
+		WHERE lc.id_livro = $1
+	`
+	linhas, erroQuery := conexao.Query(context.Background(), consulta, idLivro)
+	if erroQuery != nil {
+		panic("Um erro aconteceu ao tentar pegar as categorias associados ao livro")
+	}
+	var categorias []modelos.Categoria
+	for linhas.Next() {
+		var categoria modelos.Categoria
+		linhas.Scan(&categoria.IdDaCategoria, &categoria.Descricao)
+		categorias = append(categorias, categoria)
+	}
+
+	return categorias, nil
 }

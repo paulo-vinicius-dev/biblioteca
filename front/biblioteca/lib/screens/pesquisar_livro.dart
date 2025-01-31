@@ -69,7 +69,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
         children: [
           const BreadCrumb(breadcrumb: ['Início', 'Pesquisar Livro'], icon: Icons.search),
           Padding(
-            padding: const EdgeInsets.only(top: 40, left: 35, right: 200),
+            padding: const EdgeInsets.only(top: 40, left: 35, right: 100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -110,9 +110,9 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                       
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.only(
-                          top: 15,
-                          bottom: 15,
-                          left: 15,
+                          top: 16,
+                          bottom: 16,
+                          left: 16,
                           right: 20,
                         ),
                         backgroundColor: const Color.fromRGBO(38, 42, 79, 1),
@@ -153,186 +153,179 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (selectBook == null)
-                          SizedBox(
-                            width: 1100,
-                            child: Table(
-                              border: TableBorder.all(
-                                color: const Color.fromARGB(215, 200, 200, 200),
+                          
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 1210,
+                                minWidth: 800,
                               ),
-                              columnWidths: const {
-                                0: FlexColumnWidth(0.13),
-                                1: FlexColumnWidth(0.30),
-                                2: FlexColumnWidth(0.15),
-                                3: FlexColumnWidth(0.14),
-                                4: FlexColumnWidth(0.10),
-                                5: FlexColumnWidth(0.14),
-                              },
-                              children: [
-                                const TableRow(
-                                  decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 44, 62, 80),
-                                  ),
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'ISBN',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 14.5),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Titulo',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Editora',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Ano de Publicação',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Exemplares',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Ação',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
-                                      ),
-                                    ),
-                                  ],
+                              child: Table(
+                                border: TableBorder.all(
+                                  color: const Color.fromARGB(215, 200, 200, 200),
                                 ),
-                                for (int x = 0; x < filteredBooks.length; x++)
-                                  TableRow(
+                                columnWidths: const {
+                                  0: FlexColumnWidth(0.13),
+                                  1: FlexColumnWidth(0.30),
+                                  2: FlexColumnWidth(0.15),
+                                  3: FlexColumnWidth(0.14),
+                                  4: FlexColumnWidth(0.10),
+                                  5: FlexColumnWidth(0.12),
+                                },
+                                children: [
+                                  const TableRow(
                                     decoration: BoxDecoration(
-                                      color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1),
+                                      color: Color.fromARGB(255, 44, 62, 80),
                                     ),
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                        padding: EdgeInsets.all(8.0),
                                         child: Text(
-                                          filteredBooks[x].isbn,
+                                          'ISBN',
                                           textAlign: TextAlign.center,
-                                           style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 14.5),
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                        padding: EdgeInsets.all(8.0),
                                         child: Text(
-                                          filteredBooks[x].titulo,
-                                          textAlign: TextAlign.left,
-                                           style: TextStyle(fontWeight: FontWeight.w500,fontSize: 13.5),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
-                                        child: Text(
-                                          filteredBooks[x].editora,
+                                          'Titulo',
                                           textAlign: TextAlign.center,
-                                           style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                        padding: EdgeInsets.all(8.0),
                                         child: Text(
-                                          DateFormat('dd/MM/yyyy').format(
-                                            filteredBooks[x].anoPublicacao,
-                                          ),
+                                          'Editora',
                                           textAlign: TextAlign.center,
-                                           style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                        padding: EdgeInsets.all(8.0),
                                         child: Text(
-                                          '${providerExemplar.QtdExemplaresLivro(filteredBooks[x].idDoLivro)}',
+                                          'Ano de Publicação',
                                           textAlign: TextAlign.center,
-                                           style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 10,
-                                          horizontal: 14,
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'Exemplares',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
                                         ),
-                                        child: TextButton(
-                                          style: TextButton.styleFrom(
-                                            backgroundColor: const Color.fromARGB(255, 45, 106, 79),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(5),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              selectBook = filteredBooks[x];
-                                              SearchExemplares(selectBook!.idDoLivro);
-                                            });
-                                          },
-                                          child: const Text(
-                                            'Selecionar Livro',
-                                            style: TextStyle(
-                                              color: const Color.fromARGB(255, 250, 244, 244),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 13.5,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'Ação',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white,fontSize: 14.5),
                                         ),
                                       ),
                                     ],
                                   ),
-
-                              ],
-                            ),
-                            
-                          )
+                                  for (int x = 0; x < filteredBooks.length; x++)
+                                    TableRow(
+                                      decoration: BoxDecoration(
+                                        color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1),
+                                      ),
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                          child: Text(
+                                            filteredBooks[x].isbn,
+                                            textAlign: TextAlign.center,
+                                             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                          child: Text(
+                                            filteredBooks[x].titulo,
+                                            textAlign: TextAlign.left,
+                                             style: TextStyle(fontWeight: FontWeight.w500,fontSize: 13.5),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                          child: Text(
+                                            filteredBooks[x].editora,
+                                            textAlign: TextAlign.center,
+                                             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                          child: Text(
+                                            DateFormat('dd/MM/yyyy').format(
+                                              filteredBooks[x].anoPublicacao,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                          child: Text(
+                                            '${providerExemplar.QtdExemplaresLivro(filteredBooks[x].idDoLivro)}',
+                                            textAlign: TextAlign.center,
+                                             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 10,
+                                            horizontal: 14,
+                                          ),
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              backgroundColor: const Color.fromARGB(255, 45, 106, 79),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(7),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                selectBook = filteredBooks[x];
+                                                SearchExemplares(selectBook!.idDoLivro);
+                                              });
+                                            },
+                                            child: const Text(
+                                              'Selecionar',
+                                              style: TextStyle(
+                                                color: const Color.fromARGB(255, 250, 244, 244),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 13.5,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                              
+                                ],
+                              ),
+                            )
                         else
                           SizedBox(
                             width: 1100,
                             child: Column(
                               children: [
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 6.5),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      right: BorderSide(color: Color.fromARGB(215, 200, 200, 200), width: 1),
-                                      top: BorderSide(color: Color.fromARGB(215, 200, 200, 200), width: 1),
-                                      left: BorderSide(color: Color.fromARGB(215, 200, 200, 200), width: 1)
-                                    ),
-                                    color:   const Color.fromARGB(255, 44, 62, 80)
-                                  ),
-                                  child: Text(
-                                    "Livro Selecionado",
-                                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                      color: Colors.white
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
+                                Text(
+                                   "Livro Selecionado",
+                                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                                     fontWeight: FontWeight.bold,
+                                     fontSize: 20.3,
+                                     color: Colors.black,
+                                   ),
+                                   textAlign: TextAlign.center,
+                                 ),
+                                Divider(thickness: 2, color: Colors.grey[300]),
+                                SizedBox(height: 10,),
                                 Table(
                                   border: TableBorder.all(
                                     color: const Color.fromARGB(215, 200, 200, 200),
@@ -451,30 +444,20 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                   ],
                                 ),
                                 const SizedBox(height: 30,),
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 6.5),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      right: BorderSide(color: Color.fromARGB(215, 200, 200, 200), width: 1),
-                                      top: BorderSide(color: Color.fromARGB(215, 200, 200, 200), width: 1),
-                                      left: BorderSide(color: Color.fromARGB(215, 200, 200, 200), width: 1)
-                                    ),
-                                    color:   const Color.fromARGB(255, 44, 62, 80)
-                                  ),
-                                  child: Text(
-                                    "Detalhes Dos Exemplares",
-                                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                      color: Colors.white
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                Table(
+                                Text(
+                                   "Detalhes Dos Exemplares",
+                                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                                     fontWeight: FontWeight.bold,
+                                     fontSize: 20.3,
+                                     color: Colors.black,
+                                   ),
+                                   textAlign: TextAlign.center,
+                                 ),
+                              Divider(thickness: 2, color: Colors.grey[300]),
+                              SizedBox(height: 10,),
+                              Table(
                               border: TableBorder.all(
-                                color: const Color.fromARGB(200, 214, 214, 214),
+                                color: const Color.fromARGB(215, 200, 200, 200),
                               ),
                               columnWidths: const {
                                 0: FlexColumnWidth(0.10),
@@ -493,7 +476,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                       child: Text(
                                         'Tombamento',
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white),
+                                        style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white,fontSize: 14.5),
                                       ),
                                     ),
                                     Padding(
@@ -501,7 +484,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                       child: Text(
                                         'Titulo',
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white),
+                                        style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white,fontSize: 14.5),
                                       ),
                                     ),
                                     Padding(
@@ -509,7 +492,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                       child: Text(
                                         'Situação',
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white),
+                                        style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white,fontSize: 14.5),
                                       ),
                                     ),
                                     Padding(
@@ -517,7 +500,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                       child: Text(
                                         'Estado Físico',
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white),
+                                        style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white,fontSize: 14.5),
                                       ),
                                     ),
                                   ],

@@ -1,8 +1,8 @@
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Para acessar o ExemplarProvider
-import 'package:biblioteca/data/models/exemplar_model.dart'; // Certifique-se de que o modelo está correto
-import 'package:biblioteca/data/providers/exemplares_provider.dart'; // Supondo que você tenha um provider para buscar exemplares
+import 'package:provider/provider.dart';
+import 'package:biblioteca/data/models/exemplar_model.dart'; 
+import 'package:biblioteca/data/providers/exemplares_provider.dart';
 
 class ExemplaresPage extends StatefulWidget {
   
@@ -10,7 +10,6 @@ class ExemplaresPage extends StatefulWidget {
   const ExemplaresPage({
     super.key,
     required this.book
-
   });
 
   @override
@@ -19,19 +18,18 @@ class ExemplaresPage extends StatefulWidget {
 
 class _ExemplaresPageState extends State<ExemplaresPage> {
 
-  bool isLoading = true; // Controle de loading
+  bool isLoading = true; 
 
   @override
   void initState() {
     super.initState();
-    // Carregar os exemplares ao inicializar a página
     _loadExemplares();
   }
 
   Future<void> _loadExemplares() async {
     final provider = Provider.of<ExemplarProvider>(context,
-        listen: false); // Usando o provider
-    await provider.loadExemplares(); // Carregando os exemplares
+        listen: false); 
+    await provider.loadExemplares(); 
     setState(() {
       isLoading = false;
     });
@@ -39,7 +37,6 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Acessando os dados do provider
     final exemplarProvider = Provider.of<ExemplarProvider>(context);
 
     return Material(
@@ -48,7 +45,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
         child: Column(
           children: [
             if (isLoading)
-              const CircularProgressIndicator() // Mostra o loading enquanto carrega
+              const CircularProgressIndicator()
             else
               SingleChildScrollView(
                 child: Column(
@@ -65,7 +62,6 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                         4: IntrinsicColumnWidth(),
                       },
                       children: [
-                        // Cabeçalho da tabela
                         const TableRow(
                           children: [
                             Padding(
@@ -101,7 +97,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
 
                         // Linhas da tabela
                         for (int i = 0;i < exemplarProvider.exemplares.length; i++)
-                          if(exemplarProvider.exemplares[i].id == widget.idLivro)
+                          if(exemplarProvider.exemplares[i].id == widget.book.idDoLivro)
                           TableRow(
                             children: [
                               Padding(
@@ -161,10 +157,6 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                     DropdownMenuItem(
                                       value: '2',
                                       child: Text('Danificado'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: '3',
-                                      child: Text('Gasoso'),
                                     ),
                                   ],
                                 ),

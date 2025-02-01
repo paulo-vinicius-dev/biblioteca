@@ -1,16 +1,16 @@
+import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Para acessar o ExemplarProvider
 import 'package:biblioteca/data/models/exemplar_model.dart'; // Certifique-se de que o modelo está correto
 import 'package:biblioteca/data/providers/exemplares_provider.dart'; // Supondo que você tenha um provider para buscar exemplares
 
 class ExemplaresPage extends StatefulWidget {
-  final String bookName;
-  final int idLivro; // Agora recebendo o idLivro
-
+  
+  final Livro book;
   const ExemplaresPage({
     super.key,
-    required this.bookName,
-    required this.idLivro, // Recebendo o idLivro
+    required this.book
+
   });
 
   @override
@@ -18,6 +18,7 @@ class ExemplaresPage extends StatefulWidget {
 }
 
 class _ExemplaresPageState extends State<ExemplaresPage> {
+
   bool isLoading = true; // Controle de loading
 
   @override

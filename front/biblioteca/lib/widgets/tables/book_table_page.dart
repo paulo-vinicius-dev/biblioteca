@@ -3,7 +3,6 @@
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
-import 'package:biblioteca/widgets/tables/exemplar_table_page.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:provider/provider.dart';
@@ -280,16 +279,8 @@ class BookTablePageState extends State<BookTablePage> {
                                     onPressed: () async {
                                       try {
                                         // Navegar para a página de Exemplares com os dados carregados
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                ExemplaresPage(
-                                              bookName: book.titulo,
-                                              idLivro: book.idDoLivro,
-                                            ),
-                                          ),
-                                        );
+                                        Navigator.pushNamed(
+                                            context, AppRoutes.exemplares);
                                       } catch (e) {
                                         // Tratar erro caso os exemplares não possam ser carregados
                                         ScaffoldMessenger.of(context)

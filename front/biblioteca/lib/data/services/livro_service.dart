@@ -23,7 +23,6 @@ class LivroService {
     );
 
     if (response.statusCode! >= 200 && response.statusCode! < 299) {
-      print("fetch deu certo");
       return LivrosAtingidos.fromJson(
           jsonDecode(response.data)); // Retorna a resposta como LivrosAtingidos
     } else {

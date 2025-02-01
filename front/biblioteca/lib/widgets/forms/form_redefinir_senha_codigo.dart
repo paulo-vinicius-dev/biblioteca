@@ -1,6 +1,5 @@
 import 'package:biblioteca/data/providers/login_provider.dart';
 import 'package:biblioteca/data/services/redefinir_senha_service.dart';
-import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

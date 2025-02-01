@@ -244,7 +244,7 @@ INSERT INTO livro_categoria (id_livro, id_categoria) VALUES
 INSERT INTO exemplar_livro (id_exemplar_livro, livro, cativo, status, estado) VALUES
 (1, 1, FALSE, 1, 1),  -- Exemplar de Dom Casmurro
 (2, 2, TRUE, 1, 2),   -- Exemplar de Harry Potter
-(3, 3, FALSE, 2, 3);  -- Exemplar de A Game of Thrones
+(3, 3, FALSE, 2, 2);  -- Exemplar de A Game of Thrones
 
 -- Poque as vezes o postgres ferra a sequência do serial
 -- estou colacando a sequencia para avançar mais um apartir do max(id)

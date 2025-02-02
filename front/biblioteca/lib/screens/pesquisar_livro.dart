@@ -18,7 +18,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
   late TextEditingController _searchController;
   late List<Livro> livros;
   late List<Livro> filteredBooks = [];
-  late Livro? selectBook = null;
+  late Livro? selectBook;
   late bool search = false;
   late ExemplarProvider providerExemplar;
   late LivroProvider providerLivro;
@@ -261,7 +261,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                           left: 8.0,
                                         ),
                                         child: Text(
-                                          '${providerExemplar.QtdExemplaresLivro(filteredBooks[x].idDoLivro)}',
+                                          '${providerExemplar.qtdExemplaresLivro(filteredBooks[x].idDoLivro)}',
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
@@ -426,7 +426,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         Padding(
                                            padding:EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                           child: Text(
-                                            '${providerExemplar.QtdExemplaresLivro(selectBook!.idDoLivro)}',
+                                            '${providerExemplar.qtdExemplaresLivro(selectBook!.idDoLivro)}',
                                             textAlign: TextAlign.center,
                                           ),
                                         ),

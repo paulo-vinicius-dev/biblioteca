@@ -26,6 +26,7 @@ class LivroService {
       return LivrosAtingidos.fromJson(
           jsonDecode(response.data)); // Retorna a resposta como LivrosAtingidos
     } else {
+      print("Erro ao carregar os livros: ${response.data}");
       throw Exception('Erro ao carregar os livros: ${response.data}');
     }
   }

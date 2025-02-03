@@ -1,23 +1,32 @@
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/data/services/isbn_service.dart';
+import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
+import 'package:biblioteca/data/models/livro_model.dart';
+import 'package:biblioteca/data/providers/livro_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:biblioteca/utils/routes.dart';
 
 class FormBook extends StatefulWidget {
-  const FormBook({super.key});
+  const FormBook({super.key, this.livro});
+  final Livro? livro;
 
   @override
   State<FormBook> createState() => _FormBookState();
 }
 
 class _FormBookState extends State<FormBook> {
+  bool isModoEdicao() {
+    return widget.livro != null;
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
   final TextEditingController _editoraController = TextEditingController();
-  final TextEditingController _dataPublicacaoController =
+  final TextEditingController _anoPublicacaoController =
       TextEditingController();
-  final TextEditingController _pageCountController = TextEditingController();
-
+  final TextEditingController _paisController = TextEditingController();
   final List<TextEditingController> _authorsControllers = [
     TextEditingController()
   ];
@@ -25,13 +34,60 @@ class _FormBookState extends State<FormBook> {
     TextEditingController()
   ];
 
+  void btnSalvar(context) async {
+    LivroProvider provider = Provider.of<LivroProvider>(context, listen: false);
+    final Livro newLivro;
+    String? mensagem = '';
+
+    if (isModoEdicao()) {
+      newLivro = widget.livro!;
+
+      newLivro.titulo = _tituloController.text;
+      newLivro.isbn = _isbnController.text;
+      newLivro.editora = _editoraController.text;
+      newLivro.anoPublicacao = _anoPublicacaoController.text as DateTime;
+      newLivro.pais = int.parse(_paisController.text);
+
+      await provider.editLivro(newLivro);
+
+      mensagem = provider.hasErrors
+          ? "Ocorreu um erro ao tentar alterar este registro, por favor confira os dados inseridos"
+          : "Registro alterado com sucesso";
+    } else {
+      newLivro = Livro(
+          idDoLivro: 0,
+          titulo: _tituloController.text,
+          isbn: _isbnController.text,
+          editora: _editoraController.text,
+          anoPublicacao: _anoPublicacaoController.text as DateTime,
+          pais: int.parse(_paisController.text));
+
+      await provider.addLivro(newLivro);
+
+      mensagem = provider.hasErrors
+          ? provider.error
+          : "Cadastro realizado com sucesso";
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content: Text(mensagem!),
+          backgroundColor: provider.hasErrors ? Colors.red : Colors.green),
+    );
+
+    if (!provider.hasErrors) {
+      Navigator.pushNamedAndRemoveUntil(
+          context, AppRoutes.autores, ModalRoute.withName(AppRoutes.home));
+    }
+  }
+
   @override
   void dispose() {
     _tituloController.dispose();
     _isbnController.dispose();
     _editoraController.dispose();
-    _dataPublicacaoController.dispose();
-    _pageCountController.dispose();
+    _anoPublicacaoController.dispose();
+    _paisController.dispose();
 
     for (var controller in _authorsControllers) {
       controller.dispose();
@@ -54,11 +110,10 @@ class _FormBookState extends State<FormBook> {
         setState(() {
           _tituloController.text = data['title'] ?? '';
           _editoraController.text = data['publisher'] ?? '';
-          _dataPublicacaoController.text =
+          _anoPublicacaoController.text =
               data['publication_date']?.substring(0, 4) ?? '';
-          _pageCountController.text = (data['page_count'] ?? '').toString();
+          _paisController.text = (data['page_count'] ?? '').toString();
 
-          // Preencher os autores
           _authorsControllers.clear();
           if (data['authors'] != null) {
             for (String autor in data['authors']) {
@@ -66,7 +121,6 @@ class _FormBookState extends State<FormBook> {
             }
           }
 
-          // Preencher as categorias
           _categoriesControllers.clear();
           if (data['subjects'] != null) {
             for (String categoria in data['subjects']) {
@@ -76,14 +130,14 @@ class _FormBookState extends State<FormBook> {
           }
         });
       } else {
-              // ignore: use_build_context_synchronously
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Livro não encontrado'),
-      ));
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Livro não encontrado'),
+        ));
       }
     } catch (e) {
-            // ignore: use_build_context_synchronously
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('$e'),
       ));
     }
@@ -140,10 +194,10 @@ class _FormBookState extends State<FormBook> {
                       TextFormField(
                         controller: _isbnController,
                         decoration: InputDecoration(
-                          labelText: "ISBN",
+                          label: const CampoObrigatorio(label: "ISBN"),
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
-                            icon:  const Icon(Icons.search),
+                            icon: const Icon(Icons.search),
                             onPressed: _buscarLivroPorISBN,
                           ),
                         ),
@@ -160,7 +214,7 @@ class _FormBookState extends State<FormBook> {
                       TextFormField(
                         controller: _tituloController,
                         decoration: const InputDecoration(
-                          labelText: "Título",
+                          label: CampoObrigatorio(label: "Titulo"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
@@ -176,7 +230,7 @@ class _FormBookState extends State<FormBook> {
                       TextFormField(
                         controller: _editoraController,
                         decoration: const InputDecoration(
-                          labelText: "Editora",
+                          label: CampoObrigatorio(label: "Editora"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
@@ -190,10 +244,9 @@ class _FormBookState extends State<FormBook> {
 
                       // Data de Publicação
                       TextFormField(
-                        controller: _dataPublicacaoController,
-                        keyboardType: TextInputType.number,
+                        controller: _anoPublicacaoController,
                         decoration: const InputDecoration(
-                          labelText: "Ano de Publicação",
+                          label: CampoObrigatorio(label: "Ano de Publicação"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
@@ -203,6 +256,9 @@ class _FormBookState extends State<FormBook> {
                           final testNum = int.tryParse(value);
                           if (testNum == null) {
                             return "Apenas numeros neste campo";
+                          }
+                          if (value.length != 4) {
+                            return "Coloque o ano em um formato de 4 digitos. Ex: 2015";
                           }
                           if (testNum > DateTime.now().year) {
                             return "Confira se esta data está correta";
@@ -214,9 +270,9 @@ class _FormBookState extends State<FormBook> {
 
                       // Quantidade de paginas
                       TextFormField(
-                        controller: _pageCountController,
+                        controller: _paisController,
                         decoration: const InputDecoration(
-                          labelText: "Quantidade de Páginas",
+                          label: CampoObrigatorio(label: "Pais"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
@@ -240,7 +296,9 @@ class _FormBookState extends State<FormBook> {
                                     child: TextFormField(
                                       controller: _authorsControllers[index],
                                       decoration: InputDecoration(
-                                        labelText: "Autor ${index + 1}",
+                                        label:  index == 0
+                                            ? const CampoObrigatorio(label: "Autor")
+                                            : const Text("Autor"),
                                         border: const OutlineInputBorder(),
                                       ),
                                     ),
@@ -291,7 +349,9 @@ class _FormBookState extends State<FormBook> {
                                     child: TextFormField(
                                       controller: _categoriesControllers[index],
                                       decoration: InputDecoration(
-                                        labelText: "Categoria ${index + 1}",
+                                        label:  index == 0
+                                            ? const CampoObrigatorio(label: "Autor")
+                                            : const Text("Autor"),
                                         border: const OutlineInputBorder(),
                                       ),
                                     ),
@@ -355,14 +415,14 @@ class _FormBookState extends State<FormBook> {
                               if (_formKey.currentState!.validate()) {
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                     content: Text(
-                                        "Erro ao preencher o formulario : $_dataPublicacaoController")));
+                                        "Erro ao preencher o formulario : $_anoPublicacaoController")));
                               }
 
                               _tituloController.clear();
                               _isbnController.clear();
                               _editoraController.clear();
-                              _dataPublicacaoController.clear();
-                              _pageCountController.clear();
+                              _anoPublicacaoController.clear();
+                              _paisController.clear();
                               for (var controller in _authorsControllers) {
                                 controller.clear();
                               }

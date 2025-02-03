@@ -65,7 +65,7 @@ class LivroProvider extends ChangeNotifier {
         throw Exception("Livro com ISBN ${livro.isbn} já existe.");
       }
 
-      await _livroService.addLivro(livro);
+      await _livroService.addLivro(idDaSessao, usuarioLogado, livro);
       _livros.add(livro);
     } catch (e) {
       _error = "Erro ao inserir novo Livro:\n$e";

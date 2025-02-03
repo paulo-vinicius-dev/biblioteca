@@ -2,6 +2,7 @@ import 'package:biblioteca/data/models/turma.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/data/services/turmas_service.dart';
+import 'package:biblioteca/utils/config.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +98,7 @@ class _FormUserState extends State<FormUser> {
               : DateFormat('d/M/y').parse(_dateController.text),
           turma: int.tryParse(_turmaController.text) ?? 0,
           permissao:
-              _userTypeController.text == TipoDeUsuario.bibliotecario ? 15 : 0,
+              _userTypeController.text == TipoDeUsuario.bibliotecario ? AppConfig.maxPermissoes : 0,
         );
         await provider.addUsuario(novoUsuario);
       }

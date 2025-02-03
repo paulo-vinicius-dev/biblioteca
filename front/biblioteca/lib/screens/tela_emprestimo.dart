@@ -25,10 +25,10 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   bool showBooks = false;
   bool showLivrosEmprestados = false;
   int selectOption = -1;
-  Exemplar? selectbook = null;
+  Exemplar? selectbook;
   Usuario? selectUser;
-
- 
+  late ExemplarProvider providerExemplar;
+  late UsuarioProvider providerUsers;
   late String dataDevolucao;
   late String dataEmprestimo;
 
@@ -39,28 +39,23 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   super.initState();
   _searchController = TextEditingController();
   _searchControllerBooks = TextEditingController();
+  providerExemplar= Provider.of<ExemplarProvider>(context, listen: false);
+  providerUsers = Provider.of<UsuarioProvider>(context, listen: false);
   _filteredUsers = [];
   
   // Carregar usuários
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    Provider.of<UsuarioProvider>(context, listen: false).loadUsuarios().then((_) {
-      setState(() {
-        users = Provider.of<UsuarioProvider>(context, listen: false).users;
+  if(providerUsers.users.isEmpty){
+      Provider.of<UsuarioProvider>(context, listen: false).loadUsuarios().then((_) {
+        setState(() {
+        });
       });
-    }).catchError((error) {
-      print('Erro ao carregar usuários: $error');
-    });
-  });
-  
-  
-  Provider.of<ExemplarProvider>(context, listen: false).loadExemplares().then((_) {
-    setState(() {
-      exemplares = Provider.of<ExemplarProvider>(context, listen: false).exemplares;
-     
-    });
-  }).catchError((error) {
-    print('Erro ao carregar exemplares: $error');
-  });
+    }
+    if(providerExemplar.exemplares.isEmpty){
+      Provider.of<ExemplarProvider>(context, listen: false).loadExemplares().then((_) {
+        setState(() {
+        });
+      });
+    }
 }
   @override
   void dispose() {
@@ -180,11 +175,11 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                             ),
                             children: [
                               // Linha de Cabeçalho
-                              TableRow(
-                                decoration: const BoxDecoration(
+                              const TableRow(
+                                decoration: BoxDecoration(
                                   color: Color.fromARGB(255, 223, 223, 223),
                                 ),
-                                children: const [
+                                children: [
                                   Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text(
@@ -301,10 +296,10 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
     },
   );
 }
-
-
   @override
   Widget build(BuildContext context) {
+    exemplares = providerExemplar.exemplares;
+    users = providerUsers.users;
     return Material(
       child: Column(
         children: [
@@ -363,7 +358,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                       children: [
                         if (selectUser == null)
                           SizedBox(
-                            width: 1050,
+                            width: 1100,
                             child: Table(
                               border: TableBorder.all(color: const Color.fromARGB(97, 104, 104, 104)),
                               columnWidths: const {
@@ -448,7 +443,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                           ),
                         if (selectUser != null)
                           SizedBox(
-                            width: 1050,
+                            width: 1100,
                             child: Column(
                               children: [
                                 Container(
@@ -680,11 +675,11 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                     Column(
                                       children: [
                                         SizedBox(
-                                          width: 1050,
+                                          width: 1100,
                                           child: Table(
                                             border: TableBorder.all(color: const Color.fromARGB(97, 104, 104, 104)),
                                             columnWidths: const {
-                                              0: FlexColumnWidth(0.08),
+                                              0: FlexColumnWidth(0.10),
                                               1: FlexColumnWidth(0.25),
                                               2: FlexColumnWidth(0.14),
                                               3: FlexColumnWidth(0.15),
@@ -697,7 +692,7 @@ Future<void> msgConfirm(BuildContext context, String msg, EmprestimosModel livro
                                                 children: [
                                                   Padding(
                                                     padding: EdgeInsets.all(8.0),
-                                                    child: Text('Codigo', textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold)),
+                                                    child: Text('Tombamento', textAlign: TextAlign.center,style:TextStyle(fontWeight: FontWeight.bold)),
                                                   ),
                                                   Padding(
                                                     padding: EdgeInsets.all(8.0),

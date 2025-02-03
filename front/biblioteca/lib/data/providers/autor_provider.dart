@@ -12,7 +12,7 @@ class AutorProvider extends ChangeNotifier {
   bool get isloading => _isLoading;
   String? get error => _error;
   bool get hasErrors => _error != null ? true : false;
-  List<Autor> get autores => [..._autores];
+  List<Autor> get autores => _autores;
 
   Future<void> loadAutores() async {
     _isLoading = true;
@@ -79,18 +79,21 @@ class AutorProvider extends ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-
     try {
       final apiResponse = await _autorService.deleteAutor(autor.id);
 
-      if (apiResponse.responseCode != 200) {
+      if (apiResponse.responseCode < 200 || apiResponse.responseCode > 299) {
         _error = apiResponse.body;
+      } else {
+        _autores.removeWhere((a) => a.id == autor.id);
+        notifyListeners();
       }
     } catch (e) {
       _error = "Erro ao deletar o Autor:\n$e";
-    } finally {
+    }finally{
       _isLoading = false;
-      notifyListeners();
+    notifyListeners();
+
     }
   }
 }

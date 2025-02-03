@@ -23,18 +23,20 @@ class ExemplarProvider with ChangeNotifier {
       throw Exception("Erro ao carregar os exemplares: $e");
     }
   }
-
-  // Pesquisa exemplares
-  Future<void> searchExemplares(String textoDeBusca) async {
-    try {
-      final response = await exemplarService.searchExemplares(idDaSessao, usuarioLogado, textoDeBusca);
-      exemplares = response.exemplares;
-      exemplares.sort((a, b) => a.titulo.compareTo(b.titulo));
-      notifyListeners();
-    } catch (e) {
-      throw Exception("Erro ao pesquisar os exemplares: $e");
-    }
+  int qtdExemplaresLivro(num idDoLivro){
+    int qtd = exemplares.where((exemplar)=> exemplar.idLivro == idDoLivro).length;
+    return qtd;
   }
+  // Future<void> searchExemplares(String textoDeBusca) async {
+  //   try {
+  //     final response = await exemplarService.searchExemplares(idDaSessao, usuarioLogado, textoDeBusca);
+  //     exemplares = response.exemplares;
+  //     exemplares.sort((a, b) => a.titulo.compareTo(b.titulo));
+  //     notifyListeners();
+  //   } catch (e) {
+  //     throw Exception("Erro ao pesquisar os exemplares: $e");
+  //   }
+  // }
 
   // Adiciona um novo exemplar
   Future<void> addExemplar(Exemplar exemplar) async {

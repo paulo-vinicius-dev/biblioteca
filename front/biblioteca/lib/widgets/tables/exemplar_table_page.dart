@@ -1,16 +1,15 @@
+import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Para acessar o ExemplarProvider
-import 'package:biblioteca/data/models/exemplar_model.dart'; // Certifique-se de que o modelo está correto
-import 'package:biblioteca/data/providers/exemplares_provider.dart'; // Supondo que você tenha um provider para buscar exemplares
+import 'package:provider/provider.dart';
+import 'package:biblioteca/data/models/exemplar_model.dart'; 
+import 'package:biblioteca/data/providers/exemplares_provider.dart';
 
 class ExemplaresPage extends StatefulWidget {
-  final String bookName;
-  final int idLivro; // Agora recebendo o idLivro
-
+  
+  final Livro book;
   const ExemplaresPage({
     super.key,
-    required this.bookName,
-    required this.idLivro, // Recebendo o idLivro
+    required this.book
   });
 
   @override
@@ -18,19 +17,19 @@ class ExemplaresPage extends StatefulWidget {
 }
 
 class _ExemplaresPageState extends State<ExemplaresPage> {
-  bool isLoading = true; // Controle de loading
+
+  bool isLoading = true; 
 
   @override
   void initState() {
     super.initState();
-    // Carregar os exemplares ao inicializar a página
     _loadExemplares();
   }
 
   Future<void> _loadExemplares() async {
     final provider = Provider.of<ExemplarProvider>(context,
-        listen: false); // Usando o provider
-    await provider.loadExemplares(); // Carregando os exemplares
+        listen: false); 
+    await provider.loadExemplares(); 
     setState(() {
       isLoading = false;
     });
@@ -38,19 +37,15 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Acessando os dados do provider
     final exemplarProvider = Provider.of<ExemplarProvider>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Exemplares - ${widget.bookName}'),
-      ),
-      body: Padding(
+    return Material(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             if (isLoading)
-              const CircularProgressIndicator() // Mostra o loading enquanto carrega
+              const CircularProgressIndicator()
             else
               SingleChildScrollView(
                 child: Column(
@@ -67,7 +62,6 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                         4: IntrinsicColumnWidth(),
                       },
                       children: [
-                        // Cabeçalho da tabela
                         const TableRow(
                           children: [
                             Padding(
@@ -80,14 +74,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                             Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Text(
-                                'Código Exemplar',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                'Situação',
+                                'ISBN',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -109,15 +96,14 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                         ),
 
                         // Linhas da tabela
-                        for (int i = 0;
-                            i < exemplarProvider.exemplares.length;
-                            i++)
+                        for (int i = 0;i < exemplarProvider.exemplares.length; i++)
+                          if(exemplarProvider.exemplares[i].id == widget.book.idDoLivro)
                           TableRow(
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                    '${exemplarProvider.exemplares[i].id}'), // Código Exemplar agora é o id
+                                    '${exemplarProvider.exemplares[i].id}'),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -137,8 +123,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                             .exemplares[i].cativo,
                                         statusCodigo: exemplarProvider
                                             .exemplares[i].statusCodigo,
-                                        estado: int.parse(newValue ??
-                                            '0'), // Convertendo para inteiro
+                                        estado: int.parse(newValue!),
                                         ativo: exemplarProvider
                                             .exemplares[i].ativo,
                                         idLivro: exemplarProvider
@@ -180,7 +165,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    // Adicione a lógica de edição aqui
+                                    
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:

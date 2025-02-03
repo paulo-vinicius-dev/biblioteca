@@ -25,21 +25,28 @@ class AuthorTablePageState extends State<AuthorTablePage> {
     super.initState();
   }
 
+  _delete(author) async {
+    print('ta tentando deletar');
+    await Provider.of<AutorProvider>(context, listen: false)
+        .deleteAutor(author);
+  }
+
   @override
   Widget build(BuildContext context) {
     AutorProvider autorProvider = Provider.of<AutorProvider>(context);
+    List<Autor> autores = context.watch<AutorProvider>().autores;
 
     if (autorProvider.isloading) {
       return const Center(child: CircularProgressIndicator());
     } else if (autorProvider.hasErrors) {
       return Text(autorProvider.error!);
     } else {
-      return tableAutor(context);
+      return tableAutor(context, autores);
     }
   }
 
-  Material tableAutor(BuildContext context) {
-    List<Autor> authors = Provider.of<AutorProvider>(context).autores;
+  Material tableAutor(BuildContext context, List<Autor> autores) {
+    List<Autor> authors = autores;
 
     int totalPages = (authors.length / rowsPerPage).ceil();
 
@@ -52,7 +59,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
     // Seleciona os autores que serão exibidos na página atual
     List<Autor> paginatedAuthors = authors.sublist(startIndex, endIndex);
 
-    // Lógica para definir os botões de página (máximo 10 botões)
+    // Lógica para definir os botões de página (máximo 9 botões)
     int startPage = currentPage - 4 < 1 ? 1 : currentPage - 4;
     int endPage = startPage + 8 > totalPages ? totalPages : startPage + 8;
     if (endPage - startPage < 8 && startPage > 1) {
@@ -91,7 +98,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                         foregroundColor:
                             const WidgetStatePropertyAll(Colors.white),
                         padding: WidgetStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.all(15.0), // Padding personalizado
+                          const EdgeInsets.all(15.0),
                         ),
                       ),
                     )
@@ -223,11 +230,9 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      AutorProvider provider =
-                                          Provider.of<AutorProvider>(context, listen: false);
                                       showDialog(
                                           context: context,
-                                          builder: (context) {
+                                          builder: (dialogContext) {
                                             return AlertDialog(
                                               title:
                                                   const Text('Excluir Usuário'),
@@ -236,8 +241,8 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                               actions: [
                                                 ElevatedButton(
                                                     onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
+                                                      Navigator.pop(
+                                                          dialogContext);
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
@@ -262,14 +267,11 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                                     ),
                                                     child:
                                                         const Text('Cancelar')),
+                                                //Aqui é o botão excluir inferno
                                                 ElevatedButton(
                                                     onPressed: () {
-                                                      provider.deleteAutor(
-                                                          author);
-                                                      setState(() {
-                                                        authors.remove(author);
-                                                      });
-                                                      Navigator.pop(context);
+                                                      _delete(author);
+                                                      Navigator.pop(dialogContext);
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(

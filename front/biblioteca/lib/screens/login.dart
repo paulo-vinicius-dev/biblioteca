@@ -37,11 +37,11 @@ class TelaLogin extends StatelessWidget {
             child: Card(
               elevation: 3,
               child: Padding(
-                padding: EdgeInsets.all(40.0),
+                padding: const EdgeInsets.all(40.0),
                 child: switch (Provider.of<LoginProvider>(context).modoLogin) {
-                  ModoLogin.login => FormLogin(),
-                  ModoLogin.redefinirSenha => FormRedefinirSenha(),
-                  ModoLogin.recuperarCodigo => FormRedefinirSenhaCodigo(),
+                  ModoLogin.login => const FormLogin(),
+                  ModoLogin.redefinirSenha => const FormRedefinirSenha(),
+                  ModoLogin.recuperarCodigo => const FormRedefinirSenhaCodigo(),
                 },
               ),
             ),

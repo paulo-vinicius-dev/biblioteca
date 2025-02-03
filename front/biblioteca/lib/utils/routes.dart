@@ -1,11 +1,15 @@
 class AppRoutes {
   static const login = '/';
+  static const logout = '/logout';
   static const home = '/home';
   static const redefinirSenha = '/redefinir_senha';
   static const pesquisarLivro = '/pesquisar_livro';
   static const emprestimo = '/emprestimo';
   static const devolucao = '/devolucao';
+
   static const livros = '/livros';
+  static const exemplares = '/exemplares';
+
   static const novoLivro = '/novo_livro';
   static const relatorios = '/relatorios';
   static const nadaConsta = '/nada_consta';

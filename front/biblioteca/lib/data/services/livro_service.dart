@@ -23,10 +23,10 @@ class LivroService {
     );
 
     if (response.statusCode! >= 200 && response.statusCode! < 299) {
-      print(response.data);
       return LivrosAtingidos.fromJson(
           jsonDecode(response.data)); // Retorna a resposta como LivrosAtingidos
     } else {
+      print("Erro ao carregar os livros: ${response.data}");
       throw Exception('Erro ao carregar os livros: ${response.data}');
     }
   }

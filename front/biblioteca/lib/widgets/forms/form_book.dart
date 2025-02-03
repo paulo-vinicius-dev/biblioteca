@@ -1,5 +1,6 @@
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
+import 'package:biblioteca/data/services/isbn_service.dart';
 
 class FormBook extends StatefulWidget {
   const FormBook({super.key});
@@ -40,6 +41,52 @@ class _FormBookState extends State<FormBook> {
     }
 
     super.dispose();
+  }
+
+  Future<void> _buscarLivroPorISBN() async {
+    String isbn = _isbnController.text.trim();
+    if (isbn.isEmpty) return;
+
+    try {
+      final data = await IsbnService.buscarLivroPorISBN(isbn);
+
+      if (data != null) {
+        setState(() {
+          _tituloController.text = data['title'] ?? '';
+          _editoraController.text = data['publisher'] ?? '';
+          _dataPublicacaoController.text =
+              data['publication_date']?.substring(0, 4) ?? '';
+          _pageCountController.text = (data['page_count'] ?? '').toString();
+
+          // Preencher os autores
+          _authorsControllers.clear();
+          if (data['authors'] != null) {
+            for (String autor in data['authors']) {
+              _authorsControllers.add(TextEditingController(text: autor));
+            }
+          }
+
+          // Preencher as categorias
+          _categoriesControllers.clear();
+          if (data['subjects'] != null) {
+            for (String categoria in data['subjects']) {
+              _categoriesControllers
+                  .add(TextEditingController(text: categoria));
+            }
+          }
+        });
+      } else {
+              // ignore: use_build_context_synchronously
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Livro não encontrado'),
+      ));
+      }
+    } catch (e) {
+            // ignore: use_build_context_synchronously
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('$e'),
+      ));
+    }
   }
 
   void _addAuthorField() {
@@ -92,9 +139,13 @@ class _FormBookState extends State<FormBook> {
                       // ISBN
                       TextFormField(
                         controller: _isbnController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: "ISBN",
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon:  const Icon(Icons.search),
+                            onPressed: _buscarLivroPorISBN,
+                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {

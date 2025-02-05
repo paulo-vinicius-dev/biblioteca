@@ -23,7 +23,7 @@ class ExemplarProvider with ChangeNotifier {
       throw Exception("Erro ao carregar os exemplares: $e");
     }
   }
-  int QtdExemplaresLivro(num idDoLivro){
+  int qtdExemplaresLivro(num idDoLivro){
     int qtd = exemplares.where((exemplar)=> exemplar.idLivro == idDoLivro).length;
     return qtd;
   }

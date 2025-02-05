@@ -59,7 +59,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
     // Seleciona os autores que serão exibidos na página atual
     List<Autor> paginatedAuthors = authors.sublist(startIndex, endIndex);
 
-    // Lógica para definir os botões de página (máximo 10 botões)
+    // Lógica para definir os botões de página (máximo 9 botões)
     int startPage = currentPage - 4 < 1 ? 1 : currentPage - 4;
     int endPage = startPage + 8 > totalPages ? totalPages : startPage + 8;
     if (endPage - startPage < 8 && startPage > 1) {

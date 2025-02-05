@@ -18,7 +18,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
   late TextEditingController _searchController;
   late List<Livro> livros;
   late List<Livro> filteredBooks = [];
-  late Livro? selectBook = null;
+  late Livro? selectBook;
   late bool search = false;
   late ExemplarProvider providerExemplar;
   late LivroProvider providerLivro;

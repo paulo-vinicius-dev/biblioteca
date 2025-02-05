@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:biblioteca/data/models/exemplar_model.dart';
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
@@ -120,7 +122,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: searchBooks,
+                        onPressed: searchBooks,
                       child: const Row(
                         children: [
                           Icon(Icons.search, color: Colors.white,),
@@ -269,7 +271,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         Padding(
                                           padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
                                           child: Text(
-                                            '${providerExemplar.QtdExemplaresLivro(filteredBooks[x].idDoLivro)}',
+                                            '${providerExemplar.qtdExemplaresLivro(filteredBooks[x].idDoLivro)}',
                                             textAlign: TextAlign.center,
                                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
                                           ),
@@ -461,7 +463,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                           Padding(
                                              padding:EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                             child: Text(
-                                              '${providerExemplar.QtdExemplaresLivro(selectBook!.idDoLivro)}',
+                                              '${providerExemplar.qtdExemplaresLivro(selectBook!.idDoLivro)}',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
                                             ),

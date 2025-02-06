@@ -6,6 +6,7 @@ import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class BookTablePage extends StatefulWidget {
   const BookTablePage({super.key});
@@ -33,7 +34,7 @@ class BookTablePageState extends State<BookTablePage> {
   Widget build(BuildContext context) {
     LivroProvider livroProvider =
         Provider.of<LivroProvider>(context, listen: true);
-    if (livroProvider.isLoading) {   
+    if (livroProvider.isLoading) {
       while (livroProvider.isLoading) {}
       return const Center(child: CircularProgressIndicator());
     } else if (livroProvider.hasErrors) {
@@ -208,8 +209,11 @@ class BookTablePageState extends State<BookTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(book.anoPublicacao.year.toString(),
-                                  textAlign: TextAlign.left),
+                              child: Text(
+                                DateFormat('dd/MM/yyyy')
+                                    .format(book.anoPublicacao),
+                                textAlign: TextAlign.left,
+                              ),
                             ),
                           ),
                           Align(
@@ -277,7 +281,8 @@ class BookTablePageState extends State<BookTablePage> {
                                     onPressed: () async {
                                       try {
                                         Navigator.pushNamed(
-                                            context, AppRoutes.exemplares, arguments: book);
+                                            context, AppRoutes.exemplares,
+                                            arguments: book);
                                       } catch (e) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(

@@ -41,11 +41,11 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
             breadcrumb: ['Inicio', 'Livros', 'Exemplares'],
             icon: Icons.menu_book_outlined,
           ),
-          const SizedBox(height: 20),
           if (isLoading)
             const CircularProgressIndicator()
           else
             SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
               child: Column(
                 children: [
                   Table(

@@ -1,6 +1,6 @@
 class TipoDeStatus {
   static const disponivel = "Disponível";
-  static const emprestado = "Emprestado";
+  static const emprestado = "Indisponível";
 }
 class TipoEstado{
   static const bom ="Bom";
@@ -40,7 +40,7 @@ class Exemplar {
   String get getStatus => statusCodigo == 1
       ? TipoDeStatus.disponivel
       : TipoDeStatus.emprestado;
-  String get getEstado => statusCodigo == 1
+  String get getEstado => estado == 1
       ? TipoEstado.bom
       : TipoEstado.danificado;
   

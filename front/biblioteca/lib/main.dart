@@ -11,7 +11,6 @@ import 'package:biblioteca/screens/pesquisar_livro.dart';
 
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 
-
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/utils/theme.dart';
@@ -27,10 +26,13 @@ import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
-
   // iniciando o banco de dados caso o front venha do instalador
-  final caminhoPgCtl = Platform.isWindows ? Directory.current.path +  r'\postgres\bin\pg_ctl.exe' : '${Directory.current.path}/postgres/bin/pg_ctl';
-  final pastaBanco = Platform.isWindows ? Directory.current.path + r'\postgres\banco' : '${Directory.current.path}/postgres/banco';
+  final caminhoPgCtl = Platform.isWindows
+      ? Directory.current.path + r'\postgres\bin\pg_ctl.exe'
+      : '${Directory.current.path}/postgres/bin/pg_ctl';
+  final pastaBanco = Platform.isWindows
+      ? Directory.current.path + r'\postgres\banco'
+      : '${Directory.current.path}/postgres/banco';
   Process? processoApi;
   if (File(caminhoPgCtl).existsSync()) {
     if (Platform.isWindows) {
@@ -38,35 +40,35 @@ void main() async {
     } else {
       Process.runSync(caminhoPgCtl, ["start", "-D", pastaBanco]);
     }
-    
   }
 
   // rodando a api caso o front venha do instalador
-  final caminhoApi = Platform.isWindows ? r'.\api.exe' : './api'; // se o front foi instalado apartir do instalador o front e back vão estar no mesmo diretório
+  final caminhoApi = Platform.isWindows
+      ? r'.\api.exe'
+      : './api'; // se o front foi instalado apartir do instalador o front e back vão estar no mesmo diretório
   if (File(caminhoApi).existsSync()) {
     processoApi = await Process.start(caminhoApi, List.empty());
   }
 
-    //Carregando variáveis de ambiente
-  try{
+  //Carregando variáveis de ambiente
+  try {
     await dotenv.load(fileName: ".env");
-  }on EmptyEnvFileError{
+  } on EmptyEnvFileError {
     print("O arquivo .env não existe ou está vazio");
   }
   Provider.debugCheckInvalidValueType = null;
   runApp(const Myapp());
 
-    if (processoApi != null) {
-      processoApi.kill();
-    }
+  if (processoApi != null) {
+    processoApi.kill();
+  }
 
-      if (File(caminhoPgCtl).existsSync()) {
+  if (File(caminhoPgCtl).existsSync()) {
     if (Platform.isWindows) {
       Process.runSync("powershell ", [caminhoPgCtl, "stop", "-D", pastaBanco]);
     } else {
       Process.runSync(caminhoPgCtl, ["stop", "-D", pastaBanco]);
     }
-    
   }
 }
 
@@ -77,7 +79,9 @@ class Myapp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider(),),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) => AuthProvider(),
+        ),
         ChangeNotifierProvider(create: (_) => LoginProvider()),
         ChangeNotifierProvider(create: (context) => MenuState()),
         ChangeNotifierProvider(create: (context) => AutorProvider()),
@@ -133,11 +137,10 @@ class Myapp extends StatelessWidget {
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
           AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
           AppRoutes.devolucao: (context) => const Devolucao(),
-          
+
           AppRoutes.relatorios: (context) => const Relatorios(),
           AppRoutes.nadaConsta: (context) => const NadaConsta(),
           AppRoutes.configuracoes: (context) => const Configuracoes(),
-
         },
       ),
     );

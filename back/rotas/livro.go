@@ -38,6 +38,10 @@ type respostaLivro struct {
 	LivrosAtingidos []modelos.Livro
 }
 
+type respostaLivroTeste struct {
+	LivrosAtingidos []modelos.LivroResposta
+}
+
 func erroServicoLivroParaErrHttp(erro servicoLivro.ErroDeServicoDoLivro, resposta http.ResponseWriter) {
 	switch erro {
 	case servicoLivro.ErroDeServicoDoLivroIsbnDuplicado:
@@ -134,7 +138,7 @@ func Livro(resposta http.ResponseWriter, requisicao *http.Request) {
 			fmt.Fprint(resposta, "Houve um erro interno enquanto se fazia a busca! Provavelmente é um bug na api!")
 			return
 		}
-		respostaLivro := respostaLivro{
+		respostaLivro := respostaLivroTeste{
 			livrosEncontrados,
 		}
 		respostaLivroJson, _ := json.Marshal(&respostaLivro)

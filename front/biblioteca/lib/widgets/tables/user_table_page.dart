@@ -75,7 +75,9 @@ class UserTablePageState extends State<UserTablePage> {
       child: Column(
         children: [
           // Barra de navegação
-          const BreadCrumb(breadcrumb: ["Início","Usuários"], icon: Icons.co_present_rounded),
+          const BreadCrumb(
+              breadcrumb: ["Início", "Usuários"],
+              icon: Icons.co_present_rounded),
 
           // Corpo da página
           SingleChildScrollView(
@@ -381,7 +383,6 @@ class UserTablePageState extends State<UserTablePage> {
                                                         const Text('Cancelar')),
                                                 ElevatedButton(
                                                     onPressed: () {
-                                                      
                                                       provider.deleteUsuario(
                                                           paginatedUsers[x].idDoUsuario);
                                                       setState(() {

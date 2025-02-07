@@ -33,7 +33,7 @@ class BookTablePageState extends State<BookTablePage> {
   Widget build(BuildContext context) {
     LivroProvider livroProvider =
         Provider.of<LivroProvider>(context, listen: true);
-    if (livroProvider.isLoading) {   
+    if (livroProvider.isLoading) {
       while (livroProvider.isLoading) {}
       return const Center(child: CircularProgressIndicator());
     } else if (livroProvider.hasErrors) {
@@ -167,7 +167,7 @@ class BookTablePageState extends State<BookTablePage> {
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('Data de Publicação',
+                          child: Text('Ano de Publicação',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                         ),

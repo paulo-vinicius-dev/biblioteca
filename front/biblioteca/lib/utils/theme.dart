@@ -25,5 +25,4 @@ class AppTheme {
 
   static TextStyle btnPrimaryText(context) =>
       TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 18);
-      
 }

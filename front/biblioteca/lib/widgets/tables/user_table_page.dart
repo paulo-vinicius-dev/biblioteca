@@ -161,7 +161,7 @@ class UserTablePageState extends State<UserTablePage> {
                 ),
                 Table(
                   border: TableBorder.all(
-                      color: const Color.fromARGB(255, 213, 213, 213)),
+                      color: const Color.fromARGB(215, 200, 200, 200)),
                   columnWidths: const {
                     0: FlexColumnWidth(0.30),
                     1: FlexColumnWidth(0.17),
@@ -173,73 +173,86 @@ class UserTablePageState extends State<UserTablePage> {
                   children: [
                     // Cabeçalho da tabela
                     const TableRow(
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 44, 62, 80)
+                      ),
                       children: [
                         Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text('Nome',
                                 textAlign: TextAlign.left,
-                                style: TextStyle(fontWeight: FontWeight.bold))),
+                                style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15))),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Turma',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Turno',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Login',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Tipo de Usuario',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                         ),
                       ],
                     ),
 
                     // Linhas da tabela
-                    for (var user in paginatedUsers)
+                    for (int x = 0; x <paginatedUsers.length; x++)
                       TableRow(
+                        decoration: BoxDecoration(
+                          color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1),
+                        ),
                         children: [
                           Align(
                             alignment: Alignment
                                 .centerLeft, // Alinha o texto à esquerda
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.nome,
+                              child: Text(paginatedUsers[x].nome,
                                   textAlign:
-                                      TextAlign.left), // Alinhamento horizontal
+                                      TextAlign.left,
+                                  style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),    
+                                  ), // Alinhamento horizontal
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.getTurma,
-                                  textAlign: TextAlign.left),
+                              child: Text(paginatedUsers[x].getTurma,
+                                  textAlign: TextAlign.left,
+                                style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
+                              ),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.getTurno,
-                                  textAlign: TextAlign.left),
+                              child: Text(paginatedUsers[x].getTurno,
+                                  textAlign: TextAlign.left,
+                                  style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
+                                  
+                                  ),
                             ),
                           ),
                           Align(
@@ -247,15 +260,21 @@ class UserTablePageState extends State<UserTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child:
-                                  Text(user.login, textAlign: TextAlign.left),
+                                  Text(paginatedUsers[x].login, 
+                                    textAlign: TextAlign.left,
+                                    style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+
+                                  ),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(user.getTipoDeUsuario,
-                                  textAlign: TextAlign.left),
+                              child: Text(paginatedUsers[x].getTipoDeUsuario,
+                                  textAlign: TextAlign.left,
+                                  style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                  ),
                             ),
                           ),
                           Align(
@@ -295,7 +314,7 @@ class UserTablePageState extends State<UserTablePage> {
                                     onPressed: () {
                                       Navigator.pushNamed(
                                           context, AppRoutes.editarUsuario,
-                                          arguments: user);
+                                          arguments: paginatedUsers[x]);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
@@ -364,9 +383,9 @@ class UserTablePageState extends State<UserTablePage> {
                                                     onPressed: () {
                                                       
                                                       provider.deleteUsuario(
-                                                          user.idDoUsuario);
+                                                          paginatedUsers[x].idDoUsuario);
                                                       setState(() {
-                                                        users.remove(user);
+                                                        users.remove(paginatedUsers[x]);
                                                       });
                                                       Navigator.pop(context);
                                                     },

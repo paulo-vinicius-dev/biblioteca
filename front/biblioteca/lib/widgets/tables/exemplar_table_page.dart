@@ -1,24 +1,20 @@
 import 'package:biblioteca/data/models/livro_model.dart';
+import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biblioteca/data/models/exemplar_model.dart'; 
+import 'package:biblioteca/data/models/exemplar_model.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
 
 class ExemplaresPage extends StatefulWidget {
-  
   final Livro book;
-  const ExemplaresPage({
-    super.key,
-    required this.book
-  });
+  const ExemplaresPage({super.key, required this.book});
 
   @override
   State<ExemplaresPage> createState() => _ExemplaresPageState();
 }
 
 class _ExemplaresPageState extends State<ExemplaresPage> {
-
-  bool isLoading = true; 
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -27,9 +23,8 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
   }
 
   Future<void> _loadExemplares() async {
-    final provider = Provider.of<ExemplarProvider>(context,
-        listen: false); 
-    await provider.loadExemplares(); 
+    final provider = Provider.of<ExemplarProvider>(context, listen: false);
+    await provider.loadExemplares();
     setState(() {
       isLoading = false;
     });
@@ -40,64 +35,70 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
     final exemplarProvider = Provider.of<ExemplarProvider>(context);
 
     return Material(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            if (isLoading)
-              const CircularProgressIndicator()
-            else
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Table(
-                      border: TableBorder.all(
-                        color: const Color.fromARGB(255, 213, 213, 213),
+      child: Column(
+        children: [
+          const BreadCrumb(
+            breadcrumb: ['Inicio', 'Livros', 'Exemplares'],
+            icon: Icons.menu_book_outlined,
+          ),
+          if (isLoading)
+            const CircularProgressIndicator()
+          else
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
+              child: Column(
+                children: [
+                  Table(
+                    border: TableBorder.all(
+                      color: const Color.fromARGB(255, 213, 213, 213),
+                    ),
+                    columnWidths: const {
+                      0: IntrinsicColumnWidth(),
+                      1: FlexColumnWidth(1),
+                      2: FlexColumnWidth(1),
+                      3: FlexColumnWidth(1),
+                      4: IntrinsicColumnWidth(),
+                    },
+                    children: [
+                      const TableRow(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'Exemplar',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'ISBN',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'Estado',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'Ações',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
                       ),
-                      columnWidths: const {
-                        0: IntrinsicColumnWidth(),
-                        1: FlexColumnWidth(1),
-                        2: FlexColumnWidth(1),
-                        3: FlexColumnWidth(1),
-                        4: IntrinsicColumnWidth(),
-                      },
-                      children: [
-                        const TableRow(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                'Exemplar',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                'ISBN',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                'Estado',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                'Ações',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        ),
 
-                        // Linhas da tabela
-                        for (int i = 0;i < exemplarProvider.exemplares.length; i++)
-                          if(exemplarProvider.exemplares[i].id == widget.book.idDoLivro)
+                      // Linhas da tabela
+                      for (int i = 0;
+                          i < exemplarProvider.exemplares.length;
+                          i++)
+                        if (exemplarProvider.exemplares[i].id ==
+                            widget.book.idDoLivro)
                           TableRow(
                             children: [
                               Padding(
@@ -164,9 +165,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    
-                                  },
+                                  onPressed: () {},
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
                                         const Color.fromARGB(255, 38, 42, 79),
@@ -193,13 +192,12 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                               ),
                             ],
                           ),
-                      ],
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

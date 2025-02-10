@@ -52,7 +52,7 @@ class LivroService {
   }
 
   // Criar novo Livro
-  Future<void> addLivro(Livro livro) async {
+  Future<void> addLivro(num idDaSessao, String loginDoUsuarioRequerente, Livro livro) async {
     final Map<String, dynamic> body = livro.toJson();
 
     final response = await _api.requisicao(

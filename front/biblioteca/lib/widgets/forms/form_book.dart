@@ -45,8 +45,8 @@ class _FormBookState extends State<FormBook> {
       newLivro.titulo = _tituloController.text;
       newLivro.isbn = _isbnController.text;
       newLivro.editora = _editoraController.text;
-      newLivro.anoPublicacao = _anoPublicacaoController.text as DateTime;
-      newLivro.pais = int.parse(_paisController.text);
+      newLivro.anoPublicacao =_anoPublicacaoController.text;
+      newLivro.pais = int.tryParse(_paisController.text) ?? 0;
 
       await provider.editLivro(newLivro);
 
@@ -59,10 +59,16 @@ class _FormBookState extends State<FormBook> {
           titulo: _tituloController.text,
           isbn: _isbnController.text,
           editora: _editoraController.text,
-          anoPublicacao: _anoPublicacaoController.text as DateTime,
-          pais: int.parse(_paisController.text));
+          anoPublicacao: _anoPublicacaoController.text,
+          pais: int.tryParse(_paisController.text) ?? 1);
 
       await provider.addLivro(newLivro);
+
+      if (provider.hasErrors) {
+        mensagem = provider.error ?? "Erro ao salvar o livro.";
+      } else {
+        mensagem = "Cadastro realizado com sucesso";
+      }
 
       mensagem = provider.hasErrors
           ? provider.error
@@ -77,7 +83,7 @@ class _FormBookState extends State<FormBook> {
 
     if (!provider.hasErrors) {
       Navigator.pushNamedAndRemoveUntil(
-          context, AppRoutes.autores, ModalRoute.withName(AppRoutes.home));
+          context, AppRoutes.livros, ModalRoute.withName(AppRoutes.home));
     }
   }
 
@@ -115,30 +121,24 @@ class _FormBookState extends State<FormBook> {
           _paisController.text = (data['page_count'] ?? '').toString();
 
           _authorsControllers.clear();
+          _authorsControllers.add(TextEditingController());
           if (data['authors'] != null) {
             for (String autor in data['authors']) {
               _authorsControllers.add(TextEditingController(text: autor));
-            }
-          }
-
-          _categoriesControllers.clear();
-          if (data['subjects'] != null) {
-            for (String categoria in data['subjects']) {
-              _categoriesControllers
-                  .add(TextEditingController(text: categoria));
             }
           }
         });
       } else {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Livro não encontrado'),
+          content: Text(
+              'Livro não encontrado pelo sistema, verifique o ISBN ou preencha o formulario manualmente.'),
         ));
       }
     } catch (e) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('$e'),
+        content: Text('Erro ao procurar o livro: $e'),
       ));
     }
   }
@@ -253,16 +253,16 @@ class _FormBookState extends State<FormBook> {
                           if (value == null || value.isEmpty) {
                             return "Preencha esse campo";
                           }
-                          final testNum = int.tryParse(value);
-                          if (testNum == null) {
-                            return "Apenas numeros neste campo";
-                          }
-                          if (value.length != 4) {
-                            return "Coloque o ano em um formato de 4 digitos. Ex: 2015";
-                          }
-                          if (testNum > DateTime.now().year) {
-                            return "Confira se esta data está correta";
-                          }
+                          // final testNum = int.tryParse(value);
+                          // if (testNum == null) {
+                          //   return "Apenas numeros neste campo";
+                          // }
+                          // if (value.length != 4) {
+                          //   return "Coloque o ano em um formato de 4 digitos. Ex: 2015";
+                          // }
+                          // if (testNum > DateTime.now().year) {
+                          //   return "Confira se esta data está correta";
+                          // }
                           return null;
                         },
                       ),
@@ -296,8 +296,9 @@ class _FormBookState extends State<FormBook> {
                                     child: TextFormField(
                                       controller: _authorsControllers[index],
                                       decoration: InputDecoration(
-                                        label:  index == 0
-                                            ? const CampoObrigatorio(label: "Autor")
+                                        label: index == 0
+                                            ? const CampoObrigatorio(
+                                                label: "Autor")
                                             : const Text("Autor"),
                                         border: const OutlineInputBorder(),
                                       ),
@@ -349,9 +350,10 @@ class _FormBookState extends State<FormBook> {
                                     child: TextFormField(
                                       controller: _categoriesControllers[index],
                                       decoration: InputDecoration(
-                                        label:  index == 0
-                                            ? const CampoObrigatorio(label: "Autor")
-                                            : const Text("Autor"),
+                                        label: index == 0
+                                            ? const CampoObrigatorio(
+                                                label: "Categoria")
+                                            : const Text("Categoria"),
                                         border: const OutlineInputBorder(),
                                       ),
                                     ),
@@ -411,32 +413,45 @@ class _FormBookState extends State<FormBook> {
                           ),
                           const SizedBox(width: 16.0),
                           ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text(
-                                        "Erro ao preencher o formulario : $_anoPublicacaoController")));
+                            onPressed: () async {
+                              if (!_formKey.currentState!.validate()) {
+                                String erros = '';
+
+                                if (_isbnController.text.isEmpty) {
+                                  erros += 'ISBN está vazio.\n';
+                                }
+                                if (_tituloController.text.isEmpty) {
+                                  erros += 'Título está vazio.\n';
+                                }
+                                if (_editoraController.text.isEmpty) {
+                                  erros += 'Editora está vazia.\n';
+                                }
+                                if (_anoPublicacaoController.text.isEmpty) {
+                                  erros += 'Ano de publicação está vazio.\n';
+                                } else {
+                                  int? ano = int.tryParse(
+                                      _anoPublicacaoController.text);
+                                  if (ano == null) {
+                                    erros += 'Ano de publicação vazio.\n';
+                                  }
+                                }
+                                if (_paisController.text.isEmpty) {
+                                  erros += 'País está vazio.\n';
+                                }
+
+                                if (erros.isNotEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(erros),
+                                      duration: const Duration(seconds: 3),
+                                    ),
+                                  );
+                                }
+                                return;
                               }
 
-                              _tituloController.clear();
-                              _isbnController.clear();
-                              _editoraController.clear();
-                              _anoPublicacaoController.clear();
-                              _paisController.clear();
-                              for (var controller in _authorsControllers) {
-                                controller.clear();
-                              }
-                              for (var controller in _categoriesControllers) {
-                                controller.clear();
-                              }
-                              setState(() {
-                                _authorsControllers.clear();
-                                _categoriesControllers.clear();
-                                _authorsControllers
-                                    .add(TextEditingController());
-                                _categoriesControllers
-                                    .add(TextEditingController());
-                              });
+                              btnSalvar(context);
+
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context).primaryColor,

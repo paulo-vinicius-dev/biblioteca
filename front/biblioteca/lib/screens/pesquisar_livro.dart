@@ -248,10 +248,8 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                           top: 11.0,
                                           left: 8.0,
                                         ),
-                                        child: Text(
-                                          DateFormat('dd/MM/yyyy').format(
+                                        child: Text(                               
                                             filteredBooks[x].anoPublicacao,
-                                          ),
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
@@ -336,7 +334,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                     5: FlexColumnWidth(0.10),
                                   },
                                   children: [
-                                    TableRow(
+                                    const TableRow(
                                       decoration: BoxDecoration(
                                         color: Color.fromARGB(255, 214, 214, 214),
                                       ),
@@ -389,42 +387,40 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         color: Color.fromRGBO(233, 235, 238, 75),
                                       ),
                                       children: [
-                                        Padding(
+                                        const Padding(
                                           padding:EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                           child: Icon(Icons.menu_book_outlined, ),
                                         ),
                                         Padding(
-                                           padding:EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                           padding:const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                           child: Text(
                                             selectBook!.isbn,
                                             textAlign: TextAlign.center,
                                           ),
                                         ),
                                         Padding(
-                                           padding:EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                           padding:const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                           child: Text(
                                             selectBook!.titulo,
                                             textAlign: TextAlign.left,
                                           ),
                                         ),
                                         Padding(
-                                           padding:EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                           padding:const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                           child: Text(
                                             selectBook!.editora,
                                             textAlign: TextAlign.center,
                                           ),
                                         ),
                                         Padding(
-                                           padding:EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                           padding:const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                           child: Text(
-                                            DateFormat('dd/MM/yyyy').format(
                                               selectBook!.anoPublicacao,
-                                            ),
                                             textAlign: TextAlign.center,
                                           ),
                                         ),
                                         Padding(
-                                           padding:EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                           padding:const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                           child: Text(
                                             '${providerExemplar.qtdExemplaresLivro(selectBook!.idDoLivro)}',
                                             textAlign: TextAlign.center,
@@ -434,7 +430,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 30,),
+                                const SizedBox(height: 30,),
                                 Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 6.5),
@@ -510,28 +506,28 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                     ),
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].id.toString(),
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].titulo,
                                           textAlign: TextAlign.left,
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].getStatus,
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].getEstado,
                                           textAlign: TextAlign.center,

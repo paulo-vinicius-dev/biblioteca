@@ -208,7 +208,7 @@ class BookTablePageState extends State<BookTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(book.anoPublicacao.year.toString(),
+                              child: Text(book.anoPublicacao,
                                   textAlign: TextAlign.left),
                             ),
                           ),

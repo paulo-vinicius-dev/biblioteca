@@ -152,30 +152,45 @@ class BookTablePageState extends State<BookTablePage> {
                             padding: EdgeInsets.all(8.0),
                             child: Text('Título',
                                 textAlign: TextAlign.left,
-                                style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15))),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                    fontSize: 15))),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('ISBN',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Editora',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Ano de Publicação',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                         ),
                       ],
                     ),
@@ -184,16 +199,19 @@ class BookTablePageState extends State<BookTablePage> {
                     for (int x = 0; x < paginatedBooks.length; x++)
                       TableRow(
                         decoration: BoxDecoration(
-                          color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1),
+                          color: x % 2 == 0
+                              ? Color.fromRGBO(233, 235, 238, 75)
+                              : Color.fromRGBO(255, 255, 255, 1),
                         ),
                         children: [
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Text(paginatedBooks[x].titulo, 
-                                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
+                              child: Text(paginatedBooks[x].titulo,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 14.5),
                                   textAlign: TextAlign.left),
                             ),
                           ),
@@ -201,30 +219,37 @@ class BookTablePageState extends State<BookTablePage> {
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(paginatedBooks[x].isbn, 
-                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
-                              textAlign: TextAlign.left),
+                              child: Text(paginatedBooks[x].isbn,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 14.5),
+                                  textAlign: TextAlign.left),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Text(paginatedBooks[x].editora, 
+                              child: Text(paginatedBooks[x].editora,
                                   textAlign: TextAlign.left,
-                                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
-                                  ),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 14.5)),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(paginatedBooks[x].anoPublicacao.year.toString(),
+                              child: Text(
+                                  paginatedBooks[x]
+                                      .anoPublicacao
+                                      .year
+                                      .toString(),
                                   textAlign: TextAlign.left,
-                                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
-                                  ),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 14.5)),
                             ),
                           ),
                           Align(
@@ -292,7 +317,8 @@ class BookTablePageState extends State<BookTablePage> {
                                     onPressed: () async {
                                       try {
                                         Navigator.pushNamed(
-                                            context, AppRoutes.exemplares, arguments: paginatedBooks[x]);
+                                            context, AppRoutes.exemplares,
+                                            arguments: paginatedBooks[x]);
                                       } catch (e) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(

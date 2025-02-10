@@ -12,7 +12,7 @@ class Livro {
     int idDoLivro;
     String isbn;
     String titulo;
-    String anoPublicacao;
+    DateTime anoPublicacao;
     String editora;
     int pais;
 
@@ -29,7 +29,7 @@ class Livro {
         idDoLivro: json["IdDoLivro"],
         isbn: json["Isbn"],
         titulo: json["Titulo"],
-        anoPublicacao: json["AnoPublicacao"],
+        anoPublicacao: DateTime.parse(json["AnoPublicacao"]),
         editora: json["Editora"],
         pais: json["Pais"],
     );
@@ -38,7 +38,7 @@ class Livro {
         "IdDoLivro": idDoLivro,
         "Isbn": isbn,
         "Titulo": titulo,
-        "AnoPublicacao": anoPublicacao,
+        "AnoPublicacao": "${anoPublicacao.year.toString().padLeft(4, '0')}-${anoPublicacao.month.toString().padLeft(2, '0')}-${anoPublicacao.day.toString().padLeft(2, '0')}",
         "Editora": editora,
         "Pais": pais,
     };

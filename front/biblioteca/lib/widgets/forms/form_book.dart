@@ -45,7 +45,7 @@ class _FormBookState extends State<FormBook> {
       newLivro.titulo = _tituloController.text;
       newLivro.isbn = _isbnController.text;
       newLivro.editora = _editoraController.text;
-      newLivro.anoPublicacao =_anoPublicacaoController.text;
+      newLivro.anoPublicacao = DateTime(int.parse(_anoPublicacaoController.text));
       newLivro.pais = int.tryParse(_paisController.text) ?? 0;
 
       await provider.editLivro(newLivro);
@@ -59,7 +59,7 @@ class _FormBookState extends State<FormBook> {
           titulo: _tituloController.text,
           isbn: _isbnController.text,
           editora: _editoraController.text,
-          anoPublicacao: _anoPublicacaoController.text,
+          anoPublicacao: DateTime(int.parse(_anoPublicacaoController.text)),
           pais: int.tryParse(_paisController.text) ?? 1);
 
       await provider.addLivro(newLivro);
@@ -428,12 +428,6 @@ class _FormBookState extends State<FormBook> {
                                 }
                                 if (_anoPublicacaoController.text.isEmpty) {
                                   erros += 'Ano de publicação está vazio.\n';
-                                } else {
-                                  int? ano = int.tryParse(
-                                      _anoPublicacaoController.text);
-                                  if (ano == null) {
-                                    erros += 'Ano de publicação vazio.\n';
-                                  }
                                 }
                                 if (_paisController.text.isEmpty) {
                                   erros += 'País está vazio.\n';

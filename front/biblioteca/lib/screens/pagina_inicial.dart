@@ -26,14 +26,16 @@ class TelaPaginaIncial extends StatefulWidget {
 }
 
 class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
-  String _selectedRoute = '/inicio';
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
+  String _selectedRoute = '/inicio';
   bool _isExpanded = false;
   OverlayEntry? _overlayEntry;
 
   void _toggleOverlay(BuildContext context) {
     if (_isExpanded) {
       _overlayEntry?.remove();
+      _overlayEntry = null;
       _isExpanded = false;
     } else {
       _overlayEntry = OverlayEntry(
@@ -104,9 +106,12 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
   }
 
   void _onPageSelected(String route) {
-    setState(() {
+    if (_selectedRoute != route) {
+      setState(() {
       _selectedRoute = route;
-    });
+      _navigatorKey.currentState!.pushReplacementNamed(route);
+      });
+    }
   }
 
   @override
@@ -188,7 +193,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                       color: AppTheme.drawerBackgroundColor,
                       borderRadius: BorderRadius.circular(10.0)),
                   child: Navigator(
-                    key: GlobalKey<NavigatorState>(),
+                    key: _navigatorKey,
                     initialRoute: _selectedRoute,
                     onGenerateRoute: (RouteSettings settings) {
                       Widget page;

@@ -5,7 +5,6 @@ import (
 	"biblioteca/modelos"
 	"biblioteca/servicos/sessao"
 	"biblioteca/utilidades"
-	"fmt"
 	"time"
 )
 
@@ -54,18 +53,18 @@ func CriarLivro(idDaSessao uint64, loginUsuarioCriador string, novoLivro modelos
 	return erroDoBancoParaErroDeServicoDoLivro(banco.CriarLivro(novoLivro, nomeDosAutores, nomeDasCategorias))
 }
 
-func BuscarLivro(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca string) ([]modelos.Livro, ErroDeServicoDoLivro) {
+func BuscarLivro(idDaSessao uint64, loginDoUsuarioBuscador string, textoDaBusca string) ([]modelos.LivroResposta, ErroDeServicoDoLivro) {
 	if sessao.VerificaSeIdDaSessaoEValido(idDaSessao, loginDoUsuarioBuscador) != sessao.VALIDO {
 		return nil, ErroDeServicoDoLivroSessaoInvalida
 	}
 
 	permissaoDoUsuarioBuscador := sessao.PegarSessaoAtual()[idDaSessao].Permissao
 
-	fmt.Println(textoDaBusca)
-	if textoDaBusca == "" {
-		livros := banco.PegarTodosLivros()
-		return livros, ErroDeServicoDoLivroNenhum
-	}
+	// fmt.Println(textoDaBusca)
+	// if textoDaBusca == "" {
+	// 	livros := banco.PegarTodosLivros()
+	// 	return livros, ErroDeServicoDoLivroNenhum
+	// }
 
 	if permissaoDoUsuarioBuscador&utilidades.PermssaoLerUsuario != utilidades.PermssaoLerUsuario {
 		return nil, ErroDeServicoDoLivroSemPermisao

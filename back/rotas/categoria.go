@@ -82,7 +82,7 @@ func Categoria(resposta http.ResponseWriter, requisicao *http.Request) {
 
 	if requisicaoCategoria.LoginDoUsuarioRequerente == "" {
 		resposta.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(resposta, "A requisição para a rota de livro foi mal feita")
+		fmt.Fprintf(resposta, "A requisição para a rota de categoria foi mal feita")
 		return
 	}
 

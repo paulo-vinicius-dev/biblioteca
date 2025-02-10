@@ -1,23 +1,32 @@
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/data/services/isbn_service.dart';
+import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
+import 'package:biblioteca/data/models/livro_model.dart';
+import 'package:biblioteca/data/providers/livro_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:biblioteca/utils/routes.dart';
 
 class FormBook extends StatefulWidget {
-  const FormBook({super.key});
+  const FormBook({super.key, this.livro});
+  final Livro? livro;
 
   @override
   State<FormBook> createState() => _FormBookState();
 }
 
 class _FormBookState extends State<FormBook> {
+  bool isModoEdicao() {
+    return widget.livro != null;
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
   final TextEditingController _editoraController = TextEditingController();
-  final TextEditingController _dataPublicacaoController =
+  final TextEditingController _anoPublicacaoController =
       TextEditingController();
-  final TextEditingController _pageCountController = TextEditingController();
-
+  final TextEditingController _paisController = TextEditingController();
   final List<TextEditingController> _authorsControllers = [
     TextEditingController()
   ];
@@ -25,13 +34,66 @@ class _FormBookState extends State<FormBook> {
     TextEditingController()
   ];
 
+  void btnSalvar(context) async {
+    LivroProvider provider = Provider.of<LivroProvider>(context, listen: false);
+    final Livro newLivro;
+    String? mensagem = '';
+
+    if (isModoEdicao()) {
+      newLivro = widget.livro!;
+
+      newLivro.titulo = _tituloController.text;
+      newLivro.isbn = _isbnController.text;
+      newLivro.editora = _editoraController.text;
+      newLivro.anoPublicacao = DateTime(int.parse(_anoPublicacaoController.text));
+      newLivro.pais = int.tryParse(_paisController.text) ?? 0;
+
+      await provider.editLivro(newLivro);
+
+      mensagem = provider.hasErrors
+          ? "Ocorreu um erro ao tentar alterar este registro, por favor confira os dados inseridos"
+          : "Registro alterado com sucesso";
+    } else {
+      newLivro = Livro(
+          idDoLivro: 0,
+          titulo: _tituloController.text,
+          isbn: _isbnController.text,
+          editora: _editoraController.text,
+          anoPublicacao: DateTime(int.parse(_anoPublicacaoController.text)),
+          pais: int.tryParse(_paisController.text) ?? 1);
+
+      await provider.addLivro(newLivro);
+
+      if (provider.hasErrors) {
+        mensagem = provider.error ?? "Erro ao salvar o livro.";
+      } else {
+        mensagem = "Cadastro realizado com sucesso";
+      }
+
+      mensagem = provider.hasErrors
+          ? provider.error
+          : "Cadastro realizado com sucesso";
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content: Text(mensagem!),
+          backgroundColor: provider.hasErrors ? Colors.red : Colors.green),
+    );
+
+    if (!provider.hasErrors) {
+      Navigator.pushNamedAndRemoveUntil(
+          context, AppRoutes.livros, ModalRoute.withName(AppRoutes.home));
+    }
+  }
+
   @override
   void dispose() {
     _tituloController.dispose();
     _isbnController.dispose();
     _editoraController.dispose();
-    _dataPublicacaoController.dispose();
-    _pageCountController.dispose();
+    _anoPublicacaoController.dispose();
+    _paisController.dispose();
 
     for (var controller in _authorsControllers) {
       controller.dispose();
@@ -54,37 +116,29 @@ class _FormBookState extends State<FormBook> {
         setState(() {
           _tituloController.text = data['title'] ?? '';
           _editoraController.text = data['publisher'] ?? '';
-          _dataPublicacaoController.text =
+          _anoPublicacaoController.text =
               data['publication_date']?.substring(0, 4) ?? '';
-          _pageCountController.text = (data['page_count'] ?? '').toString();
+          _paisController.text = (data['page_count'] ?? '').toString();
 
-          // Preencher os autores
           _authorsControllers.clear();
+          _authorsControllers.add(TextEditingController());
           if (data['authors'] != null) {
             for (String autor in data['authors']) {
               _authorsControllers.add(TextEditingController(text: autor));
             }
           }
-
-          // Preencher as categorias
-          _categoriesControllers.clear();
-          if (data['subjects'] != null) {
-            for (String categoria in data['subjects']) {
-              _categoriesControllers
-                  .add(TextEditingController(text: categoria));
-            }
-          }
         });
       } else {
-              // ignore: use_build_context_synchronously
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Livro não encontrado'),
-      ));
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Livro não encontrado pelo sistema, verifique o ISBN ou preencha o formulario manualmente.'),
+        ));
       }
     } catch (e) {
-            // ignore: use_build_context_synchronously
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('$e'),
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Erro ao procurar o livro: $e'),
       ));
     }
   }
@@ -140,10 +194,10 @@ class _FormBookState extends State<FormBook> {
                       TextFormField(
                         controller: _isbnController,
                         decoration: InputDecoration(
-                          labelText: "ISBN",
+                          label: const CampoObrigatorio(label: "ISBN"),
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
-                            icon:  const Icon(Icons.search),
+                            icon: const Icon(Icons.search),
                             onPressed: _buscarLivroPorISBN,
                           ),
                         ),
@@ -160,7 +214,7 @@ class _FormBookState extends State<FormBook> {
                       TextFormField(
                         controller: _tituloController,
                         decoration: const InputDecoration(
-                          labelText: "Título",
+                          label: CampoObrigatorio(label: "Titulo"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
@@ -176,7 +230,7 @@ class _FormBookState extends State<FormBook> {
                       TextFormField(
                         controller: _editoraController,
                         decoration: const InputDecoration(
-                          labelText: "Editora",
+                          label: CampoObrigatorio(label: "Editora"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
@@ -190,23 +244,25 @@ class _FormBookState extends State<FormBook> {
 
                       // Data de Publicação
                       TextFormField(
-                        controller: _dataPublicacaoController,
-                        keyboardType: TextInputType.number,
+                        controller: _anoPublicacaoController,
                         decoration: const InputDecoration(
-                          labelText: "Ano de Publicação",
+                          label: CampoObrigatorio(label: "Ano de Publicação"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Preencha esse campo";
                           }
-                          final testNum = int.tryParse(value);
-                          if (testNum == null) {
-                            return "Apenas numeros neste campo";
-                          }
-                          if (testNum > DateTime.now().year) {
-                            return "Confira se esta data está correta";
-                          }
+                          // final testNum = int.tryParse(value);
+                          // if (testNum == null) {
+                          //   return "Apenas numeros neste campo";
+                          // }
+                          // if (value.length != 4) {
+                          //   return "Coloque o ano em um formato de 4 digitos. Ex: 2015";
+                          // }
+                          // if (testNum > DateTime.now().year) {
+                          //   return "Confira se esta data está correta";
+                          // }
                           return null;
                         },
                       ),
@@ -214,9 +270,9 @@ class _FormBookState extends State<FormBook> {
 
                       // Quantidade de paginas
                       TextFormField(
-                        controller: _pageCountController,
+                        controller: _paisController,
                         decoration: const InputDecoration(
-                          labelText: "Quantidade de Páginas",
+                          label: CampoObrigatorio(label: "Pais"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
@@ -240,7 +296,10 @@ class _FormBookState extends State<FormBook> {
                                     child: TextFormField(
                                       controller: _authorsControllers[index],
                                       decoration: InputDecoration(
-                                        labelText: "Autor ${index + 1}",
+                                        label: index == 0
+                                            ? const CampoObrigatorio(
+                                                label: "Autor")
+                                            : const Text("Autor"),
                                         border: const OutlineInputBorder(),
                                       ),
                                     ),
@@ -291,7 +350,10 @@ class _FormBookState extends State<FormBook> {
                                     child: TextFormField(
                                       controller: _categoriesControllers[index],
                                       decoration: InputDecoration(
-                                        labelText: "Categoria ${index + 1}",
+                                        label: index == 0
+                                            ? const CampoObrigatorio(
+                                                label: "Categoria")
+                                            : const Text("Categoria"),
                                         border: const OutlineInputBorder(),
                                       ),
                                     ),
@@ -351,32 +413,39 @@ class _FormBookState extends State<FormBook> {
                           ),
                           const SizedBox(width: 16.0),
                           ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text(
-                                        "Erro ao preencher o formulario : $_dataPublicacaoController")));
+                            onPressed: () async {
+                              if (!_formKey.currentState!.validate()) {
+                                String erros = '';
+
+                                if (_isbnController.text.isEmpty) {
+                                  erros += 'ISBN está vazio.\n';
+                                }
+                                if (_tituloController.text.isEmpty) {
+                                  erros += 'Título está vazio.\n';
+                                }
+                                if (_editoraController.text.isEmpty) {
+                                  erros += 'Editora está vazia.\n';
+                                }
+                                if (_anoPublicacaoController.text.isEmpty) {
+                                  erros += 'Ano de publicação está vazio.\n';
+                                }
+                                if (_paisController.text.isEmpty) {
+                                  erros += 'País está vazio.\n';
+                                }
+
+                                if (erros.isNotEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(erros),
+                                      duration: const Duration(seconds: 3),
+                                    ),
+                                  );
+                                }
+                                return;
                               }
 
-                              _tituloController.clear();
-                              _isbnController.clear();
-                              _editoraController.clear();
-                              _dataPublicacaoController.clear();
-                              _pageCountController.clear();
-                              for (var controller in _authorsControllers) {
-                                controller.clear();
-                              }
-                              for (var controller in _categoriesControllers) {
-                                controller.clear();
-                              }
-                              setState(() {
-                                _authorsControllers.clear();
-                                _categoriesControllers.clear();
-                                _authorsControllers
-                                    .add(TextEditingController());
-                                _categoriesControllers
-                                    .add(TextEditingController());
-                              });
+                              btnSalvar(context);
+
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context).primaryColor,

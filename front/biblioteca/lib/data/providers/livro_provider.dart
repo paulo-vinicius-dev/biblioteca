@@ -2,7 +2,6 @@ import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/services/livro_service.dart';
 import 'package:flutter/foundation.dart';
 
-
 class LivroProvider extends ChangeNotifier {
   final LivroService _livroService = LivroService();
   bool _isLoading = false;
@@ -34,7 +33,8 @@ class LivroProvider extends ChangeNotifier {
     print("Loading livros...");
 
     try {
-      final livrosAtingidos = await _livroService.fetchLivros(idDaSessao, usuarioLogado);
+      final livrosAtingidos =
+          await _livroService.fetchLivros(idDaSessao, usuarioLogado);
       print("Livros fetched: ${livrosAtingidos.livrosAtingidos.length}");
       if (!listEquals(_livros, livrosAtingidos.livrosAtingidos)) {
         _livros = livrosAtingidos.livrosAtingidos;
@@ -55,7 +55,7 @@ class LivroProvider extends ChangeNotifier {
   }
 
   // Adicionar um novo livro
-  Future<void> addLivro(Livro livro) async {
+  Future<bool> addLivro(Livro livro) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -65,10 +65,12 @@ class LivroProvider extends ChangeNotifier {
         throw Exception("Livro com ISBN ${livro.isbn} já existe.");
       }
 
-      await _livroService.addLivro(livro);
+      await _livroService.addLivro(idDaSessao, usuarioLogado, livro);
       _livros.add(livro);
+      return true;
     } catch (e) {
       _error = "Erro ao inserir novo Livro:\n$e";
+      return false;
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -548,7 +548,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                     ),
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].id.toString(),
                                           textAlign: TextAlign.center,
@@ -556,7 +556,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].titulo,
                                           textAlign: TextAlign.left,
@@ -579,7 +579,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].getEstado,
                                           textAlign: TextAlign.center,

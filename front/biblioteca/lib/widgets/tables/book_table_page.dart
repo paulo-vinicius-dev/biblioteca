@@ -33,7 +33,7 @@ class BookTablePageState extends State<BookTablePage> {
   Widget build(BuildContext context) {
     LivroProvider livroProvider =
         Provider.of<LivroProvider>(context, listen: true);
-    if (livroProvider.isLoading) {
+    if (livroProvider.isLoading) {   
       while (livroProvider.isLoading) {}
       return const Center(child: CircularProgressIndicator());
     } else if (livroProvider.hasErrors) {
@@ -164,7 +164,7 @@ class BookTablePageState extends State<BookTablePage> {
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('Ano de Publicação',
+                          child: Text('Data de Publicação',
                               textAlign: TextAlign.left,
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
@@ -277,8 +277,7 @@ class BookTablePageState extends State<BookTablePage> {
                                     onPressed: () async {
                                       try {
                                         Navigator.pushNamed(
-                                            context, AppRoutes.exemplares,
-                                            arguments: book);
+                                            context, AppRoutes.exemplares, arguments: book);
                                       } catch (e) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(

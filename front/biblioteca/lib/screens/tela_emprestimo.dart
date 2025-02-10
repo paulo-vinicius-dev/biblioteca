@@ -320,22 +320,25 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
               breadcrumb: ['Início', 'Empréstimo'],
               icon: Icons.my_library_books_rounded),
           Padding(
-            padding: const EdgeInsets.only(top: 40, left: 35, right: 200),
+            padding: const EdgeInsets.only(top: 40, left: 35, right: 100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Pesquisa De Aluno",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium
-                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 22)),
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 28)
+                    ),
                 const SizedBox(height: 40),
                 Row(
                   children: [
                     Flexible(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(
-                            maxWidth: 800, maxHeight: 40, minWidth: 200),
+                            maxWidth: 800, 
+                            maxHeight: 40, 
+                            minWidth: 200
+                          ),
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
@@ -353,17 +356,30 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                     const SizedBox(width: 30),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 20),
+                          padding: const EdgeInsets.only(
+                          top: 16,
+                          bottom: 16,
+                          left: 16,
+                          right: 20,
+                        ),
                           backgroundColor: const Color.fromRGBO(38, 42, 79, 1),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10))),
+                              borderRadius: BorderRadius.circular(12))),
                       onPressed: searchUsers,
-                      child: const Text("Pesquisar",
-                          style: TextStyle(
+                      child: const Row(
+                        children: [
+                          Icon(Icons.search, color: Colors.white,),
+                          SizedBox(width: 3,),
+                          Text(
+                            "Pesquisar",
+                            style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 16)),
+                              fontSize: 16.5
+                            )
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -380,12 +396,15 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (selectUser == null)
-                          SizedBox(
-                            width: 1100,
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: 1210,
+                              minHeight: 800
+                            ),
                             child: Table(
                               border: TableBorder.all(
-                                  color:
-                                      const Color.fromARGB(97, 104, 104, 104)),
+                                  color:const Color.fromARGB(215, 200, 200, 200)
+                              ),
                               columnWidths: const {
                                 0: FlexColumnWidth(0.42),
                                 1: FlexColumnWidth(0.18),
@@ -397,105 +416,109 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                               children: [
                                 const TableRow(
                                   decoration: BoxDecoration(
-                                      color:
-                                          Color.fromARGB(255, 214, 214, 214)),
+                                      color: Color.fromARGB(255, 44, 62, 80)
+                                  ),
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(8.0),
-                                      child: Text('Nome',
+                                      child: Text(
+                                          'Nome',
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                                            ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.all(8.0),
                                       child: Text('Turma',
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.all(8.0),
                                       child: Text('Turno',
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.all(8.0),
                                       child: Text('Email',
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.all(8.0),
                                       child: Text('Tipo Usuário',
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                                     ),
-                                    SizedBox(width: 5),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('Ação',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                    )
                                   ],
                                 ),
                                 for (int x = 0; x < _filteredUsers.length; x++)
                                   TableRow(
-                                    decoration: const BoxDecoration(
-                                        color:
-                                            Color.fromRGBO(233, 235, 238, 75)),
+                                    decoration: BoxDecoration(
+                                        color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1)
+                                    ),
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 11.0,
-                                          left: 8.0,
-                                        ),
+                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
                                         child: Text(_filteredUsers[x].nome,
-                                            textAlign: TextAlign.left),
+                                              textAlign: TextAlign.left, 
+                                              style: TextStyle(
+                                              fontWeight: FontWeight.w300, 
+                                              fontSize: 14.5
+                                             )
+                                            ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 11.0,
-                                          left: 8.0,
-                                        ),
-                                        child: Text(_filteredUsers[x].getTurma,
-                                            textAlign: TextAlign.center),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 11.0,
-                                          left: 8.0,
-                                        ),
-                                        child: Text(_filteredUsers[x].getTurno,
-                                            textAlign: TextAlign.center),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 11.0,
-                                          left: 8.0,
-                                        ),
-                                        child: Text(_filteredUsers[x].email,
-                                            textAlign: TextAlign.left),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 11.0,
-                                          left: 8.0,
-                                        ),
+                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
                                         child: Text(
-                                            _filteredUsers[x].getTipoDeUsuario,
-                                            textAlign: TextAlign.center),
+                                              _filteredUsers[x].getTurma,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                            ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                        child: Text(
+                                              _filteredUsers[x].getTurno,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                            ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                        child: Text(
+                                              _filteredUsers[x].email,
+                                              textAlign: TextAlign.left,
+                                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                            ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                        child: Text(
+                                              _filteredUsers[x].getTipoDeUsuario,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                            
+                                            ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            vertical: 6, horizontal: 10),
+                                          vertical: 10,
+                                          horizontal: 14,
+                                        ),
                                         child: TextButton(
                                           style: TextButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromRGBO(
-                                                    38, 42, 79, 1),
+                                            backgroundColor: const Color.fromARGB(255, 45, 106, 79),
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(5)),
+                                                    BorderRadius.circular(7)),
                                           ),
                                           onPressed: () {
                                             showSearchBooks = true;
@@ -505,8 +528,10 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                           },
                                           child: const Text('Selecionar',
                                               style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12),
+                                                color: const Color.fromARGB(255, 250, 244, 244),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 14,
+                                              ),
                                               textAlign: TextAlign.center),
                                         ),
                                       ),

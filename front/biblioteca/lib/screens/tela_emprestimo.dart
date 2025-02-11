@@ -34,6 +34,8 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
 
   late List<Usuario> users;
   late List<Exemplar> exemplares;
+
+  late List<Exemplar> selectedExemplares = [];
   @override
   void initState() {
     super.initState();
@@ -105,17 +107,202 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
         } catch (e) {
           selectbook = null;
         }
+        
+        if(selectbook!=null){
+          if(!selectedExemplares.contains(selectbook)){
+            msgConfirm(selectbook!);
+          }else{
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(
+                  'Exemplar já adicionado!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              duration: Duration(seconds: 2),
+              )
+            );
+          }
+        }
       }
-      //Caso aceite busca de exemplar pelo nome
-      //else {
-      //   // Caso não seja um número, busca por outro critério (ex: nome)
-      //   selectbook = exemplares.firstWhere(
-      //     (exemplar) => exemplar.titulo.toLowerCase().contains(searchQuery.toLowerCase()),
-      //   );
-      // }
     });
   }
 
+  Future<void> msgConfirm(Exemplar exemplar){
+    return showDialog(
+      context: context, 
+      builder: (context)=> AlertDialog(
+        title: Text(
+          'Confirmar seleção de exemplar',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20
+          ),
+        ),
+        content: Container(
+          width: 800,
+          child: Table(
+            columnWidths: const {
+              0: FlexColumnWidth(0.08),
+              1: FlexColumnWidth(0.15),
+              2: FlexColumnWidth(0.10),
+              3: FlexColumnWidth(0.11)
+            },
+            border:TableBorder.all(
+              color: const Color.fromARGB(215, 200, 200, 200)
+            ),
+            children: [
+              const TableRow(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 44, 62, 80)
+                ),
+                children:[
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Tombamento",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Título",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Ano de Publicação",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Situação",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                    ), 
+                  )
+                ]
+              ),
+              TableRow(
+                decoration: const BoxDecoration(
+                  color: Color.fromRGBO(233, 235, 238, 75)
+                ),
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      exemplar.id.toString(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14)
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      exemplar.titulo,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14)
+                    ),
+                  )
+                  ,Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      DateFormat('dd/MM/YYYY').format(exemplar.anoPublicacao),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14) 
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                        exemplar.statusCodigo == 1? Icons.check_circle: Icons.cancel, 
+                        color: exemplar.statusCodigo == 1? Colors.green: Colors.red,
+                        ),
+                        SizedBox(width: 5,),
+                        Text(
+                          exemplar.getStatus,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14)
+                        ),
+                      ],
+                    ),
+                  )
+                ]
+              )
+            ],
+          ),
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.all(11),
+                  backgroundColor: Colors.red[400],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)
+                )
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                }, 
+                child: Text(
+                  'Cancelar',
+                  style: TextStyle(
+                   fontSize: 15.5
+                  ),
+                )
+             ),
+
+             SizedBox(width: 20),
+
+             TextButton(
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.all(11),
+                backgroundColor: Colors.green[400],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)
+                )
+              ),
+              onPressed: (){
+                setState(() {
+                  selectedExemplares.add(exemplar);
+                });
+                Navigator.of(context).pop();  
+              }, 
+              child: Text(
+                'Selecionar',
+                style: TextStyle(
+                  fontSize: 15.5   
+                )
+              )
+            )
+          ],
+          )
+        ],
+      )
+    );
+  }
   void getDate() {
     DateTime now = DateTime.now();
     dataEmprestimo = DateFormat('dd/MM/yyyy').format(now);
@@ -131,183 +318,183 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     return formato.format(novaData);
   }
 
-  Future<void> msgConfirm(
-      BuildContext context, String msg, EmprestimosModel livro) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Stack(
-              children: [
-                Container(
-                  width: 800,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Cabeçalho
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        width: double.infinity,
-                        color: const Color.fromRGBO(38, 42, 79, 1),
-                        child: Text(
-                          'Confirmação de $msg',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      // Corpo do diálogo
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 20),
-                        child: Column(
-                          children: [
-                            // Tabela de informações
-                            Table(
-                              columnWidths: const {
-                                0: FlexColumnWidth(0.08),
-                                1: FlexColumnWidth(0.25),
-                                2: FlexColumnWidth(0.20),
-                                3: FlexColumnWidth(0.20),
-                              },
-                              border: TableBorder.all(
-                                color: const Color.fromARGB(255, 213, 213, 213),
-                              ),
-                              children: [
-                                // Linha de Cabeçalho
-                                const TableRow(
-                                  decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 223, 223, 223),
-                                  ),
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Código',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Nome',
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Devolução Prevista',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Situação',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                // Linha de Dados
-                                TableRow(
-                                  decoration: const BoxDecoration(
-                                    color: Color.fromARGB(255, 233, 235, 238),
-                                  ),
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        livro.codigo,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        livro.nome,
-                                        textAlign: TextAlign.left,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        livro.dataDevolucao,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        '$msg Realizado!',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.green,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            // Botão de Confirmação
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green[400],
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Fecha o diálogo
-                              },
-                              child: const Text(
-                                'Confirmar',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Botão Fechar
-                Positioned(
-                  right: 0,
-                  child: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.red),
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Fecha o diálogo
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // Future<void> msgConfirm(
+  //     BuildContext context, String msg, EmprestimosModel livro) {
+  //   return showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Dialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(15),
+  //         ),
+  //         child: ClipRRect(
+  //           borderRadius: BorderRadius.circular(15),
+  //           child: Stack(
+  //             children: [
+  //               Container(
+  //                 width: 800,
+  //                 child: Column(
+  //                   mainAxisSize: MainAxisSize.min,
+  //                   children: [
+  //                     // Cabeçalho
+  //                     Container(
+  //                       padding: const EdgeInsets.symmetric(vertical: 10),
+  //                       width: double.infinity,
+  //                       color: const Color.fromRGBO(38, 42, 79, 1),
+  //                       child: Text(
+  //                         'Confirmação de $msg',
+  //                         textAlign: TextAlign.center,
+  //                         style: const TextStyle(
+  //                           fontSize: 18,
+  //                           fontWeight: FontWeight.bold,
+  //                           color: Colors.white,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     // Corpo do diálogo
+  //                     Padding(
+  //                       padding: const EdgeInsets.symmetric(
+  //                           horizontal: 15, vertical: 20),
+  //                       child: Column(
+  //                         children: [
+  //                           // Tabela de informações
+  //                           Table(
+  //                             columnWidths: const {
+  //                               0: FlexColumnWidth(0.08),
+  //                               1: FlexColumnWidth(0.25),
+  //                               2: FlexColumnWidth(0.20),
+  //                               3: FlexColumnWidth(0.20),
+  //                             },
+  //                             border: TableBorder.all(
+  //                               color: const Color.fromARGB(255, 213, 213, 213),
+  //                             ),
+  //                             children: [
+  //                               // Linha de Cabeçalho
+  //                               const TableRow(
+  //                                 decoration: BoxDecoration(
+  //                                   color: Color.fromARGB(255, 223, 223, 223),
+  //                                 ),
+  //                                 children: [
+  //                                   Padding(
+  //                                     padding: EdgeInsets.all(8.0),
+  //                                     child: Text(
+  //                                       'Código',
+  //                                       textAlign: TextAlign.center,
+  //                                       style: TextStyle(
+  //                                           fontWeight: FontWeight.bold),
+  //                                     ),
+  //                                   ),
+  //                                   Padding(
+  //                                     padding: EdgeInsets.all(8.0),
+  //                                     child: Text(
+  //                                       'Nome',
+  //                                       textAlign: TextAlign.left,
+  //                                       style: TextStyle(
+  //                                           fontWeight: FontWeight.bold),
+  //                                     ),
+  //                                   ),
+  //                                   Padding(
+  //                                     padding: EdgeInsets.all(8.0),
+  //                                     child: Text(
+  //                                       'Devolução Prevista',
+  //                                       textAlign: TextAlign.center,
+  //                                       style: TextStyle(
+  //                                           fontWeight: FontWeight.bold),
+  //                                     ),
+  //                                   ),
+  //                                   Padding(
+  //                                     padding: EdgeInsets.all(8.0),
+  //                                     child: Text(
+  //                                       'Situação',
+  //                                       textAlign: TextAlign.center,
+  //                                       style: TextStyle(
+  //                                           fontWeight: FontWeight.bold),
+  //                                     ),
+  //                                   ),
+  //                                 ],
+  //                               ),
+  //                               // Linha de Dados
+  //                               TableRow(
+  //                                 decoration: const BoxDecoration(
+  //                                   color: Color.fromARGB(255, 233, 235, 238),
+  //                                 ),
+  //                                 children: [
+  //                                   Padding(
+  //                                     padding: const EdgeInsets.all(8.0),
+  //                                     child: Text(
+  //                                       livro.codigo,
+  //                                       textAlign: TextAlign.center,
+  //                                     ),
+  //                                   ),
+  //                                   Padding(
+  //                                     padding: const EdgeInsets.all(8.0),
+  //                                     child: Text(
+  //                                       livro.nome,
+  //                                       textAlign: TextAlign.left,
+  //                                     ),
+  //                                   ),
+  //                                   Padding(
+  //                                     padding: const EdgeInsets.all(8.0),
+  //                                     child: Text(
+  //                                       livro.dataDevolucao,
+  //                                       textAlign: TextAlign.center,
+  //                                     ),
+  //                                   ),
+  //                                   Padding(
+  //                                     padding: const EdgeInsets.all(8.0),
+  //                                     child: Text(
+  //                                       '$msg Realizado!',
+  //                                       textAlign: TextAlign.center,
+  //                                       style: const TextStyle(
+  //                                         fontWeight: FontWeight.bold,
+  //                                         color: Colors.green,
+  //                                       ),
+  //                                     ),
+  //                                   ),
+  //                                 ],
+  //                               ),
+  //                             ],
+  //                           ),
+  //                           const SizedBox(height: 20),
+  //                           // Botão de Confirmação
+  //                           ElevatedButton(
+  //                             style: ElevatedButton.styleFrom(
+  //                               backgroundColor: Colors.green[400],
+  //                               shape: RoundedRectangleBorder(
+  //                                 borderRadius: BorderRadius.circular(5),
+  //                               ),
+  //                             ),
+  //                             onPressed: () {
+  //                               Navigator.of(context).pop(); // Fecha o diálogo
+  //                             },
+  //                             child: const Text(
+  //                               'Confirmar',
+  //                               style: TextStyle(color: Colors.white),
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // Botão Fechar
+  //               Positioned(
+  //                 right: 0,
+  //                 child: IconButton(
+  //                   icon: const Icon(Icons.close, color: Colors.red),
+  //                   onPressed: () {
+  //                     Navigator.of(context).pop(); // Fecha o diálogo
+  //                   },
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -542,7 +729,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                           ),
                         if (selectUser != null)
                           SizedBox(
-                            width: 1100,
+                            width: 1150,
                             child: Column(
                               children: [
                                 Container(
@@ -550,111 +737,150 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 6.5),
                                   decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: const Color.fromARGB(
-                                              97, 104, 104, 104)),
-                                      color: const Color.fromARGB(
-                                          255, 214, 214, 214)),
-                                  child: Text(
-                                    "Usuário Selecionado",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelMedium!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15,
-                                        ),
-                                    textAlign: TextAlign.center,
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color.fromARGB(255, 218, 227, 238),
+                                        Colors.white
+                                       ], 
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 8,
+                                        spreadRadius: 2,
+                                        offset: Offset(0, 4),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                Table(
-                                  border: TableBorder.all(
-                                      color: const Color.fromARGB(
-                                          97, 104, 104, 104)),
-                                  columnWidths: const {
-                                    0: FlexColumnWidth(0.50),
-                                    1: FlexColumnWidth(0.15),
-                                    2: FlexColumnWidth(0.15),
-                                    3: FlexColumnWidth(0.35),
-                                    4: FlexColumnWidth(0.15),
-                                  },
-                                  children: [
-                                    const TableRow(
-                                      decoration: BoxDecoration(
-                                          color: Color.fromARGB(
-                                              255, 214, 214, 214)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 10, left: 8, right: 8, bottom: 16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text('Nome',
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text('Turma',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text('Turno',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text('Email',
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text('Tipo Usuário',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      decoration: const BoxDecoration(
-                                          color: Color.fromRGBO(
-                                              233, 235, 238, 75)),
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(selectUser!.nome,
-                                              textAlign: TextAlign.left),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(selectUser!.getTurma,
-                                              textAlign: TextAlign.center),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(selectUser!.getTurno,
-                                              textAlign: TextAlign.center),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(selectUser!.email,
-                                              textAlign: TextAlign.left),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
+                                          padding: const EdgeInsets.only(left: 18),
                                           child: Text(
-                                              selectUser!.getTipoDeUsuario,
-                                              textAlign: TextAlign.center),
+                                            "Usuário Selecionado",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelMedium!
+                                                .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20.3,
+                                                  color: Colors.black,
+                                                ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Divider(thickness: 2, color: Colors.grey[400]),
+                                        SizedBox(height: 10,),
+                                        Table(
+                                          border: TableBorder.all(
+                                            color: const Color.fromARGB(215, 200, 200, 200)
+                                          ),
+                                          columnWidths: const {
+                                            0: FlexColumnWidth(0.50),
+                                            1: FlexColumnWidth(0.15),
+                                            2: FlexColumnWidth(0.15),
+                                            3: FlexColumnWidth(0.35),
+                                            4: FlexColumnWidth(0.15),
+                                          },
+                                          children: [
+                                            const TableRow(
+                                              decoration: BoxDecoration(
+                                                  color: Color.fromARGB(255, 44, 62, 80)
+                                              ),
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                      'Nome',
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                      'Turma',
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                      'Turno',
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                      'Email',
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                      'Tipo Usuário',
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                                ),
+                                              ],
+                                            ),
+                                            TableRow(
+                                              decoration: const BoxDecoration(
+                                                  color: Color.fromRGBO(233, 235, 238, 75)),
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                                  child: Text(
+                                                        selectUser!.nome,
+                                                        textAlign: TextAlign.left,
+                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                      ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                                  child: Text(
+                                                        selectUser!.getTurma,
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                      ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                                  child: Text(
+                                                        selectUser!.getTurno,
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                      ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                                  child: Text(selectUser!.email,
+                                                        textAlign: TextAlign.left,
+                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                      ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                        selectUser!.getTipoDeUsuario,
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                                 const SizedBox(height: 30),
                                 if (selectUser != null &&
@@ -808,20 +1034,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                                         5)),
                                                   ),
                                                   onPressed: () {
-                                                    setState(() {
-                                                      selectUser!
-                                                              .livrosEmprestados[x]
-                                                              .dataDevolucao =
-                                                          renovar(selectUser!
-                                                              .livrosEmprestados[
-                                                                  x]
-                                                              .dataDevolucao);
-                                                    });
-                                                    msgConfirm(
-                                                        context,
-                                                        'Renovação',
-                                                        selectUser!
-                                                            .livrosEmprestados[x]);
+                                                    
                                                   },
                                                   child: const Text('Renovar',
                                                       style: TextStyle(
@@ -876,19 +1089,32 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                   const SizedBox(width: 30),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12, horizontal: 20),
+                                        padding: const EdgeInsets.only(
+                                          top: 16,
+                                          bottom: 16,
+                                          left: 16,
+                                          right: 20,
+                                        ),
                                         backgroundColor:
                                             const Color.fromRGBO(38, 42, 79, 1),
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10))),
                                     onPressed: searchBooks,
-                                    child: const Text("Pesquisar",
-                                        style: TextStyle(
+                                    child: const Row(
+                                      children: [
+                                        Icon(Icons.add, color: Colors.white,),
+                                        SizedBox(width: 3,),
+                                        Text(
+                                          "Adicionar",
+                                          style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w600,
-                                            fontSize: 16)),
+                                            fontSize: 16.5
+                                          )
+                                        ),
+                                      ],
+                                    )
                                   ),
                                 ],
                               ),
@@ -904,188 +1130,174 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                   Column(
                                     children: [
                                       SizedBox(
-                                        width: 1100,
+                                        width: 1150,
                                         child: Table(
                                           border: TableBorder.all(
-                                              color: const Color.fromARGB(
-                                                  97, 104, 104, 104)),
+                                            color:const Color.fromARGB(215, 200, 200, 200)
+                                          ),
                                           columnWidths: const {
-                                            0: FlexColumnWidth(0.10),
+                                            0: FlexColumnWidth(0.08),
                                             1: FlexColumnWidth(0.25),
-                                            2: FlexColumnWidth(0.14),
-                                            3: FlexColumnWidth(0.15),
-                                            4: FlexColumnWidth(0.09),
-                                            5: FlexColumnWidth(0.13),
+                                            2: FlexColumnWidth(0.12),
+                                            3: FlexColumnWidth(0.14),
+                                            4: FlexColumnWidth(0.10),
                                           },
                                           children: [
                                             const TableRow(
                                               decoration: BoxDecoration(
-                                                  color: Color.fromARGB(
-                                                      255, 214, 214, 214)),
+                                                color: Color.fromARGB(255, 44, 62, 80)
+                                              ),
                                               children: [
                                                 Padding(
                                                   padding: EdgeInsets.all(8.0),
-                                                  child: Text('Tombamento',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.all(8.0),
-                                                  child: Text('Titulo',
-                                                      textAlign: TextAlign.left,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
+                                                  child: Text(
+                                                    'Tombamento',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                                                  ),
                                                 ),
                                                 Padding(
                                                   padding: EdgeInsets.all(8.0),
                                                   child: Text(
-                                                      'Ano de Publicação',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
+                                                    'Titulo',
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                                                  ),
                                                 ),
                                                 Padding(
                                                   padding: EdgeInsets.all(8.0),
-                                                  child: Text('Editora',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
+                                                  child: Text(
+                                                    'Ano de Publicação',
+                                                    textAlign:TextAlign.center,
+                                                    style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                                                  ),
                                                 ),
                                                 Padding(
                                                   padding: EdgeInsets.all(8.0),
-                                                  child: Text('Cativo',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
+                                                  child: Text(
+                                                    'Editora',
+                                                    textAlign:
+                                                    TextAlign.center,
+                                                    style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                                                  ),
                                                 ),
-                                                SizedBox.shrink()
+                                                Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    'Cativo',
+                                                    textAlign:
+                                                    TextAlign.center,
+                                                    style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)
+                                                  ),
+                                                ),
                                               ],
                                             ),
-                                            TableRow(
-                                              decoration: const BoxDecoration(
-                                                  color: Color.fromRGBO(
-                                                      233, 235, 238, 75)),
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                    top: 11.0,
-                                                    left: 8.0,
-                                                  ),
-                                                  child: Text(
-                                                      selectbook!.id.toString(),
-                                                      textAlign:
-                                                          TextAlign.center),
+                                            for(int x=0; x<selectedExemplares.length; x++)
+                                              TableRow(
+                                                decoration: BoxDecoration(
+                                                  color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1)
                                                 ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                    top: 11.0,
-                                                    left: 8.0,
-                                                  ),
-                                                  child: Text(
-                                                      selectbook!.titulo,
-                                                      textAlign:
-                                                          TextAlign.left),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                    top: 11.0,
-                                                    left: 8.0,
-                                                  ),
-                                                  child: Text(
-                                                      DateFormat('dd/MM/yyyy')
-                                                          .format(selectbook!
-                                                              .anoPublicacao),
-                                                      textAlign:
-                                                          TextAlign.center),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                    top: 11.0,
-                                                    left: 8.0,
-                                                  ),
-                                                  child: Text(
-                                                      selectbook!.editora,
-                                                      textAlign:
-                                                          TextAlign.center),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                    top: 11.0,
-                                                    left: 8.0,
-                                                  ),
-                                                  child: Text(
-                                                      selectbook!.cativo
-                                                          ? 'Sim'
-                                                          : 'Não',
-                                                      textAlign:
-                                                          TextAlign.center),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      vertical: 6,
-                                                      horizontal: 10),
-                                                  child: TextButton(
-                                                    style: TextButton.styleFrom(
-                                                      backgroundColor:
-                                                          Colors.green[400],
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5)),
-                                                    ),
-                                                    onPressed: () {
-                                                      showLivrosEmprestados =
-                                                          true;
-                                                      getDate();
-                                                      setState(() {
-                                                        users[users.indexOf(
-                                                                selectUser!)]
-                                                            .livrosEmprestados
-                                                            .add(EmprestimosModel(
-                                                                selectbook!.id
-                                                                    .toString(),
-                                                                selectbook!
-                                                                    .titulo,
-                                                                dataEmprestimo,
-                                                                dataDevolucao));
-                                                      });
-                                                      msgConfirm(
-                                                          context,
-                                                          'Empréstimo',
-                                                          selectUser!
-                                                              .livrosEmprestados
-                                                              .last);
-                                                    },
-                                                    child: const Text(
-                                                        'Emprestar',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 12),
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    child: Text(
+                                                        selectedExemplares[x].id.toString(),
                                                         textAlign:
-                                                            TextAlign.center),
+                                                            TextAlign.center,
+                                                            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                        ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    child: Text(
+                                                        selectedExemplares[x].titulo,
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                        ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    child: Text(
+                                                        DateFormat('dd/MM/yyyy')
+                                                            .format(selectedExemplares[x]
+                                                                .anoPublicacao),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                        ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    child: Text(
+                                                        selectedExemplares[x].editora,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                            ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    child: Text(
+                                                        selectedExemplares[x].cativo
+                                                            ? 'Sim'
+                                                            : 'Não',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)    
+                                                        ),
+                                                  ),
+                                                  // Padding(
+                                                  //   padding: const EdgeInsets
+                                                  //       .symmetric(
+                                                  //       vertical: 6,
+                                                  //       horizontal: 10),
+                                                  //   child: TextButton(
+                                                  //     style: TextButton.styleFrom(
+                                                  //       backgroundColor:
+                                                  //           Colors.green[400],
+                                                  //       shape:
+                                                  //           RoundedRectangleBorder(
+                                                  //               borderRadius:
+                                                  //                   BorderRadius
+                                                  //                       .circular(
+                                                  //                           5)),
+                                                  //     ),
+                                                  //     onPressed: () {
+                                                  //       showLivrosEmprestados =
+                                                  //           true;
+                                                  //       getDate();
+                                                  //       setState(() {
+                                                  //         users[users.indexOf(
+                                                  //                 selectUser!)]
+                                                  //             .livrosEmprestados
+                                                  //             .add(EmprestimosModel(
+                                                  //                 selectbook!.id
+                                                  //                     .toString(),
+                                                  //                 selectbook!
+                                                  //                     .titulo,
+                                                  //                 dataEmprestimo,
+                                                  //                 dataDevolucao));
+                                                  //       });
+                                                  //       msgConfirm(
+                                                  //           context,
+                                                  //           'Empréstimo',
+                                                  //           selectUser!
+                                                  //               .livrosEmprestados
+                                                  //               .last);
+                                                  //     },
+                                                  //     child: const Text(
+                                                  //         'Emprestar',
+                                                  //         style: TextStyle(
+                                                  //             color: Colors.white,
+                                                  //             fontSize: 12),
+                                                  //         textAlign:
+                                                  //             TextAlign.center),
+                                                  //   ),
+                                                  // ),
+                                                ],
+                                              ),
+                                          ],  
                                         ),
                                       ),
                                     ],

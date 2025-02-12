@@ -31,6 +31,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   late UsuarioProvider providerUsers;
   late String dataDevolucao;
   late String dataEmprestimo;
+  late List<Exemplar> exemplaresSelecionadosEmprestimo =[];
 
   late List<Usuario> users;
   late List<Exemplar> exemplares;
@@ -106,6 +107,21 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
           );
         } catch (e) {
           selectbook = null;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text(
+                "Exemplar não encontrado!",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold
+                  ),
+                  textAlign: TextAlign.center,
+              ),
+              duration: Duration(seconds: 2),
+            )
+          );
         }
         
         if(selectbook!=null){
@@ -113,9 +129,9 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
             msgConfirm(selectbook!);
           }else{
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Colors.red,
-                content: Text(
+              const SnackBar(
+                backgroundColor: Colors.orange,
+                content:  Text(
                   'Exemplar já adicionado!',
                   style: TextStyle(
                     color: Colors.white,
@@ -265,7 +281,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                 onPressed: (){
                   Navigator.of(context).pop();
                 }, 
-                child: Text(
+                child: const Text(
                   'Cancelar',
                   style: TextStyle(
                    fontSize: 15.5
@@ -290,7 +306,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                 });
                 Navigator.of(context).pop();  
               }, 
-              child: Text(
+              child: const Text(
                 'Selecionar',
                 style: TextStyle(
                   fontSize: 15.5   
@@ -1120,15 +1136,94 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                               ),
                               const SizedBox(height: 40),
                               if (showBooks)
-                                if (selectbook == null)
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('Nenhum exemplar encontrado',
-                                        style: TextStyle(fontSize: 16)),
-                                  )
-                                else
+                                if(selectedExemplares.isNotEmpty)
                                   Column(
                                     children: [
+                                          SizedBox(
+                                            width: 1150,
+                                            child: Row(
+                                              children: [
+                                                ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                    padding: EdgeInsets.symmetric(
+                                                      vertical: 14,
+                                                      horizontal: 15
+                                                    ),
+                                                    foregroundColor: Colors.white,
+                                                    backgroundColor: Colors.green[400],
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(8)
+                                                    )
+                                                  ),
+                                                  onPressed: (){
+                                                    for (Exemplar exemplar in selectedExemplares){
+                                                      if(exemplar.checkbox == true){
+                                                        exemplaresSelecionadosEmprestimo.add(exemplar);
+                                                      }
+                                                    }
+                                                  }, 
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.outbox,
+                                                        color: Colors.white,
+                                                        size: 23,
+                                                      ),
+                                                      SizedBox(width: 5,),
+                                                      Text(
+                                                        'Emprestar',
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.w400
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                ),
+                                                SizedBox(width: 15,),
+                                                ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                    padding: EdgeInsets.symmetric(
+                                                      vertical: 14,
+                                                      horizontal: 20
+                                                    ),
+                                                    foregroundColor: Colors.white,
+                                                    backgroundColor: Colors.red[400],
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(8)
+                                                    )
+                                                  ),
+                                                  onPressed: (){
+                                                    for(Exemplar exemplar in selectedExemplares){
+                                                      if(exemplar.checkbox == true){
+                                                        setState(() {
+                                                          selectedExemplares.remove(exemplar);
+                                                        });
+                                                      }
+                                                    }
+                                                  }, 
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.delete,
+                                                        color: Colors.white,
+                                                        size: 23,
+                                                      ),
+                                                      SizedBox(width: 5,),
+                                                      Text(
+                                                        'Limpar',
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.w400
+                                                        ),
+                                                      )
+                                                    ],
+                                                  )
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                      SizedBox(height: 30,),
                                       SizedBox(
                                         width: 1150,
                                         child: Table(
@@ -1136,11 +1231,12 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                             color:const Color.fromARGB(215, 200, 200, 200)
                                           ),
                                           columnWidths: const {
-                                            0: FlexColumnWidth(0.08),
-                                            1: FlexColumnWidth(0.25),
-                                            2: FlexColumnWidth(0.12),
-                                            3: FlexColumnWidth(0.14),
-                                            4: FlexColumnWidth(0.10),
+                                            0:FlexColumnWidth(0.05),
+                                            1: FlexColumnWidth(0.08),
+                                            2: FlexColumnWidth(0.25),
+                                            3: FlexColumnWidth(0.12),
+                                            4: FlexColumnWidth(0.14),
+                                            5: FlexColumnWidth(0.10),
                                           },
                                           children: [
                                             const TableRow(
@@ -1148,6 +1244,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                 color: Color.fromARGB(255, 44, 62, 80)
                                               ),
                                               children: [
+                                                SizedBox.shrink(),
                                                 Padding(
                                                   padding: EdgeInsets.all(8.0),
                                                   child: Text(
@@ -1192,12 +1289,24 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                 ),
                                               ],
                                             ),
-                                            for(int x=0; x<selectedExemplares.length; x++)
+                                            for(int x=0; x < selectedExemplares.length; x++)
+                                              
                                               TableRow(
                                                 decoration: BoxDecoration(
                                                   color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1)
                                                 ),
                                                 children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Checkbox(
+                                                      value: selectedExemplares[x].checkbox, 
+                                                      onChanged: (value){
+                                                        setState(() {
+                                                          selectedExemplares[x].checkbox = value!;
+                                                        });
+                                                      }
+                                                    ),
+                                                  ),
                                                   Padding(
                                                     padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
                                                     child: Text(

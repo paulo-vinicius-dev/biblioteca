@@ -1,5 +1,6 @@
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/services/livro_service.dart';
+import 'package:biblioteca/data/models/autor_model.dart';
 import 'package:flutter/foundation.dart';
 
 class LivroProvider extends ChangeNotifier {
@@ -7,6 +8,7 @@ class LivroProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   List<Livro> _livros = [];
+  List<LivroEnvio> _livrosEnvio = [];
 
   final num idDaSessao;
   final String usuarioLogado;
@@ -55,7 +57,7 @@ class LivroProvider extends ChangeNotifier {
   }
 
   // Adicionar um novo livro
-  Future<bool> addLivro(Livro livro) async {
+  Future<bool> addLivro(LivroEnvio livro, List<String> autores, List<String> categorias) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -65,8 +67,8 @@ class LivroProvider extends ChangeNotifier {
         throw Exception("Livro com ISBN ${livro.isbn} já existe.");
       }
 
-      await _livroService.addLivro(idDaSessao, usuarioLogado, livro);
-      _livros.add(livro);
+      await _livroService.addLivro(idDaSessao, usuarioLogado, livro, autores, categorias);
+      _livrosEnvio.add(livro);
       return true;
     } catch (e) {
       _error = "Erro ao inserir novo Livro:\n$e";
@@ -78,19 +80,19 @@ class LivroProvider extends ChangeNotifier {
   }
 
   // Editar um livro existente
-  Future<void> editLivro(Livro livro) async {
+  Future<void> editLivro(LivroEnvio livro) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final index = _livros.indexWhere((l) => l.isbn == livro.isbn);
+      final index = _livrosEnvio.indexWhere((l) => l.isbn == livro.isbn);
       if (index == -1) {
         throw Exception("Livro com ISBN ${livro.isbn} não encontrado.");
       }
 
       await _livroService.alterLivro(livro);
-      _livros[index] = livro;
+      _livrosEnvio[index] = livro;
     } catch (e) {
       _error = "Erro ao alterar o Livro:\n$e";
     } finally {

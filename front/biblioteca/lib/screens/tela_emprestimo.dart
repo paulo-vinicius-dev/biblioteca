@@ -169,7 +169,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     return showDialog(
       context: context, 
       builder: (context)=> AlertDialog(
-        title: Text(
+        title: const Text(
           'Confirmar seleção de exemplar',
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -304,32 +304,35 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                   ),
                 )
              ),
-
-             SizedBox(width: 20),
-
-             TextButton(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.all(11),
-                backgroundColor: Colors.green[400],
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)
+             if(exemplar.statusCodigo == 1)
+                Row(
+                  children: [
+                    SizedBox(width: 20),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.all(11),
+                        backgroundColor: Colors.green[400],
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)
+                        )
+                      ),
+                      onPressed: (){
+                        setState(() {
+                          selectedBoxExemplar.add(exemplar);
+                        });
+                        Navigator.of(context).pop();  
+                      }, 
+                      child: const Text(
+                        'Selecionar',
+                        style: TextStyle(
+                          fontSize: 15.5   
+                        )
+                      )
+                    )
+                  ],
                 )
-              ),
-              onPressed: (){
-                setState(() {
-                  selectedBoxExemplar.add(exemplar);
-                });
-                Navigator.of(context).pop();  
-              }, 
-              child: const Text(
-                'Selecionar',
-                style: TextStyle(
-                  fontSize: 15.5   
-                )
-              )
-            )
-          ],
+            ],
           )
         ],
       )
@@ -349,184 +352,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     final novaData = data.add(const Duration(days: 7));
     return formato.format(novaData);
   }
-
-  // Future<void> msgConfirm(
-  //     BuildContext context, String msg, EmprestimosModel livro) {
-  //   return showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return Dialog(
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(15),
-  //         ),
-  //         child: ClipRRect(
-  //           borderRadius: BorderRadius.circular(15),
-  //           child: Stack(
-  //             children: [
-  //               Container(
-  //                 width: 800,
-  //                 child: Column(
-  //                   mainAxisSize: MainAxisSize.min,
-  //                   children: [
-  //                     // Cabeçalho
-  //                     Container(
-  //                       padding: const EdgeInsets.symmetric(vertical: 10),
-  //                       width: double.infinity,
-  //                       color: const Color.fromRGBO(38, 42, 79, 1),
-  //                       child: Text(
-  //                         'Confirmação de $msg',
-  //                         textAlign: TextAlign.center,
-  //                         style: const TextStyle(
-  //                           fontSize: 18,
-  //                           fontWeight: FontWeight.bold,
-  //                           color: Colors.white,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     // Corpo do diálogo
-  //                     Padding(
-  //                       padding: const EdgeInsets.symmetric(
-  //                           horizontal: 15, vertical: 20),
-  //                       child: Column(
-  //                         children: [
-  //                           // Tabela de informações
-  //                           Table(
-  //                             columnWidths: const {
-  //                               0: FlexColumnWidth(0.08),
-  //                               1: FlexColumnWidth(0.25),
-  //                               2: FlexColumnWidth(0.20),
-  //                               3: FlexColumnWidth(0.20),
-  //                             },
-  //                             border: TableBorder.all(
-  //                               color: const Color.fromARGB(255, 213, 213, 213),
-  //                             ),
-  //                             children: [
-  //                               // Linha de Cabeçalho
-  //                               const TableRow(
-  //                                 decoration: BoxDecoration(
-  //                                   color: Color.fromARGB(255, 223, 223, 223),
-  //                                 ),
-  //                                 children: [
-  //                                   Padding(
-  //                                     padding: EdgeInsets.all(8.0),
-  //                                     child: Text(
-  //                                       'Código',
-  //                                       textAlign: TextAlign.center,
-  //                                       style: TextStyle(
-  //                                           fontWeight: FontWeight.bold),
-  //                                     ),
-  //                                   ),
-  //                                   Padding(
-  //                                     padding: EdgeInsets.all(8.0),
-  //                                     child: Text(
-  //                                       'Nome',
-  //                                       textAlign: TextAlign.left,
-  //                                       style: TextStyle(
-  //                                           fontWeight: FontWeight.bold),
-  //                                     ),
-  //                                   ),
-  //                                   Padding(
-  //                                     padding: EdgeInsets.all(8.0),
-  //                                     child: Text(
-  //                                       'Devolução Prevista',
-  //                                       textAlign: TextAlign.center,
-  //                                       style: TextStyle(
-  //                                           fontWeight: FontWeight.bold),
-  //                                     ),
-  //                                   ),
-  //                                   Padding(
-  //                                     padding: EdgeInsets.all(8.0),
-  //                                     child: Text(
-  //                                       'Situação',
-  //                                       textAlign: TextAlign.center,
-  //                                       style: TextStyle(
-  //                                           fontWeight: FontWeight.bold),
-  //                                     ),
-  //                                   ),
-  //                                 ],
-  //                               ),
-  //                               // Linha de Dados
-  //                               TableRow(
-  //                                 decoration: const BoxDecoration(
-  //                                   color: Color.fromARGB(255, 233, 235, 238),
-  //                                 ),
-  //                                 children: [
-  //                                   Padding(
-  //                                     padding: const EdgeInsets.all(8.0),
-  //                                     child: Text(
-  //                                       livro.codigo,
-  //                                       textAlign: TextAlign.center,
-  //                                     ),
-  //                                   ),
-  //                                   Padding(
-  //                                     padding: const EdgeInsets.all(8.0),
-  //                                     child: Text(
-  //                                       livro.nome,
-  //                                       textAlign: TextAlign.left,
-  //                                     ),
-  //                                   ),
-  //                                   Padding(
-  //                                     padding: const EdgeInsets.all(8.0),
-  //                                     child: Text(
-  //                                       livro.dataDevolucao,
-  //                                       textAlign: TextAlign.center,
-  //                                     ),
-  //                                   ),
-  //                                   Padding(
-  //                                     padding: const EdgeInsets.all(8.0),
-  //                                     child: Text(
-  //                                       '$msg Realizado!',
-  //                                       textAlign: TextAlign.center,
-  //                                       style: const TextStyle(
-  //                                         fontWeight: FontWeight.bold,
-  //                                         color: Colors.green,
-  //                                       ),
-  //                                     ),
-  //                                   ),
-  //                                 ],
-  //                               ),
-  //                             ],
-  //                           ),
-  //                           const SizedBox(height: 20),
-  //                           // Botão de Confirmação
-  //                           ElevatedButton(
-  //                             style: ElevatedButton.styleFrom(
-  //                               backgroundColor: Colors.green[400],
-  //                               shape: RoundedRectangleBorder(
-  //                                 borderRadius: BorderRadius.circular(5),
-  //                               ),
-  //                             ),
-  //                             onPressed: () {
-  //                               Navigator.of(context).pop(); // Fecha o diálogo
-  //                             },
-  //                             child: const Text(
-  //                               'Confirmar',
-  //                               style: TextStyle(color: Colors.white),
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // Botão Fechar
-  //               Positioned(
-  //                 right: 0,
-  //                 child: IconButton(
-  //                   icon: const Icon(Icons.close, color: Colors.red),
-  //                   onPressed: () {
-  //                     Navigator.of(context).pop(); // Fecha o diálogo
-  //                   },
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -985,7 +810,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                             ),
                                             children: [
                                               Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
+                                                padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
                                                 child: Text(
                                                     selectUser!
                                                         .livrosEmprestados[x]
@@ -996,7 +821,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                     ),
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
+                                                padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
                                                 child: Text(
                                                     selectUser!
                                                         .livrosEmprestados[x]
@@ -1006,7 +831,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                     ),
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
+                                                padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
                                                 child: Text(
                                                     selectUser!
                                                         .livrosEmprestados[x]
@@ -1017,7 +842,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         ),
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
+                                                padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
                                                 child: Text(
                                                     selectUser!
                                                         .livrosEmprestados[x]
@@ -1112,7 +937,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                               children: [
                                                 ElevatedButton(
                                                   style: ElevatedButton.styleFrom(
-                                                    padding: EdgeInsets.symmetric(
+                                                    padding: const EdgeInsets.symmetric(
                                                       vertical: 14,
                                                       horizontal: 15
                                                     ),
@@ -1136,7 +961,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                       
                                                     });
                                                   }, 
-                                                  child: Row(
+                                                  child: const Row(
                                                     children: [
                                                       Icon(
                                                         Icons.outbox,
@@ -1154,10 +979,10 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                     ],
                                                   )
                                                 ),
-                                                SizedBox(width: 15,),
+                                                const SizedBox(width: 15,),
                                                 ElevatedButton(
                                                   style: ElevatedButton.styleFrom(
-                                                    padding: EdgeInsets.symmetric(
+                                                    padding:const  EdgeInsets.symmetric(
                                                       vertical: 14,
                                                       horizontal: 20
                                                     ),
@@ -1177,7 +1002,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
 
                                                     });
                                                   }, 
-                                                  child: Row(
+                                                  child: const Row(
                                                     children: [
                                                       Icon(
                                                         Icons.delete,
@@ -1331,52 +1156,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                             style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)    
                                                         ),
                                                   ),
-                                                  // Padding(
-                                                  //   padding: const EdgeInsets
-                                                  //       .symmetric(
-                                                  //       vertical: 6,
-                                                  //       horizontal: 10),
-                                                  //   child: TextButton(
-                                                  //     style: TextButton.styleFrom(
-                                                  //       backgroundColor:
-                                                  //           Colors.green[400],
-                                                  //       shape:
-                                                  //           RoundedRectangleBorder(
-                                                  //               borderRadius:
-                                                  //                   BorderRadius
-                                                  //                       .circular(
-                                                  //                           5)),
-                                                  //     ),
-                                                  //     onPressed: () {
-                                                  //       showLivrosEmprestados =
-                                                  //           true;
-                                                  //       getDate();
-                                                  //       setState(() {
-                                                  //         users[users.indexOf(selectUser!)].livrosEmprestados.add(
-                                                  //                  EmprestimosModel(
-                                                  //                 selectbook!.id
-                                                  //                     .toString(),
-                                                  //                 selectbook!
-                                                  //                     .titulo,
-                                                  //                 dataEmprestimo,
-                                                  //                 dataDevolucao));
-                                                  //       });
-                                                  //       msgConfirm(
-                                                  //           context,
-                                                  //           'Empréstimo',
-                                                  //           selectUser!
-                                                  //               .livrosEmprestados
-                                                  //               .last);
-                                                  //     },
-                                                  //     child: const Text(
-                                                  //         'Emprestar',
-                                                  //         style: TextStyle(
-                                                  //             color: Colors.white,
-                                                  //             fontSize: 12),
-                                                  //         textAlign:
-                                                  //             TextAlign.center),
-                                                  //   ),
-                                                  // ),
                                                 ],
                                               ),
                                           ],  

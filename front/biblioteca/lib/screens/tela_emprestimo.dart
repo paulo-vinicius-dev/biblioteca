@@ -36,7 +36,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   late List<Usuario> users;
   late List<Exemplar> exemplares;
 
-  late List<Exemplar> selectedExemplares = [];
+  late List<Exemplar> selectedBoxExemplar = [];
   @override
   void initState() {
     super.initState();
@@ -125,7 +125,23 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
         }
         
         if(selectbook!=null){
-          if(!selectedExemplares.contains(selectbook)){
+          if(selectUser!.livrosEmprestados.any((e)=> e.codigo == selectbook!.id.toString() )){
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(
+                  "Exemplar já emprestado para o aluno!",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                duration: Duration(seconds: 2),
+              )
+            );
+          }else if(!selectedBoxExemplar.contains(selectbook)){
             msgConfirm(selectbook!);
           }else{
             ScaffoldMessenger.of(context).showSnackBar(
@@ -302,7 +318,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
               ),
               onPressed: (){
                 setState(() {
-                  selectedExemplares.add(exemplar);
+                  selectedBoxExemplar.add(exemplar);
                 });
                 Navigator.of(context).pop();  
               }, 
@@ -530,7 +546,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                 Text("Pesquisa De Aluno",
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold, 
-                        fontSize: 28)
+                        fontSize: 26)
                     ),
                 const SizedBox(height: 40),
                 Row(
@@ -747,6 +763,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                           SizedBox(
                             width: 1150,
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
                                   width: double.infinity,
@@ -898,167 +915,117 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 30),
-                                if (selectUser != null &&
-                                    selectUser!.livrosEmprestados.isNotEmpty)
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 6.5),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: const Color.fromARGB(
-                                                97, 104, 104, 104)),
-                                        color: const Color.fromARGB(
-                                            255, 214, 214, 214)),
-                                    child: Text(
-                                      "Livros Emprestados",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelMedium!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
+                                if (selectUser != null && selectUser!.livrosEmprestados.isNotEmpty)
+                                  const SizedBox(height: 60),
+                                if (selectUser != null && selectUser!.livrosEmprestados.isNotEmpty)
+                                  Padding(
+                                          padding: const EdgeInsets.only(left: 18),
+                                          child: Text(
+                                            "Exemplares Emprestados",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelMedium!
+                                                .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20.3,
+                                                  color: Colors.black,
+                                                ),
+                                            textAlign: TextAlign.left,
                                           ),
-                                      textAlign: TextAlign.center,
-                                    ),
                                   ),
-                                if (selectUser != null &&
-                                    selectUser!.livrosEmprestados.isNotEmpty)
+                                if (selectUser != null && selectUser!.livrosEmprestados.isNotEmpty)
+                                  Divider(thickness: 2, color: Colors.grey[400]),
+                                  SizedBox(height: 10),
+                                if (selectUser != null && selectUser!.livrosEmprestados.isNotEmpty)
                                   Table(
                                     columnWidths: const {
                                       0: FlexColumnWidth(0.08),
                                       1: FlexColumnWidth(0.26),
                                       2: FlexColumnWidth(0.16),
                                       3: FlexColumnWidth(0.16),
-                                      4: FlexColumnWidth(0.15),
                                     },
                                     border: TableBorder.all(
-                                        color: const Color.fromARGB(
-                                            97, 104, 104, 104)),
+                                      color: const Color.fromARGB(215, 200, 200, 200),
+                                    ),
                                     children: [
                                       const TableRow(
                                           decoration: BoxDecoration(
-                                              color: Color.fromARGB(
-                                                  255, 214, 214, 214)),
+                                            color: Color.fromARGB(255, 44, 62, 80),
+                                          ),
                                           children: [
                                             Padding(
                                               padding: EdgeInsets.all(8.0),
-                                              child: Text('Codigo',
+                                              child: Text('Tombamento',
                                                   textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                                             ),
                                             Padding(
                                               padding: EdgeInsets.all(7.0),
                                               child: Text('Nome',
                                                   textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                                             ),
                                             Padding(
                                               padding: EdgeInsets.all(7.0),
                                               child: Text('Data de Empréstimo',
                                                   textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                                             ),
                                             Padding(
                                               padding: EdgeInsets.all(7.0),
                                               child: Text('Data de Devolução',
                                                   textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
                                             ),
-                                            SizedBox.shrink()
                                           ]),
-                                      for (int x = 0;
-                                          x <
-                                              selectUser!
-                                                  .livrosEmprestados.length;
-                                          x++)
+                                      for (int x = 0; x <selectUser!.livrosEmprestados.length; x++)
                                         TableRow(
-                                            decoration: const BoxDecoration(
-                                                color: Color.fromRGBO(
-                                                    233, 235, 238, 75)),
+                                            decoration: BoxDecoration(
+                                              color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1),
+                                            ),
                                             children: [
                                               Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 11.0,
-                                                  left: 8.0,
-                                                ),
+                                                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
                                                 child: Text(
                                                     selectUser!
                                                         .livrosEmprestados[x]
                                                         .codigo,
                                                     textAlign:
-                                                        TextAlign.center),
+                                                        TextAlign.center,
+                                                    style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
+                                                    ),
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 11.0,
-                                                  left: 8.0,
-                                                ),
+                                                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
                                                 child: Text(
                                                     selectUser!
                                                         .livrosEmprestados[x]
                                                         .nome,
-                                                    textAlign: TextAlign.left),
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
+                                                    ),
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 11.0,
-                                                  left: 8.0,
-                                                ),
+                                                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
                                                 child: Text(
                                                     selectUser!
                                                         .livrosEmprestados[x]
                                                         .dataEmprestimo,
                                                     textAlign:
-                                                        TextAlign.center),
+                                                        TextAlign.center,
+                                                        style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
+                                                        ),
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 11.0,
-                                                  left: 8.0,
-                                                ),
+                                                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
                                                 child: Text(
                                                     selectUser!
                                                         .livrosEmprestados[x]
                                                         .dataDevolucao,
                                                     textAlign:
-                                                        TextAlign.center),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 6,
-                                                        horizontal: 10),
-                                                child: TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.orange[400],
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5)),
-                                                  ),
-                                                  onPressed: () {
-                                                    
-                                                  },
-                                                  child: const Text('Renovar',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12),
-                                                      textAlign:
-                                                          TextAlign.center),
-                                                ),
+                                                        TextAlign.center,
+                                                        style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
+                                                        ),
                                               ),
                                             ]),
                                     ],
@@ -1077,7 +1044,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                       .headlineMedium
                                       ?.copyWith(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 22)),
+                                          fontSize: 26)),
                               const SizedBox(height: 40),
                               Row(
                                 children: [
@@ -1136,7 +1103,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                               ),
                               const SizedBox(height: 40),
                               if (showBooks)
-                                if(selectedExemplares.isNotEmpty)
+                                if(selectedBoxExemplar.isNotEmpty)
                                   Column(
                                     children: [
                                           SizedBox(
@@ -1156,11 +1123,18 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                     )
                                                   ),
                                                   onPressed: (){
-                                                    for (Exemplar exemplar in selectedExemplares){
+                                                    getDate();
+                                                    showLivrosEmprestados;
+                                                    for (Exemplar exemplar in List.from(selectedBoxExemplar)){
                                                       if(exemplar.checkbox == true){
                                                         exemplaresSelecionadosEmprestimo.add(exemplar);
+                                                        selectUser!.livrosEmprestados.add(EmprestimosModel(exemplar.id.toString(), exemplar.titulo, dataEmprestimo, dataDevolucao));
+                                                        selectedBoxExemplar.remove(exemplar);
                                                       }
                                                     }
+                                                    setState(() {
+                                                      
+                                                    });
                                                   }, 
                                                   child: Row(
                                                     children: [
@@ -1194,13 +1168,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                     )
                                                   ),
                                                   onPressed: (){
-                                                    for(Exemplar exemplar in selectedExemplares){
+                                                    for(Exemplar exemplar in List.from(selectedBoxExemplar)){
                                                       if(exemplar.checkbox == true){
-                                                        setState(() {
-                                                          selectedExemplares.remove(exemplar);
-                                                        });
+                                                        selectedBoxExemplar.remove(exemplar);
                                                       }
                                                     }
+                                                    setState(() {
+
+                                                    });
                                                   }, 
                                                   child: Row(
                                                     children: [
@@ -1289,7 +1264,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                 ),
                                               ],
                                             ),
-                                            for(int x=0; x < selectedExemplares.length; x++)
+                                            for(int x=0; x < selectedBoxExemplar.length; x++)
                                               
                                               TableRow(
                                                 decoration: BoxDecoration(
@@ -1297,39 +1272,39 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                 ),
                                                 children: [
                                                   Padding(
-                                                    padding: const EdgeInsets.all(8.0),
+                                                    padding: const EdgeInsets.all(8),
                                                     child: Checkbox(
-                                                      value: selectedExemplares[x].checkbox, 
+                                                      value: selectedBoxExemplar[x].checkbox, 
                                                       onChanged: (value){
                                                         setState(() {
-                                                          selectedExemplares[x].checkbox = value!;
+                                                          selectedBoxExemplar[x].checkbox = value!;
                                                         });
                                                       }
                                                     ),
                                                   ),
                                                   Padding(
-                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    padding: const EdgeInsets.only(top:13, bottom: 9, left:8, right:8),
                                                     child: Text(
-                                                        selectedExemplares[x].id.toString(),
+                                                        selectedBoxExemplar[x].id.toString(),
                                                         textAlign:
                                                             TextAlign.center,
                                                             style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
                                                         ),
                                                   ),
                                                   Padding(
-                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    padding: const EdgeInsets.only(top:13, bottom: 9, left:8, right:8),
                                                     child: Text(
-                                                        selectedExemplares[x].titulo,
+                                                        selectedBoxExemplar[x].titulo,
                                                         textAlign:
                                                             TextAlign.left,
                                                             style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
                                                         ),
                                                   ),
                                                   Padding(
-                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    padding: const EdgeInsets.only(top:13, bottom: 9, left:8, right:8),
                                                     child: Text(
                                                         DateFormat('dd/MM/yyyy')
-                                                            .format(selectedExemplares[x]
+                                                            .format(selectedBoxExemplar[x]
                                                                 .anoPublicacao),
                                                         textAlign:
                                                             TextAlign.center,
@@ -1337,18 +1312,18 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         ),
                                                   ),
                                                   Padding(
-                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    padding: const EdgeInsets.only(top:13, bottom: 9, left:8, right:8),
                                                     child: Text(
-                                                        selectedExemplares[x].editora,
+                                                        selectedBoxExemplar[x].editora,
                                                         textAlign:
                                                             TextAlign.center,
                                                             style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
                                                             ),
                                                   ),
                                                   Padding(
-                                                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                                                    padding: const EdgeInsets.only(top:13, bottom: 9, left:8, right:8),
                                                     child: Text(
-                                                        selectedExemplares[x].cativo
+                                                        selectedBoxExemplar[x].cativo
                                                             ? 'Sim'
                                                             : 'Não',
                                                         textAlign:
@@ -1377,10 +1352,8 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                   //           true;
                                                   //       getDate();
                                                   //       setState(() {
-                                                  //         users[users.indexOf(
-                                                  //                 selectUser!)]
-                                                  //             .livrosEmprestados
-                                                  //             .add(EmprestimosModel(
+                                                  //         users[users.indexOf(selectUser!)].livrosEmprestados.add(
+                                                  //                  EmprestimosModel(
                                                   //                 selectbook!.id
                                                   //                     .toString(),
                                                   //                 selectbook!

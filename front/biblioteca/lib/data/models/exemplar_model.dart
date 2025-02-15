@@ -20,6 +20,7 @@ class Exemplar {
   final int idPais;
   final String nomePais;
   final String siglaPais;
+  bool checkbox = true; // usado somente para controlar a seleção do exemplar no empréstimo
 
   Exemplar({
     required this.id,
@@ -35,6 +36,8 @@ class Exemplar {
     required this.idPais,
     required this.nomePais,
     required this.siglaPais,
+
+
   });
 
   String get getStatus => statusCodigo == 1

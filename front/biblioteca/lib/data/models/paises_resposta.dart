@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:biblioteca/data/models/paises_model.dart';
 
-PaisesAtingidos livrosAtingidosFromJson(String str) =>
+PaisesAtingidos paisesAtingidosFromJson(String str) =>
     PaisesAtingidos.fromJson(json.decode(str));
 
-String livrosAtingidosToJson(PaisesAtingidos data) =>
+String paisesAtingidosToJson(PaisesAtingidos data) =>
     json.encode(data.toJson());
 
 class PaisesAtingidos {
@@ -15,7 +15,7 @@ class PaisesAtingidos {
   factory PaisesAtingidos.fromJson(Map<String, dynamic> json) {
     return PaisesAtingidos(
       paisesAtingidos:
-          (json['paises'] as List).map((item) => Pais.fromJson(item)).toList(),
+          (json['Paises'] as List<dynamic>?)?.map((item) => Pais.fromJson(item as Map<String, dynamic>)).toList() ?? [],
     );
   }
 

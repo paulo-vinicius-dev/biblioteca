@@ -15,7 +15,7 @@ class LivroEnvio {
   int idDoLivro;
   String isbn;
   String titulo;
-  DateTime anoPublicacao;
+  String anoPublicacao;
   String editora;
   int pais;
 
@@ -31,7 +31,7 @@ class LivroEnvio {
         idDoLivro: json["IdDoLivro"],
         isbn: json["Isbn"],
         titulo: json["Titulo"],
-        anoPublicacao: DateTime.parse(json["AnoPublicacao"]),
+        anoPublicacao: json["AnoPublicacao"],
         editora: json["Editora"],
         pais: json["Pais"],
       );
@@ -40,8 +40,7 @@ class LivroEnvio {
         "IdDoLivro": idDoLivro,
         "Isbn": isbn,
         "Titulo": titulo,
-        "AnoPublicacao":
-            "${anoPublicacao.year.toString().padLeft(4, '0')}-${anoPublicacao.month.toString().padLeft(2, '0')}-${anoPublicacao.day.toString().padLeft(2, '0')}",
+        "AnoPublicacao": anoPublicacao,
         "Editora": editora,
         "Pais": pais,
       };

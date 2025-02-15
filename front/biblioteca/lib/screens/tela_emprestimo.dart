@@ -878,7 +878,9 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 100),
+                              const SizedBox(height: 50),
+                              const Divider(),
+                              const SizedBox(height: 50),
                               Text("Pesquisar Exemplar",
                                   style: Theme.of(context)
                                       .textTheme

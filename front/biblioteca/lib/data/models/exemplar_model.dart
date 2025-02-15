@@ -20,7 +20,7 @@ class Exemplar {
   final int idPais;
   final String nomePais;
   final String siglaPais;
-  bool checkbox = false; // usado somente para controlar a seleção do exemplar no empréstimo
+  bool checkbox = true; // usado somente para controlar a seleção do exemplar no empréstimo
 
   Exemplar({
     required this.id,

@@ -4,12 +4,14 @@ import 'package:biblioteca/data/services/isbn_service.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
+import 'package:biblioteca/data/models/paises_model.dart';
+import 'package:biblioteca/data/providers/paises_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 
 class FormBook extends StatefulWidget {
   const FormBook({super.key, this.livro});
-  final Livro? livro;
+  final LivroEnvio? livro;
 
   @override
   State<FormBook> createState() => _FormBookState();
@@ -34,9 +36,60 @@ class _FormBookState extends State<FormBook> {
     TextEditingController()
   ];
 
+  String? _paisSelecionado;
+  List<Pais> _paises = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print("chamada de load paises");
+      Provider.of<PaisesProvider>(context, listen: false)
+          .loadPaises()
+          .then((_) {
+          _carregarPaises();
+          setState(() {});
+      });
+      print(Provider.of<PaisesProvider>(context, listen: false).paises);
+    });
+    
+  }
+
+  Future<void> _carregarPaises() async {
+    try {
+      List<Pais> paisesDaApi = await buscarPaisesDaAPI();
+      print(paisesDaApi);
+      setState(() {
+        _paises = paisesDaApi;
+        if (widget.livro != null) {
+          _paisSelecionado = _paises
+              .firstWhere(
+                (pais) => pais.idDoPais == widget.livro!.pais,
+                orElse: () =>
+                    Pais(idDoPais: 1, nome: "Brasil", sigla: "BR", ativo: true),
+              )
+              .idDoPais
+              .toString();
+        }
+      });
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro ao carregar países: $e")),
+      );
+    }
+  }
+
+  Future<List<Pais>> buscarPaisesDaAPI() async {
+    List<Pais> paises =
+        Provider.of<PaisesProvider>(context, listen: false).paises;
+    print(paises);
+    return paises;
+  }
+
   void btnSalvar(context) async {
     LivroProvider provider = Provider.of<LivroProvider>(context, listen: false);
-    final Livro newLivro;
+    final LivroEnvio newLivro;
     String? mensagem = '';
 
     if (isModoEdicao()) {
@@ -45,8 +98,9 @@ class _FormBookState extends State<FormBook> {
       newLivro.titulo = _tituloController.text;
       newLivro.isbn = _isbnController.text;
       newLivro.editora = _editoraController.text;
-      newLivro.anoPublicacao = DateTime(int.parse(_anoPublicacaoController.text));
-      newLivro.pais = int.tryParse(_paisController.text) ?? 0;
+      newLivro.anoPublicacao =
+          DateTime(int.parse(_anoPublicacaoController.text));
+      newLivro.pais = int.parse(_paisSelecionado!);
 
       await provider.editLivro(newLivro);
 
@@ -54,15 +108,20 @@ class _FormBookState extends State<FormBook> {
           ? "Ocorreu um erro ao tentar alterar este registro, por favor confira os dados inseridos"
           : "Registro alterado com sucesso";
     } else {
-      newLivro = Livro(
-          idDoLivro: 0,
-          titulo: _tituloController.text,
-          isbn: _isbnController.text,
-          editora: _editoraController.text,
-          anoPublicacao: DateTime(int.parse(_anoPublicacaoController.text)),
-          pais: int.tryParse(_paisController.text) ?? 1);
+      newLivro = LivroEnvio(
+        idDoLivro: 0,
+        titulo: _tituloController.text,
+        isbn: _isbnController.text,
+        editora: _editoraController.text,
+        anoPublicacao: DateTime(int.parse(_anoPublicacaoController.text)),
+        pais: int.parse(_paisController.text),
+      );
 
-      await provider.addLivro(newLivro);
+      List<String> autores =
+          _authorsControllers.map((controller) => controller.text).toList();
+      List<String> categorias =
+          _categoriesControllers.map((controller) => controller.text).toList();
+      await provider.addLivro(newLivro, autores, categorias);
 
       if (provider.hasErrors) {
         mensagem = provider.error ?? "Erro ao salvar o livro.";
@@ -268,16 +327,27 @@ class _FormBookState extends State<FormBook> {
                       ),
                       const SizedBox(height: 20.0),
 
-                      // Quantidade de paginas
-                      TextFormField(
-                        controller: _paisController,
+                      // Pais
+                      DropdownButtonFormField<String>(
+                        value: _paisSelecionado,
+                        items: _paises.map((pais) {
+                          return DropdownMenuItem(
+                            value: pais.idDoPais.toString(),
+                            child: Text(pais.nome),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _paisSelecionado = value;
+                          });
+                        },
                         decoration: const InputDecoration(
-                          label: CampoObrigatorio(label: "Pais"),
+                          label: CampoObrigatorio(label: "País"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Preencha esse campo";
+                          if (value == null) {
+                            return "Selecione um país";
                           }
                           return null;
                         },
@@ -445,7 +515,6 @@ class _FormBookState extends State<FormBook> {
                               }
 
                               btnSalvar(context);
-
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context).primaryColor,

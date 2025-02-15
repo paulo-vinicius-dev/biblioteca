@@ -33,7 +33,7 @@ class BookTablePageState extends State<BookTablePage> {
   Widget build(BuildContext context) {
     LivroProvider livroProvider =
         Provider.of<LivroProvider>(context, listen: true);
-    if (livroProvider.isLoading) {   
+    if (livroProvider.isLoading) {
       while (livroProvider.isLoading) {}
       return const Center(child: CircularProgressIndicator());
     } else if (livroProvider.hasErrors) {

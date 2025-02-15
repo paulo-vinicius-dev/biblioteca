@@ -5,6 +5,7 @@ import 'package:biblioteca/data/providers/login_provider.dart';
 import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
+import 'package:biblioteca/data/providers/paises_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/pesquisar_livro.dart';
@@ -85,6 +86,12 @@ class Myapp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LoginProvider()),
         ChangeNotifierProvider(create: (context) => MenuState()),
         ChangeNotifierProvider(create: (context) => AutorProvider()),
+        ProxyProvider<AuthProvider, PaisesProvider>(
+          create: (_) => PaisesProvider(0, ''),
+          update: (_, authProvider, usuarioProvider) => PaisesProvider(
+              authProvider.idDaSessao, authProvider.usuarioLogado),
+          dispose: (_, usuarioProvider) => usuarioProvider.dispose(),
+        ),
         ProxyProvider<AuthProvider, UsuarioProvider>(
           create: (_) => UsuarioProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => UsuarioProvider(

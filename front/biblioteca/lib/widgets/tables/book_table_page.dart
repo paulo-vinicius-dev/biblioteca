@@ -133,7 +133,7 @@ class BookTablePageState extends State<BookTablePage> {
                 ),
                 Table(
                   border: TableBorder.all(
-                      color: const Color.fromARGB(255, 213, 213, 213)),
+                      color: const Color.fromARGB(215, 200, 200, 200)),
                   columnWidths: const {
                     0: FlexColumnWidth(0.40),
                     1: FlexColumnWidth(0.40),
@@ -144,72 +144,112 @@ class BookTablePageState extends State<BookTablePage> {
                   children: [
                     // Cabeçalho da tabela
                     const TableRow(
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 44, 62, 80),
+                      ),
                       children: [
                         Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text('Título',
                                 textAlign: TextAlign.left,
-                                style: TextStyle(fontWeight: FontWeight.bold))),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                    fontSize: 15))),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('ISBN',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Editora',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Data de Publicação',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                         ),
                       ],
                     ),
 
                     // Linhas da tabela
-                    for (var book in paginatedBooks)
+                    for (int x = 0; x < paginatedBooks.length; x++)
                       TableRow(
+                        decoration: BoxDecoration(
+                          color: x % 2 == 0
+                              ? Color.fromRGBO(233, 235, 238, 75)
+                              : Color.fromRGBO(255, 255, 255, 1),
+                        ),
                         children: [
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Text(book.titulo, textAlign: TextAlign.left),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(book.isbn, textAlign: TextAlign.left),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Text(book.editora, textAlign: TextAlign.left),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(book.anoPublicacao.year.toString(),
+                              child: Text(paginatedBooks[x].titulo,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 14.5),
                                   textAlign: TextAlign.left),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(paginatedBooks[x].isbn,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 14.5),
+                                  textAlign: TextAlign.left),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(paginatedBooks[x].editora,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 14.5)),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                  paginatedBooks[x]
+                                      .anoPublicacao
+                                      .year
+                                      .toString(),
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 14.5)),
                             ),
                           ),
                           Align(
@@ -278,7 +318,7 @@ class BookTablePageState extends State<BookTablePage> {
                                       try {
                                         Navigator.pushNamed(
                                             context, AppRoutes.exemplares,
-                                            arguments: book);
+                                            arguments: paginatedBooks[x]);
                                       } catch (e) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(

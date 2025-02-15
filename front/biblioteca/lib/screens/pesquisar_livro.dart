@@ -109,7 +109,6 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                     ),
                     const SizedBox(width: 30),
                     ElevatedButton(
-                      
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.only(
                           top: 16,
@@ -128,13 +127,13 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                           Icon(Icons.search, color: Colors.white,),
                           SizedBox(width: 3,),
                           Text(
-                         "Pesquisar",
-                         style: TextStyle(
-                           color: Colors.white,
-                           fontWeight: FontWeight.w600,
-                           fontSize: 16.5,
-                         ),
-                      ),
+                            "Pesquisar",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.5,
+                            ),
+                          ),
                         ],
                       )
                     ),
@@ -319,7 +318,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
+                                    gradient: const LinearGradient(
                                       colors: [
                                         Color.fromARGB(255, 218, 227, 238),
                                         Colors.white
@@ -548,7 +547,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                     ),
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].id.toString(),
                                           textAlign: TextAlign.center,
@@ -556,7 +555,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].titulo,
                                           textAlign: TextAlign.left,
@@ -579,7 +578,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                         child: Text(
                                           filteredExemplares[x].getEstado,
                                           textAlign: TextAlign.center,

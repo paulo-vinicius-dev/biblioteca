@@ -142,7 +142,13 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
               )
             );
           }else if(!selectedBoxExemplar.contains(selectbook)){
-            msgConfirm(selectbook!);
+            if(selectbook!.statusCodigo !=1){
+              msgConfirm(selectbook!);
+            }else{
+              setState(() {
+                selectedBoxExemplar.add(selectbook!);
+              });
+            }
           }else{
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -164,13 +170,12 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
       }
     });
   }
-
   Future<void> msgConfirm(Exemplar exemplar){
     return showDialog(
       context: context, 
       builder: (context)=> AlertDialog(
         title: const Text(
-          'Confirmar seleção de exemplar',
+          'Exemplar indisponível para empréstimo',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -387,7 +392,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                           controller: _searchController,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.search),
-                            labelText: "Insira os dados do aluno",
+                            labelText: "Insira o nome do aluno",
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20)),
                           ),
@@ -595,21 +600,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 6.5),
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color.fromARGB(255, 218, 227, 238),
-                                        Colors.white
-                                       ], 
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                    ),
+                                    color: Color.fromARGB(230,227, 242, 253),
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 8,
-                                        spreadRadius: 2,
-                                        offset: Offset(0, 4),
+                                        blurRadius: 4,
+                                        spreadRadius: 1,
+                                        offset: Offset(0, 2),
                                       ),
                                     ],
                                   ),
@@ -619,22 +617,28 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Padding(
-                                          padding: const EdgeInsets.only(left: 18),
-                                          child: Text(
-                                            "Usuário Selecionado",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelMedium!
-                                                .copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20.3,
-                                                  color: Colors.black,
-                                                ),
-                                            textAlign: TextAlign.center,
+                                          padding: const EdgeInsets.only(left: 4),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.person, color: Color.fromARGB(255,46, 125, 50), size: 26,),
+                                              SizedBox(width: 7,),
+                                              Text(
+                                                "Usuário Selecionado",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelMedium!
+                                                    .copyWith(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 21,
+                                                      color: Colors.black,
+                                                    ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                         Divider(thickness: 2, color: Colors.grey[400]),
-                                        SizedBox(height: 10,),
+                                        const SizedBox(height: 10,),
                                         Table(
                                           border: TableBorder.all(
                                             color: const Color.fromARGB(215, 200, 200, 200)
@@ -698,7 +702,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                   child: Text(
                                                         selectUser!.nome,
                                                         textAlign: TextAlign.left,
-                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.5)
                                                       ),
                                                 ),
                                                 Padding(
@@ -706,7 +710,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                   child: Text(
                                                         selectUser!.getTurma,
                                                         textAlign: TextAlign.center,
-                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.5)
                                                       ),
                                                 ),
                                                 Padding(
@@ -714,14 +718,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                   child: Text(
                                                         selectUser!.getTurno,
                                                         textAlign: TextAlign.center,
-                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.5)
                                                       ),
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                                                   child: Text(selectUser!.email,
                                                         textAlign: TextAlign.left,
-                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.5)
                                                       ),
                                                 ),
                                                 Padding(
@@ -729,7 +733,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                   child: Text(
                                                         selectUser!.getTipoDeUsuario,
                                                         textAlign: TextAlign.center,
-                                                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.5)
                                                       ),
                                                 ),
                                               ],
@@ -741,118 +745,130 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                   ),
                                 ),
                                 if (selectUser != null && selectUser!.livrosEmprestados.isNotEmpty)
-                                  const SizedBox(height: 60),
-                                if (selectUser != null && selectUser!.livrosEmprestados.isNotEmpty)
-                                  Padding(
-                                          padding: const EdgeInsets.only(left: 18),
-                                          child: Text(
-                                            "Exemplares Emprestados",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelMedium!
-                                                .copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20.3,
-                                                  color: Colors.black,
-                                                ),
-                                            textAlign: TextAlign.left,
-                                          ),
+                                  Column(
+                                    children: [
+                                      const SizedBox(height: 60),
+                                      Padding(
+                                              padding: const EdgeInsets.only(left: 4),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.library_books, color: Color.fromARGB(255,46, 125, 50), size: 25,),
+                                                  SizedBox(width: 7,),
+                                                  Text(
+                                                    "Exemplares Emprestados",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .labelMedium!
+                                                        .copyWith(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 20.3,
+                                                          color: Colors.black,
+                                                        ),
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                ],
+                                              ),
+                                      ),
+                                    ],
                                   ),
                                 if (selectUser != null && selectUser!.livrosEmprestados.isNotEmpty)
-                                  Divider(thickness: 2, color: Colors.grey[400]),
-                                  SizedBox(height: 10),
-                                if (selectUser != null && selectUser!.livrosEmprestados.isNotEmpty)
-                                  Table(
-                                    columnWidths: const {
-                                      0: FlexColumnWidth(0.08),
-                                      1: FlexColumnWidth(0.26),
-                                      2: FlexColumnWidth(0.16),
-                                      3: FlexColumnWidth(0.16),
-                                    },
-                                    border: TableBorder.all(
-                                      color: const Color.fromARGB(215, 200, 200, 200),
-                                    ),
+                                  Column(
                                     children: [
-                                      const TableRow(
-                                          decoration: BoxDecoration(
-                                            color: Color.fromARGB(255, 44, 62, 80),
-                                          ),
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('Tombamento',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(7.0),
-                                              child: Text('Nome',
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(7.0),
-                                              child: Text('Data de Empréstimo',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(7.0),
-                                              child: Text('Data de Devolução',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
-                                            ),
-                                          ]),
-                                      for (int x = 0; x <selectUser!.livrosEmprestados.length; x++)
-                                        TableRow(
-                                            decoration: BoxDecoration(
-                                              color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1),
-                                            ),
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
-                                                child: Text(
-                                                    selectUser!
-                                                        .livrosEmprestados[x]
-                                                        .codigo,
-                                                    textAlign:
-                                                        TextAlign.center,
-                                                    style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
-                                                    ),
+                                      Divider(thickness: 2, color: Colors.grey[400]),
+                                      SizedBox(height: 10),
+                                      Table(
+                                        columnWidths: const {
+                                          0: FlexColumnWidth(0.08),
+                                          1: FlexColumnWidth(0.26),
+                                          2: FlexColumnWidth(0.16),
+                                          3: FlexColumnWidth(0.16),
+                                        },
+                                        border: TableBorder.all(
+                                          color: const Color.fromARGB(215, 200, 200, 200),
+                                        ),
+                                        children: [
+                                          const TableRow(
+                                              decoration: BoxDecoration(
+                                                color: Color.fromARGB(255, 44, 62, 80),
                                               ),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
-                                                child: Text(
-                                                    selectUser!
-                                                        .livrosEmprestados[x]
-                                                        .nome,
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
-                                                    ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
-                                                child: Text(
-                                                    selectUser!
-                                                        .livrosEmprestados[x]
-                                                        .dataEmprestimo,
-                                                    textAlign:
-                                                        TextAlign.center,
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text('Tombamento',
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(7.0),
+                                                  child: Text('Nome',
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(7.0),
+                                                  child: Text('Data de Empréstimo',
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(7.0),
+                                                  child: Text('Data de Devolução',
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 15)),
+                                                ),
+                                              ]),
+                                          for (int x = 0; x <selectUser!.livrosEmprestados.length; x++)
+                                            TableRow(
+                                                decoration: BoxDecoration(
+                                                  color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1),
+                                                ),
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
+                                                    child: Text(
+                                                        selectUser!
+                                                            .livrosEmprestados[x]
+                                                            .codigo,
+                                                        textAlign:
+                                                            TextAlign.center,
                                                         style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
                                                         ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
-                                                child: Text(
-                                                    selectUser!
-                                                        .livrosEmprestados[x]
-                                                        .dataDevolucao,
-                                                    textAlign:
-                                                        TextAlign.center,
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
+                                                    child: Text(
+                                                        selectUser!
+                                                            .livrosEmprestados[x]
+                                                            .nome,
+                                                        textAlign: TextAlign.left,
                                                         style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
                                                         ),
-                                              ),
-                                            ]),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
+                                                    child: Text(
+                                                        selectUser!
+                                                            .livrosEmprestados[x]
+                                                            .dataEmprestimo,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                            style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
+                                                            ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 9.4, horizontal: 8),
+                                                    child: Text(
+                                                        selectUser!
+                                                            .livrosEmprestados[x]
+                                                            .dataDevolucao,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                            style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14.5)
+                                                            ),
+                                                  ),
+                                                ]),
+                                        ],
+                                      ),
                                     ],
                                   ),
                               ],
@@ -862,7 +878,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 50),
+                              const SizedBox(height: 100),
                               Text("Pesquisar Exemplar",
                                   style: Theme.of(context)
                                       .textTheme
@@ -883,7 +899,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                         controller: _searchControllerBooks,
                                         decoration: InputDecoration(
                                           prefixIcon: const Icon(Icons.search),
-                                          labelText: "Insira os dados do livro",
+                                          labelText: "Insira o número do tombamento",
                                           border: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(20)),
@@ -1011,7 +1027,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                       ),
                                                       SizedBox(width: 5,),
                                                       Text(
-                                                        'Limpar',
+                                                        'Remover',
                                                         style: TextStyle(
                                                           fontSize: 16,
                                                           fontWeight: FontWeight.w400
@@ -1090,7 +1106,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                               ],
                                             ),
                                             for(int x=0; x < selectedBoxExemplar.length; x++)
-                                              
                                               TableRow(
                                                 decoration: BoxDecoration(
                                                   color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1)

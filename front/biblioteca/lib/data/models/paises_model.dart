@@ -9,7 +9,6 @@ List<Pais> listaDePaisesFromJson(String str) =>
 String listaDePaisesToJson(List<Pais> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-
 class Pais {
   int idDoPais;
   String nome;
@@ -25,19 +24,19 @@ class Pais {
 
   factory Pais.fromJson(Map<String, dynamic> json) {
     return Pais(
-      idDoPais: json['idDoPais'],
-      nome: json['nome'],
-      sigla: json['sigla'],
-      ativo: json['ativo'],
+      idDoPais: json['IdDoPais'],
+      nome: json['Nome'],
+      sigla: json['Sigla'],
+      ativo: json['Ativo'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'idDoPais': idDoPais,
-      'nome': nome,
-      'sigla': sigla,
-      'ativo': ativo,
+      'IdDoPais': idDoPais,
+      'Nome': nome,
+      'Sigla': sigla,
+      'Ativo': ativo,
     };
   }
 }

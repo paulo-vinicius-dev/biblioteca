@@ -47,12 +47,11 @@ class _FormBookState extends State<FormBook> {
       Provider.of<PaisesProvider>(context, listen: false)
           .loadPaises()
           .then((_) {
-          _carregarPaises();
-          setState(() {});
+        _carregarPaises();
+        setState(() {});
       });
       print(Provider.of<PaisesProvider>(context, listen: false).paises);
     });
-    
   }
 
   Future<void> _carregarPaises() async {
@@ -98,11 +97,10 @@ class _FormBookState extends State<FormBook> {
       newLivro.titulo = _tituloController.text;
       newLivro.isbn = _isbnController.text;
       newLivro.editora = _editoraController.text;
-      newLivro.anoPublicacao =
-          DateTime(int.parse(_anoPublicacaoController.text));
+      newLivro.anoPublicacao = _anoPublicacaoController.text;
       newLivro.pais = int.parse(_paisSelecionado!);
 
-      await provider.editLivro(newLivro);
+      await provider.editLivro(newLivro.toJson());
 
       mensagem = provider.hasErrors
           ? "Ocorreu um erro ao tentar alterar este registro, por favor confira os dados inseridos"
@@ -113,15 +111,23 @@ class _FormBookState extends State<FormBook> {
         titulo: _tituloController.text,
         isbn: _isbnController.text,
         editora: _editoraController.text,
-        anoPublicacao: DateTime(int.parse(_anoPublicacaoController.text)),
-        pais: int.parse(_paisController.text),
+        anoPublicacao: _anoPublicacaoController.text.toString(),
+        pais: int.parse(_paisSelecionado!),
       );
 
       List<String> autores =
           _authorsControllers.map((controller) => controller.text).toList();
       List<String> categorias =
           _categoriesControllers.map((controller) => controller.text).toList();
-      await provider.addLivro(newLivro, autores, categorias);
+
+      Map<String, dynamic> livroJson = newLivro.toJson();
+
+      livroJson.forEach((key, value) {
+        print('$key: $value (${value.runtimeType})');
+      });
+      print(
+          "Livro, autores e categorias tentando ser upados: $autores,$categorias");
+      await provider.addLivro(livroJson, autores, categorias);
 
       if (provider.hasErrors) {
         mensagem = provider.error ?? "Erro ao salvar o livro.";
@@ -180,7 +186,6 @@ class _FormBookState extends State<FormBook> {
           _paisController.text = (data['page_count'] ?? '').toString();
 
           _authorsControllers.clear();
-          _authorsControllers.add(TextEditingController());
           if (data['authors'] != null) {
             for (String autor in data['authors']) {
               _authorsControllers.add(TextEditingController(text: autor));

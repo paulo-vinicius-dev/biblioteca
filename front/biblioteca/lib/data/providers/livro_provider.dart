@@ -8,7 +8,7 @@ class LivroProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   List<Livro> _livros = [];
-  List<LivroEnvio> _livrosEnvio = [];
+  List<Map<String,dynamic>> _livrosEnvio = [];
 
   final num idDaSessao;
   final String usuarioLogado;
@@ -57,14 +57,14 @@ class LivroProvider extends ChangeNotifier {
   }
 
   // Adicionar um novo livro
-  Future<bool> addLivro(LivroEnvio livro, List<String> autores, List<String> categorias) async {
+  Future<bool> addLivro(Map<String, dynamic> livro, List<String> autores, List<String> categorias) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      if (_livros.any((l) => l.isbn == livro.isbn)) {
-        throw Exception("Livro com ISBN ${livro.isbn} já existe.");
+      if (_livros.any((l) => l.isbn == livro["Isbn"])) {
+        throw Exception("Livro com ISBN ${livro["Isbn"]} já existe.");
       }
 
       await _livroService.addLivro(idDaSessao, usuarioLogado, livro, autores, categorias);
@@ -80,15 +80,15 @@ class LivroProvider extends ChangeNotifier {
   }
 
   // Editar um livro existente
-  Future<void> editLivro(LivroEnvio livro) async {
+  Future<void> editLivro(Map<String,dynamic> livro) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final index = _livrosEnvio.indexWhere((l) => l.isbn == livro.isbn);
+      final index = _livrosEnvio.indexWhere((l) => l["Isbn"] == livro["Isbn"]);
       if (index == -1) {
-        throw Exception("Livro com ISBN ${livro.isbn} não encontrado.");
+        throw Exception("Livro com ISBN ${livro["Isbn"]} não encontrado.");
       }
 
       await _livroService.alterLivro(livro);

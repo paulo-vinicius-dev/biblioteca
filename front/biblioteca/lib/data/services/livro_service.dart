@@ -53,8 +53,22 @@ class LivroService {
   }
 
   // Criar novo Livro
-  Future<void> addLivro(num idDaSessao, String loginDoUsuarioRequerente, LivroEnvio livro, List<String> autores, List<String> categorias) async {
-    final Map<String, dynamic> body = livro.toJson();
+  Future<void> addLivro(num idDaSessao, String loginDoUsuarioCriador,
+      Map<String, dynamic> livro, List<String> autores, List<String> categorias) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuarioRequerente": loginDoUsuarioCriador,
+      "Id": livro["IdDoLivro"],
+      "Isbn": livro["Isbn"],
+      "Titulo": livro["Titulo"],
+      "AnoPublicacao": livro["AnoPublicacao"].toString(),
+      "Editora": livro["Editora"],
+      "Pais": livro["Pais"],
+      "NomeDosAutores": autores,
+      "NomeDasCategorias": categorias,
+    };
+
+    print("Tentando enviar este body:\n ${jsonEncode(body)}");
 
     final response = await _api.requisicao(
       apiRoute,
@@ -68,8 +82,8 @@ class LivroService {
   }
 
   // Alterar Livro
-  Future<void> alterLivro(LivroEnvio livro) async {
-    final Map<String, dynamic> body = livro.toJson();
+  Future<void> alterLivro(Map<String,dynamic> livro) async {
+    final Map<String, dynamic> body = livro;
 
     final response = await _api.requisicao(
       apiRoute,

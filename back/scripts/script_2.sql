@@ -259,7 +259,7 @@ INSERT INTO livro (isbn, titulo, ano_publicacao, editora, pais) VALUES
 ('9780261103283', 'O Senhor dos Anéis', '1954-07-29', 'Allen & Unwin', 3);
 
 
-- Tabela livro_autor
+-- Tabela livro_autor
 INSERT INTO livro_autor (id_livro, id_autor) VALUES
 (1, 1),  -- Dom Casmurro por Machado de Assis
 (2, 2),  -- Harry Potter por J.K. Rowling
@@ -417,7 +417,8 @@ INSERT INTO turma (id_turma, descricao, serie, turno) VALUES
 INSERT INTO usuario (login, cpf, nome, email, telefone, data_nascimento, senha, permissoes) VALUES
 ('admin','21747274046', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3',  2047), -- senhaAdmin
 ('biblio','76784092066', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', '76cc71b64516994b050bdb5a79c50865654e551ae126492ee20d08047e841a86',  2047), --senhaBiblio
-('joao','26843511040', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'bffeba2cd38fb42e180da0254a7893f6db46e3cb2a93ff5e9b5494ce789e1006',  1), --senhaJoao
+('joao','26843511040', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'bffeba2cd38fb42e180da0254a7893f6db46e3cb2a93ff5e9b5494ce789e1006',  1), --senhaJoao,
+('kevin', null, 'Kevin Machado', 'kevinm4ch@gmail.com', null, '2004-04-30', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 2047), 
 ('maria123', '12345678901', 'Maria Oliveira', 'maria.oliveira@email.com', '11987651234', '1992-03-15', 'hash_senha1', 1),
 ('carlos_rj', '23456789012', 'Carlos Mendes', 'carlos.mendes@email.com', '21987651234', '1987-07-22', 'hash_senha2', 1),
 ('ana_paula', '34567890123', 'Ana Paula Souza', 'ana.souza@email.com', '11976543210', '1995-12-30', 'hash_senha3', 1),

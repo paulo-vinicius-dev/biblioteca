@@ -1,31 +1,80 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-/*
-import 'package:biblioteca/main.dart';
+import 'package:biblioteca/data/models/api_response_model.dart';
+import 'package:biblioteca/data/providers/login_provider.dart';
+import 'package:biblioteca/data/services/redefinir_senha_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:provider/provider.dart';
 
+class MockRedefinirSenhaService extends Mock implements RedefinirSenhaService {}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const Myapp());
+  late MockRedefinirSenhaService mockService;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  setUp(() {
+    mockService = MockRedefinirSenhaService();
   });
+
+  testWidgets('Deve alternar entre modos de login corretamente', (tester) async {
+    final provider = LoginProvider()..redefinirSenhaService = mockService;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChangeNotifierProvider.value(
+          value: provider,
+          child: Builder(
+            builder: (context) {
+              return Scaffold(
+                body: Column(
+                  children: [
+                    Text(context.watch<LoginProvider>().modoLogin.name),
+                    TextButton(
+                      onPressed: () => context.read<LoginProvider>().setModo(ModoLogin.redefinirSenha),
+                      child: const Text('Redefinir Senha'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('login'), findsOneWidget);
+    await tester.tap(find.text('Redefinir Senha'));
+    await tester.pumpAndSettle();
+    expect(find.text('redefinirSenha'), findsOneWidget);
+  });
+
+testWidgets('Deve iniciar com valores padrão corretos', (tester) async {
+  final provider = LoginProvider()..redefinirSenhaService = mockService;
+
+  await tester.pumpWidget(
+    MaterialApp(
+      home: ChangeNotifierProvider.value(
+        value: provider,
+        child: Builder(
+          builder: (context) {
+            return Scaffold(
+              body: Column(
+                children: [
+                  Text(context.watch<LoginProvider>().modoLogin.name),
+                  Text(context.watch<LoginProvider>().error),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    ),
+  );
+
+  expect(find.text('login'), findsOneWidget);
+  expect(find.text(''), findsOneWidget); // Verifica erro vazio
+});
+
+
+
+
 }
-*/

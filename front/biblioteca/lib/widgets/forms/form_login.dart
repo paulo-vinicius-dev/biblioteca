@@ -9,7 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FormLogin extends StatefulWidget {
-  const FormLogin({super.key});
+  AuthService? authService;
+  FormLogin({
+    super.key,
+    authService
+  });
 
   @override
   State<FormLogin> createState() => _FormLoginState();

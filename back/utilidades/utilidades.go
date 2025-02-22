@@ -5,50 +5,82 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+	"biblioteca/testes"
 )
+
+func DeclararTesteUtilidades() {
+	testes.DeclararTeste(
+		"primeiro dígito verificador do cpf 11144477705 deve ser 3",
+		func(dado interface{}) bool {
+			return calcularDigitosVerificadores("11144477705", true) == 3
+		},
+		nil,
+	)
+
+	testes.DeclararTeste(
+		"segundo dígito verificador do cpf 11144477705 deve ser 5",
+		func(dado interface{}) bool {
+			return calcularDigitosVerificadores("11144477705", false) == 5
+		},
+		nil,
+	)
+}
 
 const emailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 
-func calcularDigitosVerificadores(cpf string, primeiroDigito bool) int {
-	somaDigitos := 0
 
-	for indice, caractere := range cpf {
-		if indice < len(cpf)-1 {
-			if primeiroDigito {
-				somaDigitos += (int(caractere) - int('0')) * (indice + 1)
-				if indice == 8 {
-					break
-				}
-			} else {
-				somaDigitos += (int(caractere) - int('0')) * indice
-			}
+
+
+func calcularDigitosVerificadores(cpf string, primeiroDigito bool) int {
+	if primeiroDigito {
+		somaDigitos := 0
+		numeroParaMultiplicar := 2
+		for i := 8; i >= 0; i -= 1 {
+			somaDigitos += (int(cpf[i]) - int('0')) * numeroParaMultiplicar
+			numeroParaMultiplicar += 1
+		}
+		resto := somaDigitos % 11
+		if resto < 2 {
+			return 0
+		} else {
+			return 11 - resto
+		}
+
+	} else {
+		somaDigitos := calcularDigitosVerificadores(cpf, true) * 2
+		numeroParaMultiplicar := 3
+		for i := 8; i > -1; i -= 1 {
+			somaDigitos += (int(cpf[i]) - int('0')) * numeroParaMultiplicar
+			numeroParaMultiplicar += 1
+		}
+
+		resto := somaDigitos % 11
+		if resto < 2 {
+			return 0
+		} else {
+			return 11 - resto
 		}
 	}
 
-	if somaDigitos%11 == 10 {
-		return 0
-	} else {
-		return somaDigitos % 11
-	}
+
+
 }
+
 
 func ValidarCpf(cpf string) bool {
 
 	if len(cpf) != 11 {
 		return false
 	}
-	primeiroDigitoVerificadorFornecido := 0
-	segundoDigitoVerificadorFornecido := 0
-	for indice, caractere := range cpf {
-		if tamanhoCpf := len(cpf); indice == tamanhoCpf-2 {
-			primeiroDigitoVerificadorFornecido = int(caractere) - int('0')
-		} else if indice == tamanhoCpf-1 {
-			segundoDigitoVerificadorFornecido = int(caractere) - int('0')
-		}
 
+	if strings.Count(cpf, string(cpf[0])) == len(cpf) {
+		return false
 	}
 
-	return primeiroDigitoVerificadorFornecido == calcularDigitosVerificadores(cpf, true) && segundoDigitoVerificadorFornecido == calcularDigitosVerificadores(cpf, false)
+	primeiroDigito := calcularDigitosVerificadores(cpf, true)
+	segundoDigito := calcularDigitosVerificadores(cpf, false)
+	return primeiroDigito == (int(cpf[len(cpf) - 2]) - int('0')) &&
+	       segundoDigito == (int(cpf[len(cpf) - 1]) - int('0'))
 
 }
 

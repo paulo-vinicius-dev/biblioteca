@@ -46,6 +46,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
       });
     }
   }
+  // falta alterar isso aqui ainda(nada)
   void SearchExemplares(int idDoLivro){
     filteredExemplares = exemplares.where((exemplar)=> exemplar.idLivro == idDoLivro).toList();
     filteredExemplares.sort((a,b)=> a.id.compareTo(b.id));

@@ -171,10 +171,10 @@ CREATE TABLE IF NOT EXISTS emprestimo (
 	num_renovacoes smallint DEFAULT 0,
 	data_prevista_devolucao DATE NOT NULL,
 	data_devolucao DATE,
-	valor_multa SMALLINT DEFAULT 0 CHECK(valor_multa >= 0),
-	valor_adicionais SMALLINT DEFAULT 0 CHECK(valor_multa >= 0),
+	--valor_multa SMALLINT DEFAULT 0 CHECK(valor_multa >= 0),
+	--valor_adicionais SMALLINT DEFAULT 0 CHECK(valor_multa >= 0),
 	--total_multa SMALLINT DEFAULT 0,
-	observacao VARCHAR(255),
+	--observacao VARCHAR(255),
 	status smallint DEFAULT 1,
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
@@ -193,6 +193,7 @@ CREATE TABLE IF NOT EXISTS detalhe_emprestimo (
 	detalhe VARCHAR(255),
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
+	observacao VARCHAR(255),
 	primary key(id_detalhe_emprestimo),
 	foreign key (usuario) references usuario(id_usuario),
 	foreign key (emprestimo) references emprestimo(id_emprestimo)
@@ -318,12 +319,12 @@ INSERT INTO usuario (login, cpf, nome, email, telefone, data_nascimento, senha, 
 update usuario set turma = 1 where login = 'joao';
 
 -- Tabela emprestimo
-INSERT INTO emprestimo (id_emprestimo, exemplar_livro, usuario, data_emprestimo, data_prevista_devolucao, observacao) VALUES
-(1, 1, 3, '2024-01-01', '2024-01-15', 'Primeiro empréstimo'),
-(2, 2, 3, '2024-01-02', '2024-01-16', 'Devolução atrasada');
+INSERT INTO emprestimo (id_emprestimo, exemplar_livro, usuario, data_emprestimo, data_prevista_devolucao) VALUES
+(1, 1, 3, '2024-01-01', '2024-01-15'),
+(2, 2, 3, '2024-01-02', '2024-01-16');
 
 
 -- Tabela detalhe_emprestimo
-INSERT INTO detalhe_emprestimo (id_detalhe_emprestimo, usuario, emprestimo, acao, detalhe) VALUES
-(1, 3, 1, 1, 'Empréstimo realizado'),
-(2, 3, 2, 2, 'Renovação solicitada');
+INSERT INTO detalhe_emprestimo (id_detalhe_emprestimo, usuario, emprestimo, acao, detalhe, observacao) VALUES
+(1, 3, 1, 1, 'Empréstimo realizado', 'eu odeio javascript'),
+(2, 3, 2, 2, 'Renovação solicitada', 'c > c++');

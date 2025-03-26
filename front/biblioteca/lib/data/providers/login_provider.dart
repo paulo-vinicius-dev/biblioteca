@@ -4,18 +4,27 @@ import 'package:flutter/material.dart';
 enum ModoLogin { login, redefinirSenha, recuperarCodigo }
 
 class LoginProvider extends ChangeNotifier {
-  final RedefinirSenhaService _redefinirSenhaService = RedefinirSenhaService();
+  RedefinirSenhaService _redefinirSenhaService = RedefinirSenhaService();
   String _error = "";
 
   String get error => _error;
 
   ModoLogin _modoLogin = ModoLogin.login;
+
   ModoLogin get modoLogin => _modoLogin;
+
+  set modoLogin(ModoLogin modoLogin) {
+    _modoLogin = modoLogin;
+  }
 
   void setModo(ModoLogin novoModo) {
     _modoLogin = novoModo;
     notifyListeners();
   }
+
+  set redefinirSenhaService(RedefinirSenhaService service) {
+  _redefinirSenhaService = service;
+}
 
   Future<void> enviarEmailDeRecuperacao(String email) async {
     _error = "";

@@ -7,7 +7,7 @@ SET search_path TO biblioteca; -- Usado somente se você escolher criar um schem
 
 -- CRIANDO BANCO:
 --DROP DATABASE biblioteca; -- APAGA O BANCO EXISTENTE
---CREATE DATABASE biblioteca; -- CASO QUEIRA USAR UM DATASE (RECOMENDADO, mas é necessário adicionar o banco o dbeaver)
+--CREATE DATABASE biblioteca; -- CASO QUEIRA USAR UM BANCO SEPARADO (RECOMENDADO, pois evita conflitos com outros schemas e melhora o isolamento, mas é necessário adicionar o banco ao DBeaver)
 
 
 DROP TABLE IF EXISTS detalhe_emprestimo;
@@ -18,6 +18,8 @@ DROP TABLE IF EXISTS serie;
 DROP TABLE IF EXISTS turno;
 DROP TABLE IF EXISTS exemplar_livro;
 DROP TABLE IF EXISTS livro_categoria;
+DROP TABLE IF EXISTS livro_subcategoria;
+DROP TABLE IF EXISTS subcategoria;
 DROP TABLE IF EXISTS categoria;
 DROP TABLE IF EXISTS livro_autor;
 DROP TABLE IF EXISTS livro;
@@ -63,7 +65,7 @@ CREATE TABLE IF NOT EXISTS pais (
 	id_pais SMALLINT NOT NULL,
 	nome VARCHAR(255) NOT NULL UNIQUE,
 	sigla VARCHAR(2) NOT NULL UNIQUE,
-	ativo bool not null,
+	ativo BOOLEAN NOT NULL,
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
 	PRIMARY KEY(id_pais)
@@ -118,6 +120,24 @@ CREATE TABLE IF NOT EXISTS categoria (
 	PRIMARY KEY(id_categoria)
 );
 
+CREATE TABLE IF NOT EXISTS subcategoria (
+	id_subcategoria SERIAL NOT NULL,
+	descricao VARCHAR(255) NOT NULL UNIQUE,
+	ativo BOOLEAN NOT NULL DEFAULT TRUE,
+	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	data_atualizacao TIMESTAMP,
+	PRIMARY KEY(id_subcategoria)
+);
+
+CREATE TABLE IF NOT EXISTS livro_subcategoria (
+	id_livro INT NOT NULL,
+	id_subcategoria INT NOT NULL,
+	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	data_atualizacao TIMESTAMP,
+	PRIMARY KEY(id_livro, id_subcategoria),
+	FOREIGN KEY(id_livro) REFERENCES livro(id_livro),
+	FOREIGN KEY(id_subcategoria) REFERENCES subcategoria(id_subcategoria)
+);
 
 CREATE TABLE IF NOT EXISTS livro_categoria (
 	id_livro INT NOT NULL,
@@ -142,7 +162,6 @@ CREATE TABLE IF NOT EXISTS exemplar_livro (
 	PRIMARY KEY(id_exemplar_livro),
 	FOREIGN KEY(livro) REFERENCES livro(id_livro) 
 );
-
 
 CREATE TABLE IF NOT EXISTS usuario (
 	id_usuario SERIAL NOT NULL,
@@ -228,17 +247,17 @@ INSERT INTO livro_autor (id_livro, id_autor) VALUES
 
 
 -- Tabela categoria
-INSERT INTO categoria (descricao) VALUES
-('Ficção'),
-('Fantasia'),
-('Clássico');
+-- INSERT INTO categoria (descricao) VALUES
+-- ('Ficção'),
+-- ('Fantasia'),
+-- ('Clássico');
 
 
--- Tabela livro_categoria
-INSERT INTO livro_categoria (id_livro, id_categoria) VALUES
-(1, 3),  -- Dom Casmurro é Clássico
-(2, 2),  -- Harry Potter é Fantasia
-(3, 2);  -- A Game of Thrones é Fantasia
+-- -- Tabela livro_categoria
+-- INSERT INTO livro_categoria (id_livro, id_categoria) VALUES
+-- (1, 3),  -- Dom Casmurro é Clássico
+-- (2, 2),  -- Harry Potter é Fantasia
+-- (3, 2);  -- A Game of Thrones é Fantasia
 
 
 -- Tabela exemplar_livro

@@ -1,6 +1,5 @@
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/services/livro_service.dart';
-import 'package:biblioteca/data/models/autor_model.dart';
 import 'package:flutter/foundation.dart';
 
 class LivroProvider extends ChangeNotifier {

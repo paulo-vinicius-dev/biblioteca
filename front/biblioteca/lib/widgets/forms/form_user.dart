@@ -388,7 +388,7 @@ class _FormUserState extends State<FormUser> {
                     if (pickedDate != null) {
                       setState(() {
                         _dateController.text =
-                            DateFormat('d/M/y').format(pickedDate).toString();
+                          DateFormat('d/M/y').format(pickedDate).toString();
                       });
                     }
                   },

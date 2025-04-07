@@ -25,7 +25,6 @@ class LivroService {
       return LivrosAtingidos.fromJson(
           jsonDecode(response.data)); // Retorna a resposta como LivrosAtingidos
     } else {
-      print("Erro ao carregar os livros: ${response.data}");
       throw Exception('Erro ao carregar os livros: ${response.data}');
     }
   }
@@ -65,8 +64,6 @@ class LivroService {
       "NomeDosAutores": autores,
       "NomeDasCategorias": categorias,
     };
-
-    print("Tentando enviar este body:\n ${jsonEncode(body)}");
 
     final response = await _api.requisicao(
       apiRoute,

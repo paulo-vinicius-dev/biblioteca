@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'summary_card.dart';
 
 class SummaryCards extends StatelessWidget {
-  final int loansToday;
-  final int returnsToday;
-  final int delaysToday;
-  final VoidCallback onReportsPressed;
+  final int loansToday;                // Total de empréstimos do dia
+  final int returnsToday;              // Total de devoluções do dia
+  final int delaysToday;               // Total de empréstimos em atraso
+  final VoidCallback onReportsPressed; // Função chamada ao pressionar o cartão de relatórios
 
   const SummaryCards({
     super.key,
@@ -17,8 +17,10 @@ class SummaryCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Wrap(
+      spacing: 10.0,
+      runSpacing: 10.0,
+      alignment: WrapAlignment.center,
       children: [
         SummaryCard(
           title: 'Empréstimos do dia',
@@ -31,14 +33,14 @@ class SummaryCards extends StatelessWidget {
           color: Colors.orange,
         ),
         SummaryCard(
-          title: 'Empréstimos em Atrasos ',
+          title: 'Empréstimos em Atraso',
           count: delaysToday,
           color: Colors.red,
         ),
         SummaryCard(
           title: 'Relatórios',
-          icon: Icons.report,
-          color: Color.fromARGB(255, 44, 62, 80),
+          icon: Icons.list_alt_sharp,
+          color: const Color.fromRGBO(38, 42, 79, 1),
           onPressed: onReportsPressed,
         ),
       ],

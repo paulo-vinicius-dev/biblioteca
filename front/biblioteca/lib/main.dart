@@ -9,6 +9,7 @@ import 'package:biblioteca/data/providers/paises_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/pesquisar_livro.dart';
+import 'package:biblioteca/screens/library_dashboard.dart';
 
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 
@@ -42,9 +43,7 @@ void main() async {
     }
   }
 
-  final caminhoApi = Platform.isWindows
-      ? r'.\api.exe'
-      : './api';
+  final caminhoApi = Platform.isWindows ? r'.\api.exe' : './api';
   if (File(caminhoApi).existsSync()) {
     processoApi = await Process.start(caminhoApi, List.empty());
   }
@@ -131,6 +130,7 @@ class Myapp extends StatelessWidget {
           AppRoutes.login: (ctx) => const TelaLogin(),
           AppRoutes.logout: (ctx) => const Myapp(),
           AppRoutes.home: (ctx) => const TelaPaginaIncial(),
+          AppRoutes.dashboard: (ctx) => LibraryDashboard(),
           AppRoutes.usuarios: (ctx) => const UserTablePage(),
           AppRoutes.novoUsuario: (ctx) => const FormUser(),
           AppRoutes.editarUsuario: (ctx) => const FormUser(),

@@ -43,4 +43,48 @@ class CategoriaProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> addCategoria(String descricao) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final apiResponse = await _categoriaService.addCategoria(idDaSessao, usuarioLogado, descricao);
+
+      if (apiResponse.responseCode != 200) {
+        _error = apiResponse.body;
+      } else {
+        _categorias.add(apiResponse.body);
+      }
+    } catch (e) {
+      _error = "Erro ao inserir nova Categoria:\n$e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteCatgoria(Categoria categoria) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final apiResponse = await _categoriaService.deleteCategoria(idDaSessao, usuarioLogado, categoria.idDaCategoria);
+
+      if (apiResponse.responseCode != 200) {
+        _error = apiResponse.body;
+      } else {
+        _categorias.add(apiResponse.body);
+      }
+    } catch (e) {
+      _error = "Erro ao deletar Categoria ${categoria.descricao}:\n$e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+
 }

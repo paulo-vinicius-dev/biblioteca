@@ -13,7 +13,7 @@ class CategoriaService {
     List<Categoria> categorias = [];
 
     final Map<String, dynamic> body = {
-      "IdDaSessao": idDaSessao,
+      "IdDaSessao": idDaSessao, 
       "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
       "TextoDeBusca": "_"
     };
@@ -47,11 +47,20 @@ class CategoriaService {
 
     final response = await _api.requisicao(apiRoute, 'POST', body);
 
+    late final Categoria categoria;
 
+    if(response.statusCode == 200){
+
+      final json = jsonDecode(response.data)["CategoriasAtingidas"];
+
+      categoria = Categoria.fromJson(json);
+
+    }
 
     return ApiResponse(
         responseCode: response.statusCode!,
-        body: response.data);
+        body: response.statusCode == 200 ? categoria : response.data
+      );
   }
 
   Future<ApiResponse> alterCategoria(

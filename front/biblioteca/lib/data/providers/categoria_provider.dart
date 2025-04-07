@@ -98,11 +98,10 @@ class CategoriaProvider extends ChangeNotifier {
 
       if (apiResponse.responseCode != 200) {
         _error = apiResponse.body;
-      } else {
-        _categorias.remove(apiResponse.body);
       }
+      
     } catch (e) {
-      _error = "Erro ao deletar Categoria ${categoria.descricao}:\n$e";
+      _error = "Erro ao alterar a Categoria ${categoria.descricao}:\n$e";
     } finally {
       _isLoading = false;
       notifyListeners();

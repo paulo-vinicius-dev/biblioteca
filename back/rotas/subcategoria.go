@@ -10,12 +10,11 @@ import (
 )
 
 type requisicaoSubcategoria struct {
-	IdDaSessao               uint64
-	LoginDoUsuarioRequerente string
-	IdSubcategoria           int
-	Descricao                string
-	Categoria                uint64
-	TextoDeBusca             string
+	IdDaSessao               uint64 `json:"sessao"`
+	LoginDoUsuarioRequerente string `json:"login"`
+	IdSubcategoria           int    `json:"id_subcategoria"`
+	Descricao                string `json:"descricao"`
+	TextoDeBusca             string `json:"texto_de_busca"`
 }
 
 type respostaSubcategoria struct {
@@ -176,7 +175,6 @@ func SubCategoria(resposta http.ResponseWriter, requisicao *http.Request) {
 		}
 
 		resposta.WriteHeader(http.StatusNoContent)
-		fmt.Fprintf(resposta, "Categoria excluído com sucesso")
+		fmt.Fprintf(resposta, "Subcategoria excluído com sucesso")
 	}
-
 }

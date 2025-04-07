@@ -3,15 +3,14 @@ package banco
 import (
 	"biblioteca/modelos"
 	"context"
+	"fmt"
 	"strings"
-
-	pgx "github.com/jackc/pgx/v5"
 )
 
 type ErroBancoSubcategoria int
 
 const (
-	SubcategoriaErroNenhum = iota
+	SubcategoriaErroNenhum ErroBancoSubcategoria = iota
 	ErroSubcategoriaDescricaoDuplicada
 	ErroSubcategoriaInexistente
 	ErroSubcategoriaExecutarCriacao
@@ -21,148 +20,154 @@ const (
 
 func PesquisarSubcategoria(busca string) []modelos.Subcategoria {
 	conexao := PegarConexao()
+
 	busca = "%" + strings.ToLower(busca) + "%"
-	textoQuery := `
+	query := `
 		SELECT 
-			sc.id_subcategoria,
-			sc.descricao,
-			sc.subcategoria,
-			c.id_categoria,
-			c.descricao
-		FROM subcategoria sc
-		INNER JOIN categoria c ON sc.categoria = c.id_categoria
-		WHERE trim(lower(sc.id_subcategoria::varchar)) LIKE $1 
-			OR trim(lower(sc.descricao)) LIKE $1
+			id_subcategoria,
+			descricao
+		FROM subcategoria
+		WHERE trim(lower(id_subcategoria::varchar)) LIKE $1 
+			OR trim(lower(descricao)) LIKE $1
 	`
 
-	linhas, erro := conexao.Query(context.Background(), textoQuery, busca)
-	if erro != nil {
-		return []modelos.Subcategoria{}
-	}
-	var subcategoriaTemporaria modelos.Subcategoria
-	subcategoriasEncontradas := make([]modelos.Subcategoria, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{
-		&subcategoriaTemporaria.IdSubcategoria,
-		&subcategoriaTemporaria.Descricao,
-		&subcategoriaTemporaria.Categoria.IdDaCategoria,
-		&subcategoriaTemporaria.Categoria.Descricao,
-	}, func() error {
-		subcategoriasEncontradas = append(subcategoriasEncontradas, subcategoriaTemporaria)
+	linhas, err := conexao.Query(context.Background(), query, busca)
+	if err != nil {
+		fmt.Println("Erro ao executar a consulta:", err)
 		return nil
-	})
-	if erro != nil {
-		return []modelos.Subcategoria{}
 	}
-	return subcategoriasEncontradas
+	defer linhas.Close()
+
+	var subcategorias []modelos.Subcategoria
+	for linhas.Next() {
+		var subcategoria modelos.Subcategoria
+		if err := linhas.Scan(&subcategoria.IdSubcategoria, &subcategoria.Descricao); err != nil {
+			fmt.Println("Erro ao escanear linha:", err)
+			continue
+		}
+		subcategorias = append(subcategorias, subcategoria)
+	}
+
+	if err := linhas.Err(); err != nil {
+		fmt.Println("Erro ao iterar sobre as linhas:", err)
+		return nil
+	}
+
+	return subcategorias
 }
 
 func PegarTodasSubcategorias() []modelos.Subcategoria {
 	conexao := PegarConexao()
-	textoQuery := `
+
+	query := `
 		SELECT 
-			sc.id_subcategoria,
-			sc.descricao,
-			sc.subcategoria,
-			c.id_categoria,
-			c.descricao
-		FROM subcategoria sc
-		INNER JOIN categoria c ON sc.categoria = c.id_categoria
+			id_subcategoria,
+			descricao
+		FROM subcategoria
 	`
-	linhas, erro := conexao.Query(context.Background(), textoQuery)
-	if erro != nil {
-		return []modelos.Subcategoria{}
+
+	linhas, err := conexao.Query(context.Background(), query)
+	if err != nil {
+		fmt.Println("Erro ao executar a consulta:", err)
+		return nil
+	}
+	defer linhas.Close()
+
+	var subcategorias []modelos.Subcategoria
+	for linhas.Next() {
+		var subcategoria modelos.Subcategoria
+		if err := linhas.Scan(&subcategoria.IdSubcategoria, &subcategoria.Descricao); err != nil {
+			fmt.Println("Erro ao escanear linha:", err)
+			continue
+		}
+		subcategorias = append(subcategorias, subcategoria)
 	}
 
-	var subcategoriaTemporaria modelos.Subcategoria
-	subcategoriasEncontradas := make([]modelos.Subcategoria, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{
-		&subcategoriaTemporaria.IdSubcategoria,
-		&subcategoriaTemporaria.Descricao,
-		&subcategoriaTemporaria.Categoria.IdDaCategoria,
-		&subcategoriaTemporaria.Categoria.Descricao,
-	}, func() error {
-		subcategoriasEncontradas = append(subcategoriasEncontradas, subcategoriaTemporaria)
+	if err := linhas.Err(); err != nil {
+		fmt.Println("Erro ao iterar sobre as linhas:", err)
 		return nil
-	})
-	if erro != nil {
-		return []modelos.Subcategoria{}
 	}
-	return subcategoriasEncontradas
+
+	return subcategorias
 }
 
-func CriarSubcategoria(novasubcategoria modelos.Subcategoria) ErroBancoSubcategoria {
+func CriarSubcategoria(novaSubcategoria modelos.Subcategoria) ErroBancoSubcategoria {
 	conexao := PegarConexao()
 
-	_, erroQuery := conexao.Exec(context.Background(),
-		"INSERT INTO subcategoria (descricao, categoria, data_criaca) VALUES ($1, current_timestamp)",
-		novasubcategoria.Descricao,
-		novasubcategoria.Categoria.IdDaCategoria,
-	)
-
-	if erroQuery != nil {
-		return ErroCategoriaExecutarCriacao
+	query := "INSERT INTO subcategoria (descricao) VALUES ($1)"
+	_, err := conexao.Exec(context.Background(), query, novaSubcategoria.Descricao)
+	if err != nil {
+		fmt.Println("Erro ao criar subcategoria:", err)
+		return ErroSubcategoriaExecutarCriacao
 	}
-	return CategoriaErroNenhum
+
+	return SubcategoriaErroNenhum
 }
 
 func PegarSubcategoriaPeloId(id int) (modelos.Subcategoria, bool) {
 	conexao := PegarConexao()
+
 	var subcategoria modelos.Subcategoria
-	textoQuery := `
+	query := `
 		SELECT 
-			sc.id_subcategoria, 
-			sc.descricao, 
-			c.id_categoria, 
-			c.descricao
-		FROM subcategoria sc
-		INNER JOIN categoria c ON sc.categoria = c.id_categoria
-		WHERE sc.id_subcategoria = $1
+			id_subcategoria, 
+			descricao
+		FROM subcategoria
+		WHERE id_subcategoria = $1
 	`
 
-	if erro := conexao.QueryRow(context.Background(), textoQuery, id).Scan(
+	err := conexao.QueryRow(context.Background(), query, id).Scan(
 		&subcategoria.IdSubcategoria,
 		&subcategoria.Descricao,
-		&subcategoria.Categoria.IdDaCategoria,
-		&subcategoria.Categoria.Descricao,
-	); erro == nil {
-		return subcategoria, true
-	} else {
+	)
+	if err != nil {
+		fmt.Println("Erro ao buscar subcategoria pelo ID:", err)
 		return subcategoria, false
 	}
+
+	return subcategoria, true
 }
 
 func AtualizarSubcategoria(subcategoria modelos.Subcategoria) ErroBancoSubcategoria {
 	conexao := PegarConexao()
 
-	query := "UPDATE subcategoria SET descricao = $1, data_atualizacao = current_timestamp WHERE id_categoria = $2"
-	if _, erroQuery := conexao.Exec(
-		context.Background(), query, subcategoria.Descricao, subcategoria.IdSubcategoria,
-	); erroQuery != nil {
+	query := `
+		UPDATE subcategoria 
+		SET descricao = $1, data_atualizacao = current_timestamp 
+		WHERE id_subcategoria = $2
+	`
+	_, err := conexao.Exec(context.Background(), query, subcategoria.Descricao, subcategoria.IdSubcategoria)
+	if err != nil {
+		fmt.Println("Erro ao atualizar subcategoria:", err)
 		return ErroSubcategoriaExecutarAtualizacao
 	}
 
-	return ErroNenhum
+	return SubcategoriaErroNenhum
 }
 
-func ExcluirSubcategoria(IdSubcategoria int) ErroBancoSubcategoria {
+func ExcluirSubcategoria(idSubcategoria int) ErroBancoSubcategoria {
 	conexao := PegarConexao()
 
-	if _, erroQuery := conexao.Exec(
-		context.Background(),
-		"DELETE FROM subcategoria WHERE id_subcategoria = $1", IdSubcategoria,
-	); erroQuery != nil {
-		return ErroCategoriaExecutarExclusao
+	query := "DELETE FROM subcategoria WHERE id_subcategoria = $1"
+	_, err := conexao.Exec(context.Background(), query, idSubcategoria)
+	if err != nil {
+		fmt.Println("Erro ao excluir subcategoria:", err)
+		return ErroSubcategoriaExecutarExclusao
 	}
 
-	return ErroNenhum
+	return SubcategoriaErroNenhum
 }
 
 func PegarIdSubcategoria(descricao string) int {
 	conexao := PegarConexao()
+
 	var id int
-	if conexao.QueryRow(context.Background(), "SELECT id_subcategoria FROM subcategoria WHERE descricao = $1", descricao).Scan(&id) == nil {
-		return id
-	} else {
+	query := "SELECT id_subcategoria FROM subcategoria WHERE descricao = $1"
+	err := conexao.QueryRow(context.Background(), query, descricao).Scan(&id)
+	if err != nil {
+		fmt.Println("Erro ao buscar ID da subcategoria:", err)
 		return 0
 	}
+
+	return id
 }

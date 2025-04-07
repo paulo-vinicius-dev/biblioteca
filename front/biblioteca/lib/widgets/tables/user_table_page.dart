@@ -201,7 +201,7 @@ class UserTablePageState extends State<UserTablePage> {
                     for (int x = 0; x <paginatedUsers.length; x++)
                       TableRow(
                         decoration: BoxDecoration(
-                          color: x % 2 == 0?Color.fromRGBO(233, 235, 238, 75): Color.fromRGBO(255, 255, 255, 1),
+                          color: x % 2 == 0?const Color.fromRGBO(233, 235, 238, 75): const Color.fromRGBO(255, 255, 255, 1),
                         ),
                         children: [
                           Align(
@@ -212,7 +212,7 @@ class UserTablePageState extends State<UserTablePage> {
                               child: Text(paginatedUsers[x].nome,
                                   textAlign:
                                       TextAlign.left,
-                                  style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),    
+                                  style:  const TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),    
                                   ), // Alinhamento horizontal
                             ),
                           ),
@@ -222,7 +222,7 @@ class UserTablePageState extends State<UserTablePage> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(paginatedUsers[x].getTurma,
                                   textAlign: TextAlign.left,
-                                style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
+                                style:  const TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
                               ),
                             ),
                           ),
@@ -232,7 +232,7 @@ class UserTablePageState extends State<UserTablePage> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(paginatedUsers[x].getTurno,
                                   textAlign: TextAlign.left,
-                                  style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
+                                  style:  const TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5),
                                   
                                   ),
                             ),
@@ -244,7 +244,7 @@ class UserTablePageState extends State<UserTablePage> {
                               child:
                                   Text(paginatedUsers[x].login, 
                                     textAlign: TextAlign.left,
-                                    style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                    style:  const TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
 
                                   ),
                             ),
@@ -255,7 +255,7 @@ class UserTablePageState extends State<UserTablePage> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(paginatedUsers[x].getTipoDeUsuario,
                                   textAlign: TextAlign.left,
-                                  style:  TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
+                                  style:  const TextStyle(fontWeight: FontWeight.w300, fontSize: 14.5)
                                   ),
                             ),
                           ),

@@ -31,7 +31,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   late UsuarioProvider providerUsers;
   late String dataDevolucao;
   late String dataEmprestimo;
-  late List<Exemplar> exemplaresSelecionadosEmprestimo = [];
+  late List<EmprestimosModel> exemplaresSelecionadosEmprestimo = [];
   late List<EmprestimosModel> exemplaresSelecionadosRenovacao = [];
   late List<Usuario> users;
   late List<Exemplar> exemplares;
@@ -325,12 +325,13 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
             ));
   }
 
-  Future<void> msgConfirmEmprestimo(List<Exemplar> exemplaresEmpres) {
+  Future<void> msgConfirmEmprestimo(List<EmprestimosModel> exemplaresEmpres, int tipoMsg) {
+    
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              title: const Text(
-                'Confirmação de Empréstimo',
+              title:  Text(
+                tipoMsg == 0? 'Confirmação de Empréstimo':'Confimação de Renovação',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
@@ -370,7 +371,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                           ),
                           Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Text("Ano de Publicação",
+                            child: Text("Data de Devolução",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -387,14 +388,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                     fontSize: 15)),
                           )
                         ]),
-                    for (Exemplar exemplar in exemplaresEmpres)
+                    for (EmprestimosModel exemplar in exemplaresEmpres)
                       TableRow(
                           decoration: const BoxDecoration(
                               color: Color.fromRGBO(233, 235, 238, 75)),
                           children: [
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.id.toString(),
+                              child: Text(exemplar.codigo,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -402,7 +403,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                             ),
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.titulo,
+                              child: Text(exemplar.nome,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -411,8 +412,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                             Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Text(
-                                  DateFormat('dd/MM/YYYY')
-                                      .format(exemplar.anoPublicacao),
+                                  exemplar.dataDevolucao,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -420,7 +420,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                             ),
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text('Empréstimo realizado!',
+                              child: Text(tipoMsg == 0? 'Empréstimo realizado!': 'Renovação realizada',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -1200,15 +1200,21 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                                           5)),
                                                     ),
                                                     onPressed: () {
-                                                      
-                                                      for (EmprestimosModel exemplar in selectUser!.livrosEmprestados) {
-                                                        if (exemplar.selecionadoRenov == true) {
-                                                          exemplar.dataDevolucao = renovar(exemplar.dataDevolucao);
+                                                      for (EmprestimosModel exemplar
+                                                          in selectUser!
+                                                              .livrosEmprestados) {
+                                                        if (exemplar
+                                                                .selecionadoRenov ==
+                                                            true) {
+                                                          exemplar.dataDevolucao =
+                                                              renovar(exemplar
+                                                                  .dataDevolucao);
+                                                          exemplaresSelecionadosRenovacao.add(exemplar);
                                                         }
                                                       }
-                                                      setState(() {
-                                                        
-                                                      }); 
+                                                      msgConfirmEmprestimo(exemplaresSelecionadosRenovacao, 1);
+                                                      exemplaresSelecionadosRenovacao = [];
+                                                      setState(() {});
                                                     },
                                                     child: const Text('Renovar',
                                                         style: TextStyle(
@@ -1338,22 +1344,21 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                     if (exemplar.checkbox ==
                                                         true) {
                                                       exemplaresSelecionadosEmprestimo
-                                                          .add(exemplar);
-                                                      selectUser!
-                                                          .livrosEmprestados
                                                           .add(EmprestimosModel(
                                                               exemplar.id
                                                                   .toString(),
                                                               exemplar.titulo,
                                                               dataEmprestimo,
                                                               dataDevolucao));
+
                                                       selectedBoxExemplar
                                                           .remove(exemplar);
                                                     }
                                                   }
+                                                  selectUser!.livrosEmprestados.addAll(exemplaresSelecionadosEmprestimo);
                                                   setState(() {});
                                                   msgConfirmEmprestimo(
-                                                      exemplaresSelecionadosEmprestimo);
+                                                      exemplaresSelecionadosEmprestimo, 0);
                                                   exemplaresSelecionadosEmprestimo =
                                                       [];
                                                 },
@@ -1592,7 +1597,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),
                                                   ),
-                                                   Padding(
+                                                  Padding(
                                                     padding:
                                                         const EdgeInsets.only(
                                                             top: 13,

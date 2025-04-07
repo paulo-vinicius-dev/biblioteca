@@ -1,6 +1,5 @@
 import 'package:biblioteca/data/models/categorias_model.dart';
 import 'package:biblioteca/data/providers/categoria_provider.dart';
-import 'package:biblioteca/utils/routes.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +23,8 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
   bool _isInit = true;
   bool _isLoading = false;
 
+  late List<Categoria> categorias;
+
   @override
   void didChangeDependencies() {
     if (_isInit) {
@@ -43,31 +44,21 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
   }
 
   @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<CategoriaProvider>(context, listen: false).loadCategorias();
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     CategoriaProvider categoriaProvider =
         Provider.of<CategoriaProvider>(context);
-    List<Categoria> categorias = context.watch<CategoriaProvider>().categorias;
+    categorias = context.watch<CategoriaProvider>().categorias;
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     } else if (categoriaProvider.hasErrors) {
       return Text(categoriaProvider.error!);
     } else {
-      return getPage();
+      return getPage(categoriaProvider, categorias);
     }
   }
 
-  Material getPage() {
-    CategoriaProvider provider = Provider.of<CategoriaProvider>(context);
-    List<Categoria> categories = provider.categorias;
+  Material getPage(CategoriaProvider provider, List<Categoria> categories) {
     int totalPages = (categories.length / rowsPerPage).ceil();
 
     // Calcula o índice inicial e final dos usuários exibidos
@@ -305,16 +296,18 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
                                                     child:
                                                         const Text('Cancelar')),
                                                 ElevatedButton(
-                                                    onPressed: ()  {
+                                                    onPressed: () {
                                                       //Colocar aqui o deletar
-                                                       provider
-                                                          .deleteCatgoria(
-                                                              paginatedCategorias[
-                                                                  x]);
+                                                      provider.deleteCatgoria(
+                                                          paginatedCategorias[
+                                                              x]);
                                                       setState(() {
-                                                        categories.remove(paginatedCategorias[x]);
+                                                        categories.remove(
+                                                            paginatedCategorias[
+                                                                x]);
                                                       });
-                                                      Navigator.of(context).pop();
+                                                      Navigator.of(context)
+                                                          .pop();
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
@@ -480,7 +473,23 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
 
         //Botão Salvar
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            if (isEdit) {
+              categoria!.descricao = _descriptionController.text;
+              categoriaProvider.editCatgoria(categoria);
+              setState(() {
+                categorias.firstWhere((c)=>c.idDaCategoria == categoria!.idDaCategoria).descricao = _descriptionController.text;
+              });
+              Navigator.of(context).pop();
+            } else {
+              categoriaProvider.addCategoria(_descriptionController.text);
+              setState(() {
+                categorias.add(Categoria(
+                    idDaCategoria: 1, descricao: _descriptionController.text));
+              });
+              Navigator.of(context).pop();
+            }
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(255, 38, 42, 79),
             foregroundColor: Colors.white,

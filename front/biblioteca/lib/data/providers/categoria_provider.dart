@@ -18,7 +18,7 @@ class CategoriaProvider extends ChangeNotifier {
   bool get isloading => _isLoading;
   String? get error => _error;
   bool get hasErrors => _error != null ? true : false;
-  List<Categoria> get   categorias => _categorias;
+  List<Categoria> get categorias => _categorias;
 
   Future<void> loadCategorias() async {
     _isLoading = true;
@@ -26,15 +26,14 @@ class CategoriaProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-
-      final apiResponse = await _categoriaService.fetchCategorias(idDaSessao, usuarioLogado);
+      final apiResponse =
+          await _categoriaService.fetchCategorias(idDaSessao, usuarioLogado);
 
       if (apiResponse.responseCode == 200) {
         _categorias = apiResponse.body;
       } else {
         _error = apiResponse.body;
       }
-      
     } catch (e) {
       _error = "Erro ao carregar as Categorias:\n$e";
     } finally {
@@ -50,7 +49,8 @@ class CategoriaProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final apiResponse = await _categoriaService.addCategoria(idDaSessao, usuarioLogado, descricao);
+      final apiResponse = await _categoriaService.addCategoria(
+          idDaSessao, usuarioLogado, descricao);
 
       if (apiResponse.responseCode != 200) {
         _error = apiResponse.body;
@@ -58,7 +58,7 @@ class CategoriaProvider extends ChangeNotifier {
         _categorias.add(apiResponse.body);
       }
     } catch (e) {
-      _error = "Erro ao inserir nova Categoria:\n$e";
+      _error = "Provider: Erro ao inserir nova Categoria:\n$e";
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -71,12 +71,13 @@ class CategoriaProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final apiResponse = await _categoriaService.deleteCategoria(idDaSessao, usuarioLogado, categoria.idDaCategoria);
+      final apiResponse = await _categoriaService.deleteCategoria(
+          idDaSessao, usuarioLogado, categoria.idDaCategoria);
 
       if (apiResponse.responseCode != 200) {
         _error = apiResponse.body;
       } else {
-        _categorias.add(apiResponse.body);
+        _categorias.remove(apiResponse.body);
       }
     } catch (e) {
       _error = "Erro ao deletar Categoria ${categoria.descricao}:\n$e";
@@ -87,4 +88,24 @@ class CategoriaProvider extends ChangeNotifier {
   }
 
 
+  Future<void> editCatgoria(Categoria categoria) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final apiResponse = await _categoriaService.alterCategoria(idDaSessao, usuarioLogado, categoria);
+
+      if (apiResponse.responseCode != 200) {
+        _error = apiResponse.body;
+      } else {
+        _categorias.remove(apiResponse.body);
+      }
+    } catch (e) {
+      _error = "Erro ao deletar Categoria ${categoria.descricao}:\n$e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

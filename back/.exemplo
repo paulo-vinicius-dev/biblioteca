@@ -1,0 +1,6 @@
+#DB_URL=postgres://USUARIO:SENHA@localhost:5432/BANCO?options=-c%20search_path%3DNOME_SCHEMA
+#EMAIL=coloqueoemailaqui
+#SENHA_EMAIL=coloqueasenhadoemail
+#PORTA_API=9090
+#DIAS_EMPRESTIMO=7
+

@@ -12,6 +12,7 @@ import 'package:biblioteca/widgets/forms/form_book.dart';
 import 'package:biblioteca/widgets/forms/form_author.dart';
 import 'package:biblioteca/widgets/tables/author_table_page.dart';
 import 'package:biblioteca/widgets/tables/book_table_page.dart';
+import 'package:biblioteca/widgets/tables/categories_table_page.dart';
 import 'package:biblioteca/widgets/tables/exemplar_table_page.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:biblioteca/widgets/navegacao/menu_navegacao.dart';
@@ -237,6 +238,9 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           });
                         case '/novo_autor':
                           page = const FormAutor();
+                          break;
+                        case '/categorias':
+                          page = const CategoriesTablePage();
                           break;
                         case AppRoutes.editarAutor:
                           final autor = settings.arguments as Autor;

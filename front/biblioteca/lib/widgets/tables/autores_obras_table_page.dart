@@ -116,8 +116,7 @@ class _ObrasPageState extends State<ObrasPage> {
                 children: [
                   Table(
                     border: TableBorder.all(
-                      color: const Color.fromARGB(255, 213, 213, 213),
-                    ),
+                        color: const Color.fromARGB(215, 200, 200, 200)),
                     columnWidths: const {
                       0: IntrinsicColumnWidth(),
                       1: FlexColumnWidth(2),
@@ -126,33 +125,52 @@ class _ObrasPageState extends State<ObrasPage> {
                     },
                     children: [
                       const TableRow(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 44, 62, 80),
+                        ),
                         children: [
                           Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'Exemplar',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              'Código',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15),
                             ),
                           ),
                           Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
                               'Título',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15),
                             ),
                           ),
                           Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'ISBN',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              'Disponibilidade',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15),
                             ),
                           ),
                           Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
                               'Categoria',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15),
                             ),
                           ),
                         ],
@@ -170,7 +188,7 @@ class _ObrasPageState extends State<ObrasPage> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(exemplar.isbn),
+                              child: Text(exemplar.getStatus),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),

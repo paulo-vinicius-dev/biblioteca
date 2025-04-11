@@ -99,7 +99,7 @@ class CategoriaProvider extends ChangeNotifier {
       if (apiResponse.responseCode != 200) {
         _error = apiResponse.body;
       }
-      
+        
     } catch (e) {
       _error = "Erro ao alterar a Categoria ${categoria.descricao}:\n$e";
     } finally {

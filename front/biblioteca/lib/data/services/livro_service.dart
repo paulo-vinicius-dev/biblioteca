@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-import 'package:biblioteca/data/models/autor_model.dart';
-import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/models/livros_resposta.dart';
 import 'package:biblioteca/data/services/api_service.dart';
 

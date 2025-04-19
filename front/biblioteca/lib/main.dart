@@ -9,6 +9,7 @@ import 'package:biblioteca/data/providers/paises_provider.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/pesquisar_livro.dart';
+import 'package:biblioteca/screens/tela_devolucao.dart';
 
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 
@@ -139,12 +140,11 @@ class Myapp extends StatelessWidget {
           AppRoutes.editarUsuario: (ctx) => const FormUser(),
           AppRoutes.livros: (context) => const BookTablePage(),
           AppRoutes.autores: (context) => const AuthorTablePage(),
-
-          //paginas temporarias para teste
+          AppRoutes.devolucao: (context) =>  TelaDevolucao(),
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
           AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
-          AppRoutes.devolucao: (context) => const Devolucao(),
 
+          //paginas temporarias para teste
           AppRoutes.relatorios: (context) => const Relatorios(),
           AppRoutes.nadaConsta: (context) => const NadaConsta(),
           AppRoutes.configuracoes: (context) => const Configuracoes(),

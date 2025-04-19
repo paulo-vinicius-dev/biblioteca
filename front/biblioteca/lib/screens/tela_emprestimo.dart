@@ -94,7 +94,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
 
     setState(() {
       if (searchQuery.isEmpty) {
-        // Limpa a seleção se o campo estiver vazio
         selectbook = null;
         return;
       }
@@ -326,7 +325,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   }
 
   Future<void> msgConfirmEmprestimo(List<EmprestimosModel> exemplaresEmpres, int tipoMsg) {
-    
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1313,7 +1311,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                               const SizedBox(height: 40),
                               if (showBooks)
                                 if (selectedBoxExemplar.isNotEmpty)
-                                  Column(
+                                    Column(
                                     children: [
                                       SizedBox(
                                         width: 1150,
@@ -1356,6 +1354,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                     }
                                                   }
                                                   selectUser!.livrosEmprestados.addAll(exemplaresSelecionadosEmprestimo);
+                                                  Provider.of<ExemplarProvider>(context, listen: false).addExemplarEmprestado(exemplaresSelecionadosEmprestimo);
                                                   setState(() {});
                                                   msgConfirmEmprestimo(
                                                       exemplaresSelecionadosEmprestimo, 0);

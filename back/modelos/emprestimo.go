@@ -13,7 +13,7 @@ type Emprestimo struct {
 	Usuario               Usuario // Esse usuário é o usuario requerente
 	DataEmprestimo        string
 	NumeroRenovacoes      int
-  DataDeEntregaPrevista string
+	DataDeEntregaPrevista string
 	DataDeDevolucao       string
 	Status                int
 }

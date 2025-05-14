@@ -6,6 +6,8 @@ import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/data/models/paises_model.dart';
 import 'package:biblioteca/data/providers/paises_provider.dart';
+import 'package:biblioteca/data/models/categorias_model.dart';
+import 'package:biblioteca/data/providers/categoria_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 
@@ -41,6 +43,8 @@ class _FormBookState extends State<FormBook> {
   String? _paisSelecionado;
   List<Pais> _paises = [];
 
+  String? _categoriaSelecionada;
+
   @override
   void initState() {
     super.initState();
@@ -51,31 +55,42 @@ class _FormBookState extends State<FormBook> {
         _carregarPaises();
         setState(() {});
       });
+      Provider.of<CategoriaProvider>(context, listen: false)
+          .loadCategorias()
+          .then((_) {
+        setState(
+            () {}); 
+      });
     });
   }
 
   Future<void> _carregarPaises() async {
     try {
       List<Pais> paisesDaApi = await buscarPaisesDaAPI();
+      if (!mounted) return;
       setState(() {
         _paises = paisesDaApi;
         if (widget.livro != null) {
-          _paisSelecionado = _paises
-              .firstWhere(
-                (pais) => pais.idDoPais == widget.livro!.pais,
-                orElse: () =>
-                    Pais(idDoPais: 1, nome: "Brasil", sigla: "BR", ativo: true),
-              )
-              .idDoPais
-              .toString();
+          _paisSelecionado = widget.livro!.pais.toString();
         }
       });
     } catch (e) {
-      // ignore: use_build_context_synchronously
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Erro ao carregar países: $e")),
       );
     }
+  }
+
+  Future<List<Categoria>> buscarCategorias() async {
+    CategoriaProvider categoriaProvider =
+        Provider.of<CategoriaProvider>(context, listen: false);
+    if (categoriaProvider.categorias.isEmpty) {
+      await categoriaProvider.loadCategorias();
+    }
+    return categoriaProvider.categorias;
   }
 
   Future<List<Pais>> buscarPaisesDaAPI() async {
@@ -115,7 +130,9 @@ class _FormBookState extends State<FormBook> {
   bool validarISBN(String isbn) {
     isbn = isbn.replaceAll(RegExp(r'[^0-9Xx]'), '');
 
-    if (isbn.length == 10) {
+    if (isbn == "0") {
+      return true;
+    } else if (isbn.length == 10) {
       return _validarISBN10(isbn);
     } else if (isbn.length == 13) {
       return _validarISBN13(isbn);
@@ -455,21 +472,52 @@ class _FormBookState extends State<FormBook> {
                       Column(
                         children: List.generate(_categoriesControllers.length,
                             (index) {
+                          final categoriasPrincipais =
+                              context.watch<CategoriaProvider>().categorias;
+                          print("categorias: $categoriasPrincipais");
                           return Column(
                             children: [
                               Row(
                                 children: [
                                   Expanded(
-                                    child: TextFormField(
-                                      controller: _categoriesControllers[index],
-                                      decoration: InputDecoration(
-                                        label: index == 0
-                                            ? const CampoObrigatorio(
-                                                label: "Categoria")
-                                            : const Text("Categoria"),
-                                        border: const OutlineInputBorder(),
-                                      ),
-                                    ),
+                                    child: index == 0
+                                        ? DropdownButtonFormField<String>(
+                                            value: _categoriaSelecionada,
+                                            decoration: const InputDecoration(
+                                              label: CampoObrigatorio(
+                                                  label: "Categoria Principal"),
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            items: categoriasPrincipais
+                                                .map((categoria) {
+                                              return DropdownMenuItem<String>(
+                                                value: categoria.descricao
+                                                    .toString(),
+                                                child:
+                                                    Text(categoria.descricao),
+                                              );
+                                            }).toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _categoriaSelecionada = value;
+                                              });
+                                            },
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "Selecione uma categoria principal";
+                                              }
+                                              return null;
+                                            },
+                                          )
+                                        : TextFormField(
+                                            controller:
+                                                _categoriesControllers[index],
+                                            decoration: const InputDecoration(
+                                              label: Text("Categoria"),
+                                              border: OutlineInputBorder(),
+                                            ),
+                                          ),
                                   ),
                                   const SizedBox(width: 4.0),
                                   if (index == 0)

@@ -9,7 +9,10 @@ import 'package:biblioteca/data/providers/paises_provider.dart';
 
 class ExemplaresPage extends StatefulWidget {
   final Livro book;
-  const ExemplaresPage({super.key, required this.book});
+  final String ultimaPagina;
+
+  const ExemplaresPage(
+      {super.key, required this.book, required this.ultimaPagina});
 
   @override
   State<ExemplaresPage> createState() => _ExemplaresPageState();
@@ -24,23 +27,23 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
     _loadExemplares();
     _loadPaises();
 
-
-
-    Exemplar novoExemplar = Exemplar(
-        id: 0,
-        cativo: false,
-        statusCodigo: 0,
-        estado: 0,
-        ativo: true,
-        idLivro: widget.book.idDoLivro,
-        isbn: widget.book.isbn,
-        titulo: widget.book.titulo,
-        anoPublicacao: widget.book.anoPublicacao,
-        editora: widget.book.editora,
-        idPais: widget.book.pais.values,
-        nomePais: 
-        );
-  }
+    print(widget.book.pais.values);
+//
+    //Exemplar novoExemplar = Exemplar(
+    //  id: 0,
+    //  cativo: false,
+    //  statusCodigo: 0,
+    //  estado: 0,
+    //  ativo: true,
+    //  idLivro: widget.book.idDoLivro,
+    //  isbn: widget.book.isbn,
+    //  titulo: widget.book.titulo,
+    //  anoPublicacao: widget.book.anoPublicacao,
+    //  editora: widget.book.editora,
+    //  idPais: widget.book.pais.values,
+    //  nomePais:
+    //);
+  } //
 
   Future<void> _loadExemplares() async {
     final provider = Provider.of<ExemplarProvider>(context, listen: false);
@@ -58,20 +61,16 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final exemplarProvider = Provider.of<ExemplarProvider>(context);
     final paisesProvider = Provider.of<ExemplarProvider>(context);
 
-
-
-
     return Material(
       child: Column(
         children: [
-          const BreadCrumb(
-            breadcrumb: ['Inicio', 'Livros', 'Exemplares'],
+          BreadCrumb(
+            breadcrumb: ['Inicio', widget.ultimaPagina, 'Exemplares'],
             icon: Icons.menu_book_outlined,
           ),
           if (isLoading)
@@ -229,7 +228,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Provider.of<ExemplarProvider>(context).addExemplar();
+                      //Provider.of<ExemplarProvider>(context).addExemplar();
                     },
                     label: const Text(
                       'Novo Livro',

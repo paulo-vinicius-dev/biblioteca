@@ -259,7 +259,9 @@ class BookTablePageState extends State<BookTablePage> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      Provider.of<LivroProvider>(context).deleteLivro(paginatedBooks[x].idDoLivro);
+                                      Provider.of<LivroProvider>(context)
+                                          .deleteLivro(
+                                              paginatedBooks[x].idDoLivro);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,
@@ -316,8 +318,10 @@ class BookTablePageState extends State<BookTablePage> {
                                     onPressed: () async {
                                       try {
                                         Navigator.pushNamed(
-                                            context, AppRoutes.exemplares,
-                                            arguments: paginatedBooks[x]);
+                                            context,
+                                            AppRoutes.exemplares,
+                                            arguments: paginatedBooks[x],
+                                            );
                                       } catch (e) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(

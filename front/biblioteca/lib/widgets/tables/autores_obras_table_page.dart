@@ -1,11 +1,10 @@
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/models/autor_model.dart';
-import 'package:biblioteca/data/models/exemplar_model.dart';
-import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biblioteca/widgets/tables/exemplar_table_page.dart';
 
 class ObrasPage extends StatefulWidget {
   final Autor autor;
@@ -18,21 +17,16 @@ class ObrasPage extends StatefulWidget {
 class _ObrasPageState extends State<ObrasPage> {
   bool isLoading = true;
   List<Livro> livrosDoAutor = [];
-  List<Exemplar> exemplaresFiltrados = [];
 
   @override
   void initState() {
     super.initState();
-    _loadDados();
+    _loadLivrosDoAutor();
   }
 
-  Future<void> _loadDados() async {
+  Future<void> _loadLivrosDoAutor() async {
     final livrosProvider = Provider.of<LivroProvider>(context, listen: false);
-    final exemplaresProvider =
-        Provider.of<ExemplarProvider>(context, listen: false);
-
     await livrosProvider.loadLivros();
-    await exemplaresProvider.loadExemplares();
 
     livrosDoAutor = livrosProvider.livros
         .where((livro) => livro.autores.any((autor) =>
@@ -40,48 +34,12 @@ class _ObrasPageState extends State<ObrasPage> {
             autor['nome'] == widget.autor.nome))
         .toList();
 
-    final idsLivros = livrosDoAutor.map((livro) => livro.idDoLivro).toSet();
-
-    exemplaresFiltrados = exemplaresProvider.exemplares
-        .where((exemplar) => idsLivros.contains(exemplar.idLivro))
-        .toList();
-
     setState(() {
       isLoading = false;
     });
   }
 
-  String _getLivroTitulo(int idLivro) {
-    return livrosDoAutor
-            .firstWhere((livro) => livro.idDoLivro == idLivro,
-                orElse: () => Livro(
-                    idDoLivro: 0,
-                    isbn: '',
-                    titulo: '',
-                    anoPublicacao: DateTime.now(),
-                    editora: '',
-                    pais: {},
-                    categorias: [],
-                    autores: []))
-            .titulo ??
-        '';
-  }
-
-  String _getLivroCategoria(int idLivro) {
-    final livro = livrosDoAutor.firstWhere(
-      (livro) => livro.idDoLivro == idLivro,
-      orElse: () => Livro(
-        idDoLivro: 0,
-        isbn: '',
-        titulo: '',
-        anoPublicacao: DateTime.now(),
-        editora: '',
-        pais: {},
-        categorias: [],
-        autores: [],
-      ),
-    );
-
+  String _getCategoriaDescricao(Livro livro) {
     if (livro.categorias.isEmpty) return 'Sem categoria';
 
     final primeira = livro.categorias.first;
@@ -93,10 +51,17 @@ class _ObrasPageState extends State<ObrasPage> {
     return 'Sem categoria';
   }
 
+  void _abrirExemplares(Livro livro) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExemplaresPage(book: livro),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final exemplarProvider = Provider.of<ExemplarProvider>(context);
-
     return Material(
       child: Column(
         children: [
@@ -116,12 +81,13 @@ class _ObrasPageState extends State<ObrasPage> {
                 children: [
                   Table(
                     border: TableBorder.all(
-                        color: const Color.fromARGB(215, 200, 200, 200)),
+                      color: const Color.fromARGB(215, 200, 200, 200),
+                    ),
                     columnWidths: const {
-                      0: IntrinsicColumnWidth(),
-                      1: FlexColumnWidth(2),
-                      2: FlexColumnWidth(2),
-                      3: FlexColumnWidth(2),
+                      0: IntrinsicColumnWidth(), // ícone
+                      1: FlexColumnWidth(3), // título
+                      2: FlexColumnWidth(2), // ISBN
+                      3: FlexColumnWidth(2), // categoria
                     },
                     children: [
                       const TableRow(
@@ -131,20 +97,12 @@ class _ObrasPageState extends State<ObrasPage> {
                         children: [
                           Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'Código',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15),
-                            ),
+                            child: Text(''),
                           ),
                           Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
                               'Título',
-                              textAlign: TextAlign.left,
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
@@ -154,8 +112,7 @@ class _ObrasPageState extends State<ObrasPage> {
                           Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'Disponibilidade',
-                              textAlign: TextAlign.left,
+                              'ISBN',
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
@@ -166,7 +123,6 @@ class _ObrasPageState extends State<ObrasPage> {
                             padding: EdgeInsets.all(8.0),
                             child: Text(
                               'Categoria',
-                              textAlign: TextAlign.left,
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
@@ -175,24 +131,33 @@ class _ObrasPageState extends State<ObrasPage> {
                           ),
                         ],
                       ),
-                      for (var exemplar in exemplaresFiltrados)
+                      for (var livro in livrosDoAutor)
                         TableRow(
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text('${exemplar.id}'),
+                              child: IconButton(
+                                icon: const Icon(Icons.menu_book),
+                                tooltip: 'Ver exemplares',
+                                iconSize: 18,
+                                constraints: const BoxConstraints(
+                                  minWidth: 25,
+                                  minHeight: 25,
+                                ),
+                                onPressed: () => _abrirExemplares(livro),
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(_getLivroTitulo(exemplar.idLivro)),
+                              child: Text(livro.titulo),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(exemplar.getStatus),
+                              child: Text(livro.isbn),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(_getLivroCategoria(exemplar.idLivro)),
+                              child: Text(_getCategoriaDescricao(livro)),
                             ),
                           ],
                         ),

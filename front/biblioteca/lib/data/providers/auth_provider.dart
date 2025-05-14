@@ -15,7 +15,7 @@ class AuthProvider with ChangeNotifier {
   Usuario get usuario => _usuario;
 
   Future login(num idDaSessao, String loginDoUsuario) async {
-
+    print(idDaSessao);
     _idDaSessao = idDaSessao;
     usuarioLogado = loginDoUsuario;
 

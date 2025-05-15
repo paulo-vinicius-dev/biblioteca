@@ -7,7 +7,7 @@ SET search_path TO biblioteca; -- Usado somente se você escolher criar um schem
 
 -- CRIANDO BANCO:
 --DROP DATABASE biblioteca; -- APAGA O BANCO EXISTENTE
---CREATE DATABASE biblioteca; -- CASO QUEIRA USAR UM DATASE (RECOMENDADO, mas é necessário adicionar o banco o dbeaver)
+--CREATE DATABASE biblioteca; -- CASO QUEIRA USAR UM BANCO SEPARADO (RECOMENDADO, pois evita conflitos com outros schemas e melhora o isolamento, mas é necessário adicionar o banco ao DBeaver)
 
 
 DROP TABLE IF EXISTS detalhe_emprestimo;
@@ -18,6 +18,8 @@ DROP TABLE IF EXISTS serie;
 DROP TABLE IF EXISTS turno;
 DROP TABLE IF EXISTS exemplar_livro;
 DROP TABLE IF EXISTS livro_categoria;
+DROP TABLE IF EXISTS livro_subcategoria;
+DROP TABLE IF EXISTS subcategoria;
 DROP TABLE IF EXISTS categoria;
 DROP TABLE IF EXISTS livro_autor;
 DROP TABLE IF EXISTS livro;
@@ -63,7 +65,7 @@ CREATE TABLE IF NOT EXISTS pais (
 	id_pais SMALLINT NOT NULL,
 	nome VARCHAR(255) NOT NULL UNIQUE,
 	sigla VARCHAR(2) NOT NULL UNIQUE,
-	ativo bool not null,
+	ativo BOOLEAN NOT NULL,
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
 	PRIMARY KEY(id_pais)
@@ -118,6 +120,24 @@ CREATE TABLE IF NOT EXISTS categoria (
 	PRIMARY KEY(id_categoria)
 );
 
+CREATE TABLE IF NOT EXISTS subcategoria (
+	id_subcategoria SERIAL NOT NULL,
+	descricao VARCHAR(255) NOT NULL UNIQUE,
+	ativo BOOLEAN NOT NULL DEFAULT TRUE,
+	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	data_atualizacao TIMESTAMP,
+	PRIMARY KEY(id_subcategoria)
+);
+
+CREATE TABLE IF NOT EXISTS livro_subcategoria (
+	id_livro INT NOT NULL,
+	id_subcategoria INT NOT NULL,
+	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	data_atualizacao TIMESTAMP,
+	PRIMARY KEY(id_livro, id_subcategoria),
+	FOREIGN KEY(id_livro) REFERENCES livro(id_livro),
+	FOREIGN KEY(id_subcategoria) REFERENCES subcategoria(id_subcategoria)
+);
 
 CREATE TABLE IF NOT EXISTS livro_categoria (
 	id_livro INT NOT NULL,
@@ -143,7 +163,6 @@ CREATE TABLE IF NOT EXISTS exemplar_livro (
 	FOREIGN KEY(livro) REFERENCES livro(id_livro) 
 );
 
-
 CREATE TABLE IF NOT EXISTS usuario (
 	id_usuario SERIAL NOT NULL,
 	login VARCHAR(255) NOT NULL UNIQUE,
@@ -166,15 +185,11 @@ CREATE TABLE IF NOT EXISTS usuario (
 CREATE TABLE IF NOT EXISTS emprestimo (
 	id_emprestimo SERIAL NOT null,
 	exemplar_livro INT NOT NULL,
-	usuario INT NOT NULL,
+	usuario INT NOT NULL, -- Esse usuário é o aluno que pede o livro
 	data_emprestimo DATE NOT NULL,
 	num_renovacoes smallint DEFAULT 0,
 	data_prevista_devolucao DATE NOT NULL,
-	data_devolucao DATE,
-	valor_multa SMALLINT DEFAULT 0 CHECK(valor_multa >= 0),
-	valor_adicionais SMALLINT DEFAULT 0 CHECK(valor_multa >= 0),
-	--total_multa SMALLINT DEFAULT 0,
-	observacao VARCHAR(255),
+	data_devolucao DATE DEFAULT NULL,
 	status smallint DEFAULT 1,
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	data_atualizacao TIMESTAMP,
@@ -186,13 +201,13 @@ CREATE TABLE IF NOT EXISTS emprestimo (
 
 CREATE TABLE IF NOT EXISTS detalhe_emprestimo (
 	id_detalhe_emprestimo SERIAL NOT NULL,
-	usuario INT NOT NULL,
+	usuario INT NOT NULL, -- Esse é o usuário do sistema que realiza o empréstimo
 	emprestimo INT NOT NULL,
 	data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	acao SMALLINT NOT NULL,
 	detalhe VARCHAR(255),
 	data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	data_atualizacao TIMESTAMP,
+	observacao VARCHAR(255),
 	primary key(id_detalhe_emprestimo),
 	foreign key (usuario) references usuario(id_usuario),
 	foreign key (emprestimo) references emprestimo(id_emprestimo)
@@ -227,17 +242,17 @@ INSERT INTO livro_autor (id_livro, id_autor) VALUES
 
 
 -- Tabela categoria
-INSERT INTO categoria (descricao) VALUES
-('Ficção'),
-('Fantasia'),
-('Clássico');
+-- INSERT INTO categoria (descricao) VALUES
+-- ('Ficção'),
+-- ('Fantasia'),
+-- ('Clássico');
 
 
--- Tabela livro_categoria
-INSERT INTO livro_categoria (id_livro, id_categoria) VALUES
-(1, 3),  -- Dom Casmurro é Clássico
-(2, 2),  -- Harry Potter é Fantasia
-(3, 2);  -- A Game of Thrones é Fantasia
+-- -- Tabela livro_categoria
+-- INSERT INTO livro_categoria (id_livro, id_categoria) VALUES
+-- (1, 3),  -- Dom Casmurro é Clássico
+-- (2, 2),  -- Harry Potter é Fantasia
+-- (3, 2);  -- A Game of Thrones é Fantasia
 
 
 -- Tabela exemplar_livro
@@ -311,19 +326,23 @@ INSERT INTO turma (id_turma, descricao, serie, turno) VALUES
 
 -- Tabela usuario
 INSERT INTO usuario (login, cpf, nome, email, telefone, data_nascimento, senha, permissoes) VALUES
-('admin','21747274046', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3',  2047), -- senhaAdmin
-	('biblio','76784092066', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', '76cc71b64516994b050bdb5a79c50865654e551ae126492ee20d08047e841a86',  2047), --senhaBiblio
+('admin','21747274046', 'Admin User', 'admin@biblioteca.com', '11123456789', '1990-01-01', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3',  16383), -- senhaAdmin
+	('biblio','76784092066', 'Bibliotecario', 'bibliotecario@biblioteca.com', '11123456789', '1980-05-15', '76cc71b64516994b050bdb5a79c50865654e551ae126492ee20d08047e841a86',  16383), --senhaBiblio
 ('joao','26843511040', 'João Silva', 'joao.silva@usuario.com', '11987654321', '1995-08-10', 'bffeba2cd38fb42e180da0254a7893f6db46e3cb2a93ff5e9b5494ce789e1006',  1); --senhaJoao
 
 update usuario set turma = 1 where login = 'joao';
 
 -- Tabela emprestimo
-INSERT INTO emprestimo (id_emprestimo, exemplar_livro, usuario, data_emprestimo, data_prevista_devolucao, observacao) VALUES
-(1, 1, 3, '2024-01-01', '2024-01-15', 'Primeiro empréstimo'),
-(2, 2, 3, '2024-01-02', '2024-01-16', 'Devolução atrasada');
+INSERT INTO emprestimo (id_emprestimo, exemplar_livro, usuario, data_emprestimo, data_prevista_devolucao) VALUES
+(1, 1, 3, '2024-01-01', '2024-01-15'),
+(2, 2, 3, '2024-01-02', '2024-01-16');
+select setval((select pg_get_serial_sequence('emprestimo', 'id_emprestimo')), (select max(id_emprestimo) from emprestimo) + 1);
+
 
 
 -- Tabela detalhe_emprestimo
-INSERT INTO detalhe_emprestimo (id_detalhe_emprestimo, usuario, emprestimo, acao, detalhe) VALUES
-(1, 3, 1, 1, 'Empréstimo realizado'),
-(2, 3, 2, 2, 'Renovação solicitada');
+INSERT INTO detalhe_emprestimo (id_detalhe_emprestimo, usuario, emprestimo, acao, detalhe, observacao) VALUES
+(1, 3, 1, 1, 'Empréstimo realizado', 'eu odeio javascript'),
+(2, 3, 2, 2, 'Renovação solicitada', 'c > c++');
+select setval((select pg_get_serial_sequence('detalhe_emprestimo', 'id_detalhe_emprestimo')), (select max(id_detalhe_emprestimo) from detalhe_emprestimo) + 1);
+

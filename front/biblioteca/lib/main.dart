@@ -1,5 +1,6 @@
 import 'package:biblioteca/data/providers/auth_provider.dart';
 import 'package:biblioteca/data/providers/autor_provider.dart';
+import 'package:biblioteca/data/providers/categoria_provider.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/login_provider.dart';
 import 'package:biblioteca/data/providers/menu_provider.dart';
@@ -28,7 +29,6 @@ import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
-  // iniciando o banco de dados caso o front venha do instalador
   final caminhoPgCtl = Platform.isWindows
       ? Directory.current.path + r'\postgres\bin\pg_ctl.exe'
       : '${Directory.current.path}/postgres/bin/pg_ctl';
@@ -44,15 +44,11 @@ void main() async {
     }
   }
 
-  // rodando a api caso o front venha do instalador
-  final caminhoApi = Platform.isWindows
-      ? r'.\api.exe'
-      : './api'; // se o front foi instalado apartir do instalador o front e back vão estar no mesmo diretório
+  final caminhoApi = Platform.isWindows ? r'.\api.exe' : './api';
   if (File(caminhoApi).existsSync()) {
     processoApi = await Process.start(caminhoApi, List.empty());
   }
 
-  //Carregando variáveis de ambiente
   try {
     await dotenv.load(fileName: ".env");
   } on EmptyEnvFileError {
@@ -87,6 +83,12 @@ class Myapp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LoginProvider()),
         ChangeNotifierProvider(create: (context) => MenuState()),
         ChangeNotifierProvider(create: (context) => AutorProvider()),
+        ProxyProvider<AuthProvider, CategoriaProvider>(
+          create: (_) => CategoriaProvider(0, ''),
+          update: (_, authProvider, usuarioProvider) => CategoriaProvider(
+              authProvider.idDaSessao, authProvider.usuarioLogado),
+          dispose: (_, usuarioProvider) => usuarioProvider.dispose(),
+        ),
         ProxyProvider<AuthProvider, PaisesProvider>(
           create: (_) => PaisesProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => PaisesProvider(
@@ -135,6 +137,7 @@ class Myapp extends StatelessWidget {
           AppRoutes.login: (ctx) => const TelaLogin(),
           AppRoutes.logout: (ctx) => const Myapp(),
           AppRoutes.home: (ctx) => const TelaPaginaIncial(),
+          AppRoutes.dashboard: (ctx) => LibraryDashboard(),
           AppRoutes.usuarios: (ctx) => const UserTablePage(),
           AppRoutes.novoUsuario: (ctx) => const FormUser(),
           AppRoutes.editarUsuario: (ctx) => const FormUser(),

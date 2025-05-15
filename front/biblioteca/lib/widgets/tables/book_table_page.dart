@@ -94,7 +94,7 @@ class BookTablePageState extends State<BookTablePage> {
                         foregroundColor:
                             const WidgetStatePropertyAll(Colors.white),
                         padding: WidgetStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.all(15.0), // Padding personalizado
+                          const EdgeInsets.all(15.0),
                         ),
                       ),
                     )
@@ -117,8 +117,7 @@ class BookTablePageState extends State<BookTablePage> {
                           if (value != null) {
                             setState(() {
                               rowsPerPage = value;
-                              currentPage =
-                                  1; // Reinicia para a primeira página
+                              currentPage = 1;
                             });
                           }
                         },
@@ -200,8 +199,8 @@ class BookTablePageState extends State<BookTablePage> {
                       TableRow(
                         decoration: BoxDecoration(
                           color: x % 2 == 0
-                              ? Color.fromRGBO(233, 235, 238, 75)
-                              : Color.fromRGBO(255, 255, 255, 1),
+                              ? const Color.fromRGBO(233, 235, 238, 75)
+                              : const Color.fromRGBO(255, 255, 255, 1),
                         ),
                         children: [
                           Align(
@@ -209,7 +208,7 @@ class BookTablePageState extends State<BookTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(paginatedBooks[x].titulo,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 14.5),
                                   textAlign: TextAlign.left),
@@ -220,7 +219,7 @@ class BookTablePageState extends State<BookTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(paginatedBooks[x].isbn,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 14.5),
                                   textAlign: TextAlign.left),
@@ -232,7 +231,7 @@ class BookTablePageState extends State<BookTablePage> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(paginatedBooks[x].editora,
                                   textAlign: TextAlign.left,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 14.5)),
                             ),
@@ -247,7 +246,7 @@ class BookTablePageState extends State<BookTablePage> {
                                       .year
                                       .toString(),
                                   textAlign: TextAlign.left,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 14.5)),
                             ),
@@ -260,7 +259,7 @@ class BookTablePageState extends State<BookTablePage> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      // Apagar
+                                      Provider.of<LivroProvider>(context).deleteLivro(paginatedBooks[x].idDoLivro);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,

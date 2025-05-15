@@ -1,3 +1,6 @@
+//go:build !testes
+// +build !testes
+
 package main
 
 import (
@@ -32,8 +35,10 @@ func main() {
 	http.HandleFunc("/turmas", rotas.Turma)
 	http.HandleFunc("/exemplar", rotas.Exemplar)
 	http.HandleFunc("/categoria", rotas.Categoria)
+	http.HandleFunc("/subcategoria", rotas.SubCategoria)
 	http.HandleFunc("/devolucao", rotas.Devolucao)
 	http.HandleFunc("/pais", rotas.Pais)
+	http.HandleFunc("/emprestimo", rotas.Emprestimo)
 	fmt.Printf("Api está rodando em http://%s:%s\n", ip, porta)
 	if erro := http.ListenAndServe(fmt.Sprintf(":%s", porta), nil); erro != nil {
 		fmt.Println(erro)

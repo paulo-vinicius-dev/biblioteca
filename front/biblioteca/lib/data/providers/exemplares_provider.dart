@@ -11,7 +11,15 @@ class ExemplarProvider with ChangeNotifier {
   final num idDaSessao;
   final String usuarioLogado;
   List<EmprestimosModel> listaEmprestados = [];  //alterei so isso aqui
+  List<EmprestimosModel> listaEmprestados = [];  //alterei so isso aqui
   ExemplarProvider(this.idDaSessao, this.usuarioLogado);
+
+  void addExemplarEmprestado (List<EmprestimosModel> exemplares){
+    listaEmprestados.addAll(exemplares);
+    print(listaEmprestados);
+    notifyListeners();
+  }
+
 
   void addExemplarEmprestado (List<EmprestimosModel> exemplares){
     listaEmprestados.addAll(exemplares);

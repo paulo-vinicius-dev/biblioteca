@@ -9,7 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FormLogin extends StatefulWidget {
-  const FormLogin({super.key});
+  AuthService? authService;
+  FormLogin({
+    super.key,
+    authService
+  });
 
   @override
   State<FormLogin> createState() => _FormLoginState();
@@ -69,7 +73,7 @@ class _FormLoginState extends State<FormLogin> {
           print(_login!.idSessao);
           _authProvider.login(_login!.idSessao, login);
           Future.delayed(
-            Duration(milliseconds: 200),
+            const Duration(milliseconds: 200),
             () => Navigator.pushReplacementNamed(context, AppRoutes.home),
           );
         } else {
@@ -78,7 +82,7 @@ class _FormLoginState extends State<FormLogin> {
       });
     } catch (e) {
       print("$e");
-      showError('Ops! Algo de errado não está certo, volte mais tarde');
+      showError('Não foi possível conectar ao banco de dados no momento. Por favor, tente novamente mais tarde');
     }
   }
 

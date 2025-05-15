@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biblioteca/data/models/exemplar_model.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
+import 'package:biblioteca/data/models/paises_model.dart';
+import 'package:biblioteca/data/providers/paises_provider.dart';
 
 class ExemplaresPage extends StatefulWidget {
   final Livro book;
@@ -20,6 +22,24 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
   void initState() {
     super.initState();
     _loadExemplares();
+    _loadPaises();
+
+
+
+    Exemplar novoExemplar = Exemplar(
+        id: 0,
+        cativo: false,
+        statusCodigo: 0,
+        estado: 0,
+        ativo: true,
+        idLivro: widget.book.idDoLivro,
+        isbn: widget.book.isbn,
+        titulo: widget.book.titulo,
+        anoPublicacao: widget.book.anoPublicacao,
+        editora: widget.book.editora,
+        idPais: widget.book.pais.values,
+        nomePais: 
+        );
   }
 
   Future<void> _loadExemplares() async {
@@ -30,9 +50,22 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
     });
   }
 
+  Future<void> _loadPaises() async {
+    final provider = Provider.of<PaisesProvider>(context, listen: false);
+    await provider.loadPaises();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final exemplarProvider = Provider.of<ExemplarProvider>(context);
+    final paisesProvider = Provider.of<ExemplarProvider>(context);
+
+
+
 
     return Material(
       child: Column(
@@ -194,6 +227,26 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                           ),
                     ],
                   ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Provider.of<ExemplarProvider>(context).addExemplar();
+                    },
+                    label: const Text(
+                      'Novo Livro',
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.bold),
+                    ),
+                    icon: const Icon(Icons.add),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStatePropertyAll(Colors.green.shade800),
+                      foregroundColor:
+                          const WidgetStatePropertyAll(Colors.white),
+                      padding: WidgetStateProperty.all<EdgeInsets>(
+                        const EdgeInsets.all(15.0),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

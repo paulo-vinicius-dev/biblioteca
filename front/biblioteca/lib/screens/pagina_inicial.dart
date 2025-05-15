@@ -1,3 +1,4 @@
+import 'package:biblioteca/screens/library_dashboard.dart'; // Adicione esta linha
 import 'package:biblioteca/data/models/autor_model.dart';
 import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
@@ -12,6 +13,7 @@ import 'package:biblioteca/widgets/forms/form_book.dart';
 import 'package:biblioteca/widgets/forms/form_author.dart';
 import 'package:biblioteca/widgets/tables/author_table_page.dart';
 import 'package:biblioteca/widgets/tables/book_table_page.dart';
+import 'package:biblioteca/widgets/tables/categories_table_page.dart';
 import 'package:biblioteca/widgets/tables/exemplar_table_page.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:biblioteca/widgets/navegacao/menu_navegacao.dart';
@@ -109,20 +111,18 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
   void _onPageSelected(String route) {
     if (_selectedRoute != route) {
       setState(() {
-      _selectedRoute = route;
-      _navigatorKey.currentState!.pushReplacementNamed(route);
+        _selectedRoute = route;
+        _navigatorKey.currentState!.pushReplacementNamed(route);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return paginaInicialContent(context);
   }
 
   Scaffold paginaInicialContent(BuildContext context) {
-
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
@@ -200,7 +200,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                       Widget page;
                       switch (settings.name) {
                         case '/inicio':
-                          page = const Home();
+                          page = LibraryDashboard();
                           break;
                         case '/pesquisar_livro':
                           page = const PesquisarLivro();
@@ -239,6 +239,9 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           });
                         case '/novo_autor':
                           page = const FormAutor();
+                          break;
+                        case '/categorias':
+                          page = const CategoriesTablePage();
                           break;
                         case AppRoutes.editarAutor:
                           final autor = settings.arguments as Autor;

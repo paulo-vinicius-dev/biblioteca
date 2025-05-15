@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:biblioteca/data/models/exemplar_model.dart';
 import 'package:biblioteca/data/models/livro_model.dart';
@@ -374,7 +373,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         color: Colors.black.withOpacity(0.1),
                                         blurRadius: 4,
                                         spreadRadius: 1,
-                                        offset: Offset(0, 2),
+                                        offset: const Offset(0, 2),
                                       ),
                                     ],
                                   ),

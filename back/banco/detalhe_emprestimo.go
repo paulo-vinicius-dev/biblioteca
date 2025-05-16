@@ -102,7 +102,7 @@ func PegarDetalheEmprestimoPorIdDoEmprestimo(idDoEmprestimo int) []modelos.Detal
 	return detalhes
 }
 
-func PegarDetalheEmprestimoPorIdDoAluno(idDoAluno int) []modelos.DetalheEmprestimo {
+func PegarDetalheEmprestimoPorIdDoRequerente(idDoRequerente int) []modelos.DetalheEmprestimo {
 	conexao := PegarConexao()
 	detalhes := make([]modelos.DetalheEmprestimo, 0)
 	var detalhe modelos.DetalheEmprestimo
@@ -118,7 +118,7 @@ func PegarDetalheEmprestimoPorIdDoAluno(idDoAluno int) []modelos.DetalheEmpresti
 		detalhe
 		from detalhe_emprestimo
 		where usuario = $1;	`,
-		idDoAluno,
+		idDoRequerente,
 	)
 	if _, erro := pgx.ForEachRow(
 		rows,

@@ -74,9 +74,9 @@ func requisicaoEmprestimoPostParaEmprestimoEDetalheEmprestimo(r requisicaoEmpres
 	for _, idExemplar := range r.IdsExemplares {
 		var emprestimo modelos.Emprestimo
 		emprestimo.Exemplar.IdDoExemplarLivro = idExemplar
-		emprestimo.Usuario.Login = r.LoginDoUsuario
+		emprestimo.Usuario.IdDoUsuario = r.IdDoAluno
 		var detalheEmprestimo modelos.DetalheEmprestimo
-		detalheEmprestimo.Usuario.IdDoUsuario = r.IdDoAluno
+		detalheEmprestimo.Usuario.Login = r.LoginDoUsuario
 		emprestimos = append(emprestimos, emprestimo)	
 		detalhes = append(detalhes, detalheEmprestimo)	
 	} 

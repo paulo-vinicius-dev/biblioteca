@@ -28,7 +28,6 @@ class ExemplarService {
 
   // Pesquisa os exemplares
 
-  
   // Future<ExemplaresAtingidos> searchExemplares(num idDaSessao,
   //     String loginDoUsuarioRequerente, String textoDeBusca) async {
   //   final Map<String, dynamic> body = {
@@ -49,18 +48,14 @@ class ExemplarService {
   // }
 
   // Cria um novo exemplar
-  Future<Exemplar> addExemplar(
-      num idDaSessao, String loginDoUsuarioRequerente, Exemplar exemplar) async {
+  Future<ExemplarEnvio> addExemplar(num idDaSessao,
+      String loginDoUsuarioRequerente, ExemplarEnvio exemplar) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuario": loginDoUsuarioRequerente,
-      "Titulo": exemplar.titulo,
-      "AnoPublicacao": exemplar.anoPublicacao.toIso8601String(),
-      "Editora": exemplar.editora,
-      "Isbn": exemplar.isbn,
       "IdDoLivro": exemplar.idLivro,
       "Estado": exemplar.estado,
-      "Status": exemplar.statusCodigo,
+      "Status": exemplar.status,
       "Ativo": exemplar.ativo
     };
 
@@ -74,12 +69,12 @@ class ExemplarService {
       throw Exception(response.data);
     }
 
-    return exemplaresAtingidosFromJson(response.data).exemplares[0];
+    return exemplaresEnvioAtingidosFromJson(response.data).exemplaresEnvio[0];
   }
 
   // Altera um exemplar existente
-  Future<Exemplar> alterExemplar(
-      num idDaSessao, String loginDoUsuarioRequerente, Exemplar exemplar) async {
+  Future<Exemplar> alterExemplar(num idDaSessao,
+      String loginDoUsuarioRequerente, Exemplar exemplar) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuario": loginDoUsuarioRequerente,

@@ -48,6 +48,8 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
               padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
               child: Column(
                 children: [
+                  Text(
+                      "Total de exemplares: ${exemplarProvider.exemplares.length}"),
                   Table(
                     border: TableBorder.all(
                       color: const Color.fromARGB(255, 213, 213, 213),
@@ -194,6 +196,37 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                           ),
                     ],
                   ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      ExemplarEnvio novoExemplar = ExemplarEnvio(
+                        id: 0,
+                        cativo: false,
+                        status: 0,
+                        estado: 0,
+                        ativo: true,
+                        idLivro: widget.book.idDoLivro,
+                      );
+
+                      Provider.of<ExemplarProvider>(context)
+                          .addExemplar(novoExemplar);
+                      setState(() {});
+                    },
+                    label: const Text(
+                      'Novo Livro',
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.bold),
+                    ),
+                    icon: const Icon(Icons.add),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStatePropertyAll(Colors.green.shade800),
+                      foregroundColor:
+                          const WidgetStatePropertyAll(Colors.white),
+                      padding: WidgetStateProperty.all<EdgeInsets>(
+                        const EdgeInsets.all(15.0),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

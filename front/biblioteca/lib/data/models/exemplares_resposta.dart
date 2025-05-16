@@ -24,3 +24,28 @@ class ExemplaresAtingidos {
         "Exemplares": List<dynamic>.from(exemplares.map((x) => x.toJson())),
       };
 }
+
+ExemplaresEnvioAtingidos exemplaresEnvioAtingidosFromJson(String str) =>
+    ExemplaresEnvioAtingidos.fromJson(json.decode(str));
+
+String exemplaresEnvioAtingidosToJson(ExemplaresEnvioAtingidos data) =>
+    json.encode(data.toJson());
+
+class ExemplaresEnvioAtingidos {
+  List<ExemplarEnvio> exemplaresEnvio;
+
+  ExemplaresEnvioAtingidos({
+    required this.exemplaresEnvio,
+  });
+
+  factory ExemplaresEnvioAtingidos.fromJson(Map<String, dynamic> json) =>
+      ExemplaresEnvioAtingidos(
+        exemplaresEnvio: List<ExemplarEnvio>.from(
+            json["Exemplares"].map((x) => ExemplarEnvio.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "Exemplares":
+            List<dynamic>.from(exemplaresEnvio.map((x) => x.toJson())),
+      };
+}

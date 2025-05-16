@@ -94,7 +94,7 @@ class BookTablePageState extends State<BookTablePage> {
                         foregroundColor:
                             const WidgetStatePropertyAll(Colors.white),
                         padding: WidgetStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.all(15.0), // Padding personalizado
+                          const EdgeInsets.all(15.0),
                         ),
                       ),
                     )
@@ -117,8 +117,7 @@ class BookTablePageState extends State<BookTablePage> {
                           if (value != null) {
                             setState(() {
                               rowsPerPage = value;
-                              currentPage =
-                                  1; // Reinicia para a primeira página
+                              currentPage = 1;
                             });
                           }
                         },
@@ -260,7 +259,7 @@ class BookTablePageState extends State<BookTablePage> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      // Apagar
+                                      Provider.of<LivroProvider>(context).deleteLivro(paginatedBooks[x].idDoLivro);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,

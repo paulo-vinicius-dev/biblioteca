@@ -6,8 +6,6 @@ import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/data/models/paises_model.dart';
 import 'package:biblioteca/data/providers/paises_provider.dart';
-import 'package:biblioteca/data/models/exemplar_model.dart';
-import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 

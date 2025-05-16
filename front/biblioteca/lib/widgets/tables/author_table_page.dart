@@ -27,7 +27,6 @@ class AuthorTablePageState extends State<AuthorTablePage> {
   }
 
   _delete(author) async {
-    print('ta tentando deletar');
     await Provider.of<AutorProvider>(context, listen: false)
         .deleteAutor(author);
   }

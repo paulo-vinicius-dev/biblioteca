@@ -130,7 +130,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
               duration: Duration(seconds: 2),
             ));
           } else if (!selectedBoxExemplar.contains(selectbook)) {
-            if (selectbook!.statusCodigo == 4) { //mudar isso aqui dps para (selectbook!.statusCodigo != 1) pq a api da com bug de definir o status de todos os exemplares como 0
+            if (selectbook!.statusCodigo != 1) { //mudar isso aqui dps para (selectbook!.statusCodigo != 1) pq a api da com bug de definir o status de todos os exemplares como 0
               msgIndisponivel(selectbook!);
             } else {
               setState(() {
@@ -463,16 +463,34 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   void carregarEmprestimosUsuario(int idUsuario) async{
     emprestimos = await Provider.of<EmprestimoProvider>(context, listen:  false).fetchEmprestimoUsuario(idUsuario);
     setState(() {
-      
     });
   }
-  void realizarEmprestimo(List<Exemplar> exemplaresParaEmprestar){
+  void realizarEmprestimo(List<Exemplar> exemplaresParaEmprestar) async{
     List<int> listaIdsExemplares = [];
     for(Exemplar item in exemplaresParaEmprestar){
       listaIdsExemplares.add(item.id);
     }
-    final statusCode = Provider.of<EmprestimoProvider>(context,listen: false).addEmprestimo(selectUser!.idDoUsuario, listaIdsExemplares);
+    final statusCode = await Provider.of<EmprestimoProvider>(context,listen: false).addEmprestimo(selectUser!.idDoUsuario, listaIdsExemplares);
 
+    if(statusCode == 200){
+      msgConfirmEmprestimo(exemplaresParaEmprestar, 0);
+      
+      carregarEmprestimosUsuario(selectUser!.idDoUsuario);
+      
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text(
+                'Erro ao tentar realizar o emprestimo, tente novamente mais tarde!',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              duration: Duration(seconds: 2),
+            ));
+    }
   }
   @override
   void dispose() {
@@ -1338,10 +1356,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                     }
                                                   }
                                                   realizarEmprestimo(exemplaresSelecionadosEmprestimo);
-                                                  msgConfirmEmprestimo(
-                                                      exemplaresSelecionadosEmprestimo, 0);
-                                                  exemplaresSelecionadosEmprestimo =
-                                                      [];
                                                 },
                                                 child: const Row(
                                                   children: [

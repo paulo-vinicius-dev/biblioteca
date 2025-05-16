@@ -48,6 +48,8 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
               padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
               child: Column(
                 children: [
+                  Text(
+                      "Total de exemplares: ${exemplarProvider.exemplares.length}"),
                   Table(
                     border: TableBorder.all(
                       color: const Color.fromARGB(255, 213, 213, 213),

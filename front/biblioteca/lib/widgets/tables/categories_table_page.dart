@@ -478,7 +478,10 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
               categoria!.descricao = _descriptionController.text;
               categoriaProvider.editCatgoria(categoria);
               setState(() {
-                categorias.firstWhere((c)=>c.idDaCategoria == categoria!.idDaCategoria).descricao = _descriptionController.text;
+                categorias
+                    .firstWhere(
+                        (c) => c.idDaCategoria == categoria.idDaCategoria)
+                    .descricao = _descriptionController.text;
               });
               Navigator.of(context).pop();
             } else {

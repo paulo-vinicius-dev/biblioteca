@@ -22,9 +22,9 @@ func TextoAcaoDetalhe(acaoDetalhe int) string {
 type DetalheEmprestimo struct {
 	IdDetalheEmprestimo int
 	Emprestimo Emprestimo
-	Usuario Usuario // Esse usuário é quem faz o empréstimo
+	Usuario Usuario // Esse usuário é o bibliotecário
 	DataHora string
 	Acao int
-  Detalhe string
+	Detalhe string
 	Observacao string
 }

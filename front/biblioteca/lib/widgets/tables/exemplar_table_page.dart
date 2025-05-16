@@ -25,21 +25,21 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
     _loadPaises();
 
 
-
-    Exemplar novoExemplar = Exemplar(
-        id: 0,
-        cativo: false,
-        statusCodigo: 0,
-        estado: 0,
-        ativo: true,
-        idLivro: widget.book.idDoLivro,
-        isbn: widget.book.isbn,
-        titulo: widget.book.titulo,
-        anoPublicacao: widget.book.anoPublicacao,
-        editora: widget.book.editora,
-        idPais: widget.book.pais.values,
-        nomePais: 
-        );
+    //dando erro aqui
+    // Exemplar novoExemplar = Exemplar(
+    //     id: 0,
+    //     cativo: false,
+    //     statusCodigo: 0,
+    //     estado: 0,
+    //     ativo: true,
+    //     idLivro: widget.book.idDoLivro,
+    //     isbn: widget.book.isbn,
+    //     titulo: widget.book.titulo,
+    //     anoPublicacao: widget.book.anoPublicacao,
+    //     editora: widget.book.editora,
+    //     idPais: widget.book.pais.values, //ta dando erro aqui
+    //     nomePais: 
+    //     ); 
   }
 
   Future<void> _loadExemplares() async {
@@ -229,7 +229,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Provider.of<ExemplarProvider>(context).addExemplar();
+                      //Provider.of<ExemplarProvider>(context).addExemplar(); // dando erro aqui
                     },
                     label: const Text(
                       'Novo Livro',

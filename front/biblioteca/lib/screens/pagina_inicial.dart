@@ -208,9 +208,9 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                         case '/emprestimo':
                           page = const PaginaEmprestimo();
                           break;
-                        case '/devolucao':
-                          page = const TelaDevolucao();
-                          break;
+                        // case '/devolucao':
+                        //   page = const TelaDevolucao();
+                        //   break;
                         case AppRoutes.autores:
                           page = const AuthorTablePage();
                           break;

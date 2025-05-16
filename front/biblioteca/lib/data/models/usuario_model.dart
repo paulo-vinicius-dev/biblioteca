@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-
-import 'package:biblioteca/data/models/emprestimos_model.dart';
 import 'package:biblioteca/utils/config.dart';
 
 
@@ -27,8 +24,6 @@ class Usuario {
   int permissao;
   bool ativo;
   int turma;
-  //remover depois
-  List<EmprestimosModel> livrosEmprestados = [];
 
   String? turmaDescrisao;
   int? serie;
@@ -49,11 +44,7 @@ class Usuario {
     this.turmaDescrisao,
     this.serie,
     this.turno,
-  
-
-    //remover depois
-    List<EmprestimosModel>? livrosEmprestados,
-  }): livrosEmprestados = livrosEmprestados ?? [];
+    });
 
 
 
@@ -107,3 +98,4 @@ class Usuario {
         "Turno": turno,
       };
 }
+  

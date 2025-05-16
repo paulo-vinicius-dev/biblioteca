@@ -7,6 +7,9 @@ import (
 	"biblioteca/utilidades"
 	"context"
 	"fmt"
+	"os"
+	"strconv"
+	"time"
 )
 
 // Nota: Refatore para que não tenha dependencias cíclicas entre o pacote de
@@ -23,6 +26,8 @@ const (
 	ErroServicoEmprestimoObservacaoInvalida
 	ErroServicoEmprestimoSessaoInvalida
 	ErroServicoEmprestimoUsuarioSemPermissao
+	ErroServicoEmprestimoEmprestimoNaoEncontrado
+	ErroServicoEmprestimoNumeroMaximoDeRenovacoesAtingidos
 )
 
 func erroBancoEmprestimoParaErroServico(erro banco.ErroBancoEmprestimo) ErroServicoDoEmprestimo {
@@ -140,4 +145,76 @@ func PesquisarEmprestimo(idDaSessao uint64, loginDoUsuario string, idDoEmprestim
 
 	return emprestimos, detalhes, ErroServicoEmprestimoNenhum
 
+}
+
+// sei que esse método só retorna um item sempre
+// mas para passar o resultado mais facilmente para a função paraRespostaEmprestimo
+func RenovarEmprestimo(idDaSessao uint64, loginDoUsuario string, idDoEmprestimo int) ([]modelos.Emprestimo, []modelos.DetalheEmprestimo, ErroServicoDoEmprestimo) {
+	transacao, _ := banco.CriarTransacao()
+	defer func() {
+		if transacao.Commit(context.Background()) != nil {
+			transacao.Rollback(context.Background())
+		}
+	}()
+
+	diasEmprestimo, erro := strconv.Atoi(os.Getenv("DIAS_EMPRESTIMO"))
+	if erro != nil {
+		panic("Configuração 'DIAS_EMPRESTIMO' é inválida ou inexistente")
+	}
+
+	emprestimo, detalhes, e := PesquisarEmprestimo(idDaSessao, loginDoUsuario, idDoEmprestimo, 0, 0, 0)
+
+	if e != ErroServicoEmprestimoNenhum || len(emprestimo) == 0 || len(detalhes) == 0 {
+		return emprestimo, detalhes, e
+	}
+
+	contadorRenovacoes := 0
+	for _, detalhe := range detalhes {
+		if detalhe.Acao == modelos.AcaoDetalheEmprestimoRenovar {
+			contadorRenovacoes += 1
+		}
+	}
+
+	if contadorRenovacoes > 2 {
+		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, ErroServicoEmprestimoNumeroMaximoDeRenovacoesAtingidos
+	}
+
+	dataEntregaPrevista, _ := time.Parse(time.DateOnly, emprestimo[0].DataDeEntregaPrevista)
+
+	dataEntregaPrevista = dataEntregaPrevista.AddDate(0, 0, diasEmprestimo)
+
+	emprestimo[0].DataDeEntregaPrevista = dataEntregaPrevista.Format(time.DateOnly)
+	emprestimo[0].NumeroRenovacoes += 1
+
+	if banco.AtualizarEmprestimo(transacao, emprestimo[0]) != banco.ErroBancoEmprestimoNenhum {
+		transacao.Rollback(context.Background())
+		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, ErroServicoEmprestimoEmprestimoNaoEncontrado
+	}
+
+	usuario, erroUsuario := banco.PesquisarUsuarioPeloLogin(loginDoUsuario)
+	if erroUsuario {
+		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, ErroServicoEmprestimoUsuarioNaoEncontrado
+	}
+
+	detalheRenovacao := modelos.DetalheEmprestimo{
+		Emprestimo: emprestimo[0],
+		Usuario:    usuario,
+		DataHora:   time.Now().Format(time.DateOnly),
+		Acao:       modelos.AcaoDetalheEmprestimoRenovar,
+	}
+
+	erroDetalheEmprestimo := banco.CadastroDetalheEmprestimo(
+		transacao,
+		[]modelos.DetalheEmprestimo{
+			detalheRenovacao,
+		},
+	)
+
+	if erroDetalheEmprestimo != banco.ErroBancoDetalheEmprestimoNenhum {
+		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, erroBancoDetalheEmprestimoParaErroServico(erroDetalheEmprestimo)
+	}
+
+	detalhes = append(detalhes, detalheRenovacao)
+
+	return emprestimo, detalhes, ErroServicoEmprestimoNenhum
 }

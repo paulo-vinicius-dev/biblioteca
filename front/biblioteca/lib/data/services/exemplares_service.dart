@@ -53,6 +53,7 @@ class ExemplarService {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuario": loginDoUsuarioRequerente,
+      "IdDoExemplarLivro": exemplar.id,
       "IdDoLivro": exemplar.idLivro,
       "Estado": exemplar.estado,
       "Status": exemplar.status,

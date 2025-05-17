@@ -91,7 +91,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                         style: TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
-                      icon: const Icon(Icons.add),
+                      icon: const Icon(Icons.add, color: Colors.white),
                       style: ButtonStyle(
                         backgroundColor:
                             WidgetStatePropertyAll(Colors.green.shade800),

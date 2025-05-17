@@ -101,7 +101,11 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                       ),
 
                       // Linhas da tabela
-                      for (int i = 0; i < exemplaresDoLivro.length; i++)
+                      for (int i = 0;
+                          i < exemplarProvider.exemplares.length;
+                          i++)
+                        if (exemplarProvider.exemplares[i].idLivro ==
+                            widget.book.idDoLivro)
                         TableRow(
                           children: [
                             Padding(

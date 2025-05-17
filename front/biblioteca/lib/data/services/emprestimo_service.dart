@@ -29,17 +29,36 @@ class EmprestimoService {
     }
     List<EmprestimosModel> emprestimos = [];
     final respostaFinal = jsonDecode(response.data);
-    print(respostaFinal);
     respostaFinal.map((item){
       if(item['Status'] == 1){
         final emprestimo = EmprestimosModel.fromMap(item); 
         emprestimos.add(emprestimo);
       }
     }).toList();
-    print('Lista de emprestimos: ${emprestimos}');
     return emprestimos;
   }
+  Future<List<EmprestimosModel>> fetchEmprestimoExemplar(
+      num idDaSessao, String loginDoUsuarioRequerente, int idExemplar ) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuario": loginDoUsuarioRequerente,
+      "idDoExemplar": idExemplar
+    };
 
+    final response = await _api.requisicao(
+      apiRoute,
+      'GET',
+      body,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(response.data);
+    }
+    final respostaFinal = jsonDecode(response.data);
+    final emprestimo = EmprestimosModel.fromMap(respostaFinal[0]); 
+
+    return [emprestimo];
+  }
 
   // Cria um novo emprestimo
   Future<int?> addEmprestimo(
@@ -90,6 +109,22 @@ class EmprestimoService {
 
     return exemplaresAtingidosFromJson(response.data).exemplares[0];
   }
-
+  Future<int?> renovarEmprestimo(
+      num idDaSessao, String loginDoUsuarioRequerente, int idEmprestimo) async {
+    final Map<String, dynamic> body = {
+      "idDaSessao": idDaSessao, 
+      "loginDoUsuario" :loginDoUsuarioRequerente,
+      "idDoEmprestimo": idEmprestimo,
+    };
+    final response = await _api.requisicao(
+      apiRoute,
+      'PUT',
+      body,
+    );
+    if (response.statusCode != 200) {
+      throw Exception(response.data);
+    }
+    return response.statusCode;
+  }
 
 }

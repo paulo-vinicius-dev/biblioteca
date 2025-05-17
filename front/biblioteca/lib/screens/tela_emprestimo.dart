@@ -61,7 +61,20 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
       });
     }
   }
-
+  scafoldMsg(String msg, int tipo){
+    return ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+            backgroundColor: tipo == 1? Colors.red: (tipo ==2)? Colors.orange: Colors.green,
+            content: Text(
+              msg,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            duration: Duration(seconds: 2),
+          ));
+  }
   
   void searchUsers() {
     final searchQuery = _searchController.text.toLowerCase();
@@ -99,36 +112,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
           );
         } catch (e) {
           selectbook = null;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text(
-              "Exemplar não encontrado!",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            duration: Duration(seconds: 2),
-          ));
+          scafoldMsg('Exemplar não encontrado!', 1);
         }
 
         if (selectbook != null) {
           
           if (emprestimos
               .any((e) => e.exemplarMap['IdDoExemplarLivro'] == selectbook!.id)) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.red,
-              content: Text(
-                "Exemplar já emprestado para o aluno!",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              duration: Duration(seconds: 2),
-            ));
+            scafoldMsg('Exemplar já emprestado para o aluno!', 1);
           } else if (!selectedBoxExemplar.contains(selectbook)) {
             if (selectbook!.statusCodigo != 1) { //mudar isso aqui dps para (selectbook!.statusCodigo != 1) pq a api da com bug de definir o status de todos os exemplares como 0
               msgIndisponivel(selectbook!);
@@ -138,18 +129,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
               });
             }
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orange,
-              content: Text(
-                'Exemplar já adicionado!',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              duration: Duration(seconds: 2),
-            ));
+            scafoldMsg('Exemplar já adicionado!', 2);
           }
         }
       }
@@ -453,11 +433,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     return dataDevolucao;
   }
 
-  String renovar(String dataString) {
-    final formato = DateFormat('dd/MM/yyyy');
-    final data = formato.parse(dataString);
-    final novaData = data.add(const Duration(days: 7));
-    return formato.format(novaData);
+  Future<void> renovarExemplares(List<EmprestimosModel> emprestimosRenov) async{
+    final copia = List.from(emprestimosRenov);
+    for(final item in copia){
+      await Provider.of<EmprestimoProvider>(context, listen: false).renovacao(item.IdDoEmprestimo);
+    }
+    scafoldMsg('Renovaçao realiza com sucesso', 3);
+    carregarEmprestimosUsuario(selectUser!.idDoUsuario);
+    
   }
 
   void carregarEmprestimosUsuario(int idUsuario) async{
@@ -478,18 +461,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
       carregarEmprestimosUsuario(selectUser!.idDoUsuario);
       
     }else{
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.red,
-              content: Text(
-                'Erro ao tentar realizar o emprestimo, tente novamente mais tarde!',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              duration: Duration(seconds: 2),
-            ));
+      scafoldMsg('Erro ao tentar realizar o emprestimo, tente novamente mais tarde!', 1);
     }
   }
   @override
@@ -1210,17 +1182,13 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                                           5)),
                                                     ),
                                                     onPressed: () {
-                                                      List<int> exemplaresSelecionadosRenovacao = [];
+                                                      List<EmprestimosModel> exemplaresSelecionadosRenovacao = [];
                                                       for (EmprestimosModel dadosEmprestimo in emprestimos) {
                                                         if (dadosEmprestimo.selecionadoRenov == true) {
-                                                          //implermentar logica de renovacao
-                                                           exemplaresSelecionadosRenovacao.add(dadosEmprestimo.exemplarMap['IdDoExemplarLivro']);
+                                                           exemplaresSelecionadosRenovacao.add(dadosEmprestimo);
+                                                           renovarExemplares(exemplaresSelecionadosRenovacao);
                                                         }
                                                       }
-                                                      //sem msg de confirmacao por enquanto
-                                                      //msgConfirmEmprestimo(exemplaresSelecionadosRenovacao, 1);
-                                                      exemplaresSelecionadosRenovacao = [];
-                                                      //setState(() {});
                                                     },
                                                     child: const Text('Renovar',
                                                         style: TextStyle(

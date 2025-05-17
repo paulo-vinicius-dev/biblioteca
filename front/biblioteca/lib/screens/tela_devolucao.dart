@@ -1,4 +1,5 @@
 import 'package:biblioteca/data/models/emprestimos_model.dart';
+import 'package:biblioteca/data/providers/emprestimo_provider.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
@@ -21,13 +22,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
   void initState() {
     super.initState();
     exemplarProvider = Provider.of<ExemplarProvider>(context, listen: false);
-    // if (exemplarProvider.exemplares.isEmpty) {
-    //   Provider.of<ExemplarProvider>(context, listen: false)
-    //       .loadExemplares()
-    //       .then((_) {
-    //     setState(() {});
-    //   });
-    //}
+    
   }
 
   void msgSnackBar(String msg, int tipoCor) {
@@ -43,31 +38,30 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
     ));
   }
 
-  void searchBooks() {
+  Future<void> searchBooks() async{
     showBooks = true;
-    EmprestimosModel? selectbook;
+    List<EmprestimosModel> selectbook;
     final searchQuery = _searchControllerBooks.text.trim();
-
-    setState(() {
       if (searchQuery.isEmpty) {
-        selectbook = null;
+        selectbook = [];
         return;
       }
         try {
-          selectbook = exemplares.firstWhere(
-            (exemplar) => exemplar.codigo == searchQuery,
-          );
+          selectbook = await Provider.of<EmprestimoProvider>(context, listen: false).fetchEmprestimoExemplar(int.parse(searchQuery));
         } catch (e) {
-          selectbook = null;
-          msgSnackBar('Exemplar não foi emprestado', 0);
+          selectbook = [];
+          msgSnackBar('Erro ao fazer a pesquisa, tente novamente mais tarde', 0);
         }
-        if (selectbook != null) {
-          if (selectedBoxExemplar.contains(selectbook)) {
+        if(selectbook.isEmpty){
+          msgSnackBar('Exemplar não se encontra na situação emprestado.', 0);
+        }else{
+          if (selectedBoxExemplar.any((item)=> item.IdDoEmprestimo == selectbook[0].IdDoEmprestimo)) {
             msgSnackBar('Exemplar já adicionado na lista', 1);
           } else {
-            selectedBoxExemplar.add(selectbook!);
+            selectedBoxExemplar.add(selectbook[0]);
           }
         }
+    setState(() {
       
     });
   }
@@ -140,7 +134,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                           children: [
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.codigo,
+                              child: Text(exemplar.exemplarMap['IdDoExemplarLivro'].toString(),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -148,7 +142,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                             ),
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.nome,
+                              child: Text(exemplar.exemplarMap['Livro']['Titulo'],
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -157,7 +151,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                             Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Text(
-                                  exemplar.dataDevolucao,
+                                  exemplar.dataPrevistaEntrega,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -290,7 +284,16 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                                           borderRadius:
                                               BorderRadius.circular(8))),
                                   onPressed: () {
-                                    msgConfirmEmprestimo(selectedBoxExemplar).then((_){
+                                    List<EmprestimosModel> listaParaDevolucao  = [];
+                                    for(EmprestimosModel item in selectedBoxExemplar){
+                                      if(item.selecionadoRenov == true){
+                                        listaParaDevolucao.add(item);
+                                      }
+                                    }
+                                    if(listaParaDevolucao.isEmpty){
+                                      msgSnackBar('Nenhum exemplar selecionado', 1);
+                                    }else{
+                                      msgConfirmEmprestimo(listaParaDevolucao).then((_){
                                      for (EmprestimosModel exemplar
                                         in List.from(selectedBoxExemplar)) {
                                       if (exemplar.selecionadoRenov == true) {
@@ -299,6 +302,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                                     }
                                     setState(() {});
                                     });
+                                    }
                                   },
                                   child: const Row(
                                     children: [
@@ -442,7 +446,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 9.4, horizontal: 8),
                                         child: Text(
-                                            selectedBoxExemplar[x].codigo,
+                                            selectedBoxExemplar[x].exemplarMap['IdDoExemplarLivro'].toString(),
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w300,
@@ -451,7 +455,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 9.4, horizontal: 8),
-                                        child: Text(selectedBoxExemplar[x].nome,
+                                        child: Text(selectedBoxExemplar[x].exemplarMap['Livro']['Titulo'],
                                             textAlign: TextAlign.left,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w300,
@@ -473,7 +477,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                                             vertical: 9.4, horizontal: 8),
                                         child: Text(
                                             selectedBoxExemplar[x]
-                                                .dataDevolucao,
+                                                .dataPrevistaEntrega,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w300,

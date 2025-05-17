@@ -153,7 +153,7 @@ class Myapp extends StatelessWidget {
           AppRoutes.editarUsuario: (ctx) => const FormUser(),
           AppRoutes.livros: (context) => const BookTablePage(),
           AppRoutes.autores: (context) => const AuthorTablePage(),
-          //AppRoutes.devolucao: (context) =>  TelaDevolucao(),
+          AppRoutes.devolucao: (context) =>  TelaDevolucao(),
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
           AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
 

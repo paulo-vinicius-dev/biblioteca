@@ -22,11 +22,29 @@ class EmprestimoProvider with ChangeNotifier {
   Future<int?> addEmprestimo(int idAluno, List<int> exemplaresEmprestados) async {
     try {
      final statusCode = await emprestimoService.addEmprestimo(idDaSessao, usuarioLogado, idAluno, exemplaresEmprestados);
-     print(statusCode);
      return statusCode;
     } catch (e) {
       print("Erro ao criar empréstimo: $e");
       return null;
+    }
+  }
+  Future<int?> renovacao(int idEmprestimo) async {
+    try {
+     final statusCode = await emprestimoService.renovarEmprestimo(idDaSessao, usuarioLogado, idEmprestimo);
+     print('Status renovacao : ${statusCode}');
+     return statusCode;
+    } catch (e) {
+      print("Erro ao renovar Emprestimo: $e");
+      return null;
+    }
+  }
+  Future<List<EmprestimosModel>> fetchEmprestimoExemplar(int idExemplar) async{
+    try{
+      final emprestimo = await emprestimoService.fetchEmprestimoExemplar(idDaSessao, usuarioLogado, idExemplar);
+      return emprestimo;
+    }catch(e){
+      print('Erro ao pesquisar emprestimo: ${e}');
+      return [];
     }
   }
 }

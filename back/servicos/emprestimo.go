@@ -28,6 +28,7 @@ const (
 	ErroServicoEmprestimoUsuarioSemPermissao
 	ErroServicoEmprestimoEmprestimoNaoEncontrado
 	ErroServicoEmprestimoNumeroMaximoDeRenovacoesAtingidos
+	ErroServicoEmprestimoJaConcluido
 )
 
 func erroBancoEmprestimoParaErroServico(erro banco.ErroBancoEmprestimo) ErroServicoDoEmprestimo {
@@ -150,6 +151,7 @@ func PesquisarEmprestimo(idDaSessao uint64, loginDoUsuario string, idDoEmprestim
 // sei que esse método só retorna um item sempre
 // mas para passar o resultado mais facilmente para a função paraRespostaEmprestimo
 func RenovarEmprestimo(idDaSessao uint64, loginDoUsuario string, idDoEmprestimo int) ([]modelos.Emprestimo, []modelos.DetalheEmprestimo, ErroServicoDoEmprestimo) {
+	// nessa função não checo a permissão do usuário porque já faço isso na PesquisarEmprestimo
 	transacao, _ := banco.CriarTransacao()
 	defer func() {
 		if transacao.Commit(context.Background()) != nil {
@@ -170,6 +172,10 @@ func RenovarEmprestimo(idDaSessao uint64, loginDoUsuario string, idDoEmprestimo 
 
 	if emprestimo[0].NumeroRenovacoes > 2 {
 		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, ErroServicoEmprestimoNumeroMaximoDeRenovacoesAtingidos
+	}
+
+	if emprestimo[0].Status != modelos.StatusEmprestimoEmAndamento {
+		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, ErroServicoEmprestimoJaConcluido
 	}
 
 	dataEntregaPrevista, _ := time.Parse(time.DateOnly, emprestimo[0].DataDeEntregaPrevista)
@@ -194,6 +200,74 @@ func RenovarEmprestimo(idDaSessao uint64, loginDoUsuario string, idDoEmprestimo 
 		Usuario:    usuario,
 		DataHora:   time.Now().Format(time.DateOnly),
 		Acao:       modelos.AcaoDetalheEmprestimoRenovar,
+	}
+
+	erroDetalheEmprestimo := banco.CadastroDetalheEmprestimo(
+		transacao,
+		[]modelos.DetalheEmprestimo{
+			detalheRenovacao,
+		},
+	)
+
+	if erroDetalheEmprestimo != banco.ErroBancoDetalheEmprestimoNenhum {
+		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, erroBancoDetalheEmprestimoParaErroServico(erroDetalheEmprestimo)
+	}
+
+	detalhes = append(detalhes, detalheRenovacao)
+
+	return emprestimo, detalhes, ErroServicoEmprestimoNenhum
+}
+
+func DevolverEmprestimo(idDaSessao uint64, loginDoUsuario string, idDoEmprestimo int) ([]modelos.Emprestimo, []modelos.DetalheEmprestimo, ErroServicoDoEmprestimo) {
+	// nessa função não checo a permissão do usuário porque já faço isso na PesquisarEmprestimo
+	transacao, _ := banco.CriarTransacao()
+	defer func() {
+		if transacao.Commit(context.Background()) != nil {
+			transacao.Rollback(context.Background())
+		}
+	}()
+
+	emprestimo, detalhes, e := PesquisarEmprestimo(idDaSessao, loginDoUsuario, idDoEmprestimo, 0, 0, 0)
+
+	if e != ErroServicoEmprestimoNenhum || len(emprestimo) == 0 || len(detalhes) == 0 {
+		return emprestimo, detalhes, e
+	}
+
+	if emprestimo[0].Status != modelos.StatusEmprestimoEmAndamento {
+		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, ErroServicoEmprestimoJaConcluido
+	}
+
+	dataEntregaPrevista, _ := time.Parse(time.DateOnly, emprestimo[0].DataDeEntregaPrevista)
+	dataEntraga := time.Now()
+
+	emprestimo[0].DataDeDevolucao = dataEntraga.Format(time.DateOnly)
+
+	if dataEntraga.Unix() > dataEntregaPrevista.Unix() {
+		emprestimo[0].Status = modelos.StatusEmprestimoEntregueComAtraso
+	} else {
+		emprestimo[0].Status = modelos.StatusEmprestimoConcluido
+	}
+
+	if banco.AtualizarEmprestimo(transacao, emprestimo[0]) != banco.ErroBancoEmprestimoNenhum {
+		transacao.Rollback(context.Background())
+		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, ErroServicoEmprestimoEmprestimoNaoEncontrado
+	}
+
+	emprestimo[0].Exemplar.Status = modelos.StatusExemplarLivroDisponivel
+
+	_ = banco.AtualizarExemplarTransacao(transacao, emprestimo[0].Exemplar, emprestimo[0].Exemplar)
+
+	usuario, erroUsuario := banco.PesquisarUsuarioPeloLogin(loginDoUsuario)
+	if erroUsuario {
+		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, ErroServicoEmprestimoUsuarioNaoEncontrado
+	}
+
+	detalheRenovacao := modelos.DetalheEmprestimo{
+		Emprestimo: emprestimo[0],
+		Usuario:    usuario,
+		DataHora:   time.Now().Format(time.DateOnly),
+		Acao:       modelos.AcaoDetalheEmprestimoDevolver,
+		Detalhe:    modelos.TextoAcaoDetalhe(modelos.AcaoDetalheEmprestimoDevolver),
 	}
 
 	erroDetalheEmprestimo := banco.CadastroDetalheEmprestimo(

@@ -70,6 +70,7 @@ class _FormLoginState extends State<FormLogin> {
         _login = futureLogin;
 
         if (_login!.aceito) {
+          print(_login!.idSessao);
           _authProvider.login(_login!.idSessao, login);
           Future.delayed(
             const Duration(milliseconds: 200),

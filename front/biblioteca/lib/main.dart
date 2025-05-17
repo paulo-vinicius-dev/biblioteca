@@ -1,16 +1,18 @@
 import 'package:biblioteca/data/providers/auth_provider.dart';
 import 'package:biblioteca/data/providers/autor_provider.dart';
 import 'package:biblioteca/data/providers/categoria_provider.dart';
+import 'package:biblioteca/data/providers/emprestimo_provider.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/login_provider.dart';
 import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/data/providers/paises_provider.dart';
+import 'package:biblioteca/screens/library_dashboard.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
 import 'package:biblioteca/screens/pesquisar_livro.dart';
-import 'package:biblioteca/screens/library_dashboard.dart';
+import 'package:biblioteca/screens/tela_devolucao.dart';
 
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 
@@ -105,11 +107,19 @@ class Myapp extends StatelessWidget {
           create: (_) => ExemplarProvider(0, ''),
           update: (_, authProvider, exemplarprovider) => ExemplarProvider(
               authProvider.idDaSessao, authProvider.usuarioLogado),
+          dispose: (_, exemplarProvider) => exemplarProvider.dispose(),
         ),
         ProxyProvider<AuthProvider, LivroProvider>(
           create: (_) => LivroProvider(0, ''),
           update: (_, authProvider, exemplarprovider) => LivroProvider(
               authProvider.idDaSessao, authProvider.usuarioLogado),
+          dispose: (_, livroProvider) => livroProvider.dispose(),
+        ),
+        ProxyProvider<AuthProvider, EmprestimoProvider>(
+          create: (_) => EmprestimoProvider(0, ''),
+          update: (_, authProvider, exemplarprovider) => EmprestimoProvider(
+              authProvider.idDaSessao, authProvider.usuarioLogado),
+          dispose: (_, emprestimoProvider) => emprestimoProvider.dispose(),
         ),
       ],
       child: MaterialApp(
@@ -143,12 +153,11 @@ class Myapp extends StatelessWidget {
           AppRoutes.editarUsuario: (ctx) => const FormUser(),
           AppRoutes.livros: (context) => const BookTablePage(),
           AppRoutes.autores: (context) => const AuthorTablePage(),
-
-          //paginas temporarias para teste
+          AppRoutes.devolucao: (context) =>  TelaDevolucao(),
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
           AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
-          AppRoutes.devolucao: (context) => const Devolucao(),
 
+          //paginas temporarias para teste
           AppRoutes.relatorios: (context) => const Relatorios(),
           AppRoutes.nadaConsta: (context) => const NadaConsta(),
           AppRoutes.configuracoes: (context) => const Configuracoes(),

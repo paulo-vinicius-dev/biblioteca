@@ -4,6 +4,7 @@ import 'package:biblioteca/data/models/livro_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/auth_provider.dart';
 import 'package:biblioteca/screens/pesquisar_livro.dart';
+import 'package:biblioteca/screens/tela_devolucao.dart';
 import 'package:biblioteca/screens/tela_emprestimo.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/utils/routes.dart';
@@ -208,7 +209,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           page = const PaginaEmprestimo();
                           break;
                         case '/devolucao':
-                          page = const Devolucao();
+                          page = const TelaDevolucao();
                           break;
                         case AppRoutes.autores:
                           page = const AuthorTablePage();

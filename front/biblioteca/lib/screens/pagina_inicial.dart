@@ -252,7 +252,8 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           break;
                         case AppRoutes.exemplares:
                           final book = settings.arguments as Livro;
-                          page = ExemplaresPage(book: book);
+                          final ultimaPagina = settings.arguments as String;
+                          page = ExemplaresPage(book: book, ultimaPagina: ultimaPagina);
                           break;
                         default:
                           page = const Home();

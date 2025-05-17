@@ -5,6 +5,7 @@ import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
+import 'package:biblioteca/widgets/tables/exemplar_table_page.dart';
 import 'package:provider/provider.dart';
 
 class BookTablePage extends StatefulWidget {
@@ -87,7 +88,7 @@ class BookTablePageState extends State<BookTablePage> {
                         style: TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
-                      icon: const Icon(Icons.add),
+                      icon: const Icon(Icons.add, color: Colors.white),
                       style: ButtonStyle(
                         backgroundColor:
                             WidgetStatePropertyAll(Colors.green.shade800),
@@ -259,7 +260,9 @@ class BookTablePageState extends State<BookTablePage> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      Provider.of<LivroProvider>(context).deleteLivro(paginatedBooks[x].idDoLivro);
+                                      Provider.of<LivroProvider>(context)
+                                          .deleteLivro(
+                                              paginatedBooks[x].idDoLivro);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,
@@ -315,9 +318,16 @@ class BookTablePageState extends State<BookTablePage> {
                                   ElevatedButton(
                                     onPressed: () async {
                                       try {
-                                        Navigator.pushNamed(
-                                            context, AppRoutes.exemplares,
-                                            arguments: paginatedBooks[x]);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ExemplaresPage(
+                                              book: paginatedBooks[x],
+                                              ultimaPagina: 'Livros',
+                                            ),
+                                          ),
+                                        );
                                       } catch (e) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(

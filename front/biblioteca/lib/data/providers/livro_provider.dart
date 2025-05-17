@@ -63,6 +63,7 @@ class LivroProvider extends ChangeNotifier {
         throw Exception("Livro com ISBN ${livro["Isbn"]} já existe.");
       }
 
+      print("Provider: Tentando enviar o Livro: \n $idDaSessao \n $usuarioLogado \n $livro \n autores \n $categorias");
       await _livroService.addLivro(idDaSessao, usuarioLogado, livro, autores, categorias);
       _livrosEnvio.add(livro);
       return true;

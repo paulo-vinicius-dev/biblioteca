@@ -324,7 +324,7 @@ class BookTablePageState extends State<BookTablePage> {
                                             builder: (context) =>
                                                 ExemplaresPage(
                                               book: paginatedBooks[x],
-                                              ultimaPagina: 'Página Inicial',
+                                              ultimaPagina: 'Livros',
                                             ),
                                           ),
                                         );

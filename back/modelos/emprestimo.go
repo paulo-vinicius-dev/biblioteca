@@ -10,7 +10,7 @@ const (
 type Emprestimo struct {
 	IdDoEmprestimo        int
 	Exemplar              ExemplarLivro
-	Usuario               Usuario // Esse usuário é o usuario requerente
+	Usuario               Usuario // Esse usuário é o aluno
 	DataEmprestimo        string
 	NumeroRenovacoes      int
 	DataDeEntregaPrevista string

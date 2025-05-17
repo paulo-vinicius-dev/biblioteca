@@ -110,7 +110,7 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
                         style: TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
-                      icon: const Icon(Icons.add),
+                      icon: const Icon(Icons.add, color: Colors.white),
                       style: ButtonStyle(
                         backgroundColor:
                             WidgetStatePropertyAll(Colors.green.shade800),

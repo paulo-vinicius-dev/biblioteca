@@ -49,8 +49,12 @@ class LivroService {
   }
 
   // Criar novo Livro
-  Future<void> addLivro(num idDaSessao, String loginDoUsuarioCriador,
-      Map<String, dynamic> livro, List<String> autores, List<String> categorias) async {
+  Future<void> addLivro(
+      num idDaSessao,
+      String loginDoUsuarioCriador,
+      Map<String, dynamic> livro,
+      List<String> autores,
+      List<String> categorias) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuarioRequerente": loginDoUsuarioCriador,
@@ -70,13 +74,15 @@ class LivroService {
       body,
     );
 
+    print("Service: Tentando enviar o Livro: $body");
+
     if (response.statusCode != 200) {
       throw Exception('Erro ao adicionar livro: ${response.data}');
     }
   }
 
   // Alterar Livro
-  Future<void> alterLivro(Map<String,dynamic> livro) async {
+  Future<void> alterLivro(Map<String, dynamic> livro) async {
     final Map<String, dynamic> body = livro;
 
     final response = await _api.requisicao(

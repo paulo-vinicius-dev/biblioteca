@@ -255,18 +255,18 @@ func AtualizarEmprestimo(transacao pgx.Tx, emprestimoComDadosAtualizados modelos
 	where id_emprestimo = $5`
 
 	var dataDevolucao *string = nil
-	if emprestimo[0].DataDeDevolucao != "" {
-		dataDevolucao = &emprestimo[0].DataDeDevolucao
+	if emprestimoComDadosAtualizados.DataDeDevolucao != "" {
+		dataDevolucao = &emprestimoComDadosAtualizados.DataDeDevolucao
 	}
 
 	if _, erro := transacao.Exec(
 		context.Background(),
 		textoQuery,
-		emprestimo[0].NumeroRenovacoes,
-		emprestimo[0].DataDeEntregaPrevista,
+		emprestimoComDadosAtualizados.NumeroRenovacoes,
+		emprestimoComDadosAtualizados.DataDeEntregaPrevista,
 		dataDevolucao,
-		emprestimo[0].Status,
-		emprestimo[0].IdDoEmprestimo,
+		emprestimoComDadosAtualizados.Status,
+		emprestimoComDadosAtualizados.IdDoEmprestimo,
 	); erro != nil {
 		transacao.Rollback(context.Background())
 		panic(fmt.Sprintf("Provavelmente é um bug\n%v\n", erro))

@@ -168,14 +168,7 @@ func RenovarEmprestimo(idDaSessao uint64, loginDoUsuario string, idDoEmprestimo 
 		return emprestimo, detalhes, e
 	}
 
-	contadorRenovacoes := 0
-	for _, detalhe := range detalhes {
-		if detalhe.Acao == modelos.AcaoDetalheEmprestimoRenovar {
-			contadorRenovacoes += 1
-		}
-	}
-
-	if contadorRenovacoes > 2 {
+	if emprestimo[0].NumeroRenovacoes > 2 {
 		return []modelos.Emprestimo{}, []modelos.DetalheEmprestimo{}, ErroServicoEmprestimoNumeroMaximoDeRenovacoesAtingidos
 	}
 

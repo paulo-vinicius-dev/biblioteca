@@ -55,7 +55,7 @@ class _ObrasPageState extends State<ObrasPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ExemplaresPage(book: livro),
+        builder: (context) => ExemplaresPage(book: livro, ultimaPagina: "Autores",),
       ),
     );
   }

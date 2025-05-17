@@ -1,6 +1,7 @@
 import 'package:biblioteca/data/models/emprestimos_model.dart';
 import 'package:biblioteca/data/models/exemplar_model.dart';
 import 'package:biblioteca/data/models/usuario_model.dart';
+import 'package:biblioteca/data/providers/emprestimo_provider.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 
@@ -29,14 +30,12 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   Usuario? selectUser;
   late ExemplarProvider providerExemplar;
   late UsuarioProvider providerUsers;
-  late String dataDevolucao;
-  late String dataEmprestimo;
-  late List<EmprestimosModel> exemplaresSelecionadosEmprestimo = [];
-  late List<EmprestimosModel> exemplaresSelecionadosRenovacao = [];
   late List<Usuario> users;
   late List<Exemplar> exemplares;
 
   late List<Exemplar> selectedBoxExemplar = [];
+
+  late List<EmprestimosModel> emprestimos = [];
   @override
   void initState() {
     super.initState();
@@ -62,14 +61,21 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
       });
     }
   }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _searchControllerBooks.dispose();
-    super.dispose();
+  scafoldMsg(String msg, int tipo){
+    return ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+            backgroundColor: tipo == 1? Colors.red: (tipo ==2)? Colors.orange: Colors.green,
+            content: Text(
+              msg,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            duration: Duration(seconds: 2),
+          ));
   }
-
+  
   void searchUsers() {
     final searchQuery = _searchController.text.toLowerCase();
     selectUser = null;
@@ -106,37 +112,16 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
           );
         } catch (e) {
           selectbook = null;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text(
-              "Exemplar não encontrado!",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            duration: Duration(seconds: 2),
-          ));
+          scafoldMsg('Exemplar não encontrado!', 1);
         }
 
         if (selectbook != null) {
-          if (selectUser!.livrosEmprestados
-              .any((e) => e.codigo == selectbook!.id.toString())) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.red,
-              content: Text(
-                "Exemplar já emprestado para o aluno!",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              duration: Duration(seconds: 2),
-            ));
+          
+          if (emprestimos
+              .any((e) => e.exemplarMap['IdDoExemplarLivro'] == selectbook!.id)) {
+            scafoldMsg('Exemplar já emprestado para o aluno!', 1);
           } else if (!selectedBoxExemplar.contains(selectbook)) {
-            if (selectbook!.statusCodigo != 1) {
+            if (selectbook!.statusCodigo != 1) { //mudar isso aqui dps para (selectbook!.statusCodigo != 1) pq a api da com bug de definir o status de todos os exemplares como 0
               msgIndisponivel(selectbook!);
             } else {
               setState(() {
@@ -144,18 +129,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
               });
             }
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orange,
-              content: Text(
-                'Exemplar já adicionado!',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              duration: Duration(seconds: 2),
-            ));
+            scafoldMsg('Exemplar já adicionado!', 2);
           }
         }
       }
@@ -324,7 +298,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
             ));
   }
 
-  Future<void> msgConfirmEmprestimo(List<EmprestimosModel> exemplaresEmpres, int tipoMsg) {
+  Future<void> msgConfirmEmprestimo(List<Exemplar> exemplaresEmpres, int tipoMsg) {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -386,14 +360,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                     fontSize: 15)),
                           )
                         ]),
-                    for (EmprestimosModel exemplar in exemplaresEmpres)
+                    for (Exemplar exemplar in exemplaresEmpres)
                       TableRow(
                           decoration: const BoxDecoration(
                               color: Color.fromRGBO(233, 235, 238, 75)),
                           children: [
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.codigo,
+                              child: Text(exemplar.id.toString(),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -401,7 +375,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                             ),
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.nome,
+                              child: Text(exemplar.titulo,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -410,7 +384,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                             Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Text(
-                                  exemplar.dataDevolucao,
+                                  getDate(DateTime.now()),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -453,19 +427,53 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
             ));
   }
 
-  void getDate() {
-    DateTime now = DateTime.now();
-    dataEmprestimo = DateFormat('dd/MM/yyyy').format(now);
-
-    DateTime dataDevolucaoDate = now.add(const Duration(days: 7));
-    dataDevolucao = DateFormat('dd/MM/yyyy').format(dataDevolucaoDate);
+  String getDate(DateTime dateNow) {
+    DateTime dataDevolucaoDate = dateNow.add(const Duration(days: 7));
+    final dataDevolucao = DateFormat('dd/MM/yyyy').format(dataDevolucaoDate);
+    return dataDevolucao;
   }
 
-  String renovar(String dataString) {
-    final formato = DateFormat('dd/MM/yyyy');
-    final data = formato.parse(dataString);
-    final novaData = data.add(const Duration(days: 7));
-    return formato.format(novaData);
+  Future<void> renovarExemplares(List<EmprestimosModel> emprestimosRenov) async{
+    final copia = List.from(emprestimosRenov);
+    for(final item in copia){
+      
+      var status = await Provider.of<EmprestimoProvider>(context, listen: false).renovacao(item.IdDoEmprestimo);
+      if(status == 200){
+        scafoldMsg('Exemplar N°${item.exemplarMap['IdDoExemplarLivro']} Renovaçao realiza com sucesso', 3);
+      }else{
+        scafoldMsg('Exemplar N° ${item.exemplarMap['IdDoExemplarLivro']} Ultrapassou o limite de renovação', 1);
+      }
+    }
+    carregarEmprestimosUsuario(selectUser!.idDoUsuario);
+    
+  }
+
+  void carregarEmprestimosUsuario(int idUsuario) async{
+    emprestimos = await Provider.of<EmprestimoProvider>(context, listen:  false).fetchEmprestimoUsuario(idUsuario);
+    setState(() {
+    });
+  }
+  void realizarEmprestimo(List<Exemplar> exemplaresParaEmprestar) async{
+    List<int> listaIdsExemplares = [];
+    for(Exemplar item in exemplaresParaEmprestar){
+      listaIdsExemplares.add(item.id);
+    }
+    final statusCode = await Provider.of<EmprestimoProvider>(context,listen: false).addEmprestimo(selectUser!.idDoUsuario, listaIdsExemplares);
+
+    if(statusCode == 200){
+      msgConfirmEmprestimo(exemplaresParaEmprestar, 0);
+      
+      carregarEmprestimosUsuario(selectUser!.idDoUsuario);
+      
+    }else{
+      scafoldMsg('Erro ao tentar realizar o emprestimo, tente novamente mais tarde!', 1);
+    }
+  }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchControllerBooks.dispose();
+    super.dispose();
   }
 
   @override
@@ -701,6 +709,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                             showSearchBooks = true;
                                             setState(() {
                                               selectUser = _filteredUsers[x];
+                                              carregarEmprestimosUsuario(_filteredUsers[x].idDoUsuario);
                                             });
                                           },
                                           child: const Text('Selecionar',
@@ -933,8 +942,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                     ),
                                   ),
                                 ),
-                                if (selectUser != null &&
-                                    selectUser!.livrosEmprestados.isNotEmpty)
+                                if (selectUser != null &&emprestimos.isNotEmpty )
                                   Column(
                                     children: [
                                       const SizedBox(height: 60),
@@ -968,8 +976,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                       ),
                                     ],
                                   ),
-                                if (selectUser != null &&
-                                    selectUser!.livrosEmprestados.isNotEmpty)
+                                if (selectUser != null &&emprestimos.isNotEmpty)
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
@@ -1055,8 +1062,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                               ]),
                                           for (int x = 0;
                                               x <
-                                                  selectUser!
-                                                      .livrosEmprestados.length;
+                                                  emprestimos.length;
                                               x++)
                                             TableRow(
                                                 decoration: BoxDecoration(
@@ -1073,10 +1079,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         vertical: 9.4,
                                                         horizontal: 8),
                                                     child: Text(
-                                                        selectUser!
-                                                            .livrosEmprestados[
-                                                                x]
-                                                            .codigo,
+                                                        emprestimos[x].exemplarMap['IdDoExemplarLivro'].toString(),
                                                         textAlign:
                                                             TextAlign.center,
                                                         style: TextStyle(
@@ -1090,10 +1093,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         vertical: 9.4,
                                                         horizontal: 8),
                                                     child: Text(
-                                                        selectUser!
-                                                            .livrosEmprestados[
-                                                                x]
-                                                            .nome,
+                                                        emprestimos[x].exemplarMap['Livro']['Titulo'],
                                                         textAlign:
                                                             TextAlign.left,
                                                         style: TextStyle(
@@ -1107,10 +1107,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         vertical: 9.4,
                                                         horizontal: 8),
                                                     child: Text(
-                                                        selectUser!
-                                                            .livrosEmprestados[
-                                                                x]
-                                                            .dataEmprestimo,
+                                                        emprestimos[x].dataEmprestimo,
                                                         textAlign:
                                                             TextAlign.center,
                                                         style: TextStyle(
@@ -1124,10 +1121,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         vertical: 9.4,
                                                         horizontal: 8),
                                                     child: Text(
-                                                        selectUser!
-                                                            .livrosEmprestados[
-                                                                x]
-                                                            .dataDevolucao,
+                                                        emprestimos[x].dataPrevistaEntrega,
                                                         textAlign:
                                                             TextAlign.center,
                                                         style: TextStyle(
@@ -1142,19 +1136,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         horizontal: 37,
                                                       ),
                                                       child: Checkbox(
-                                                          value: selectUser!
-                                                              .livrosEmprestados[
-                                                                  x]
-                                                              .selecionadoRenov,
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              selectUser!
-                                                                      .livrosEmprestados[
-                                                                          x]
-                                                                      .selecionadoRenov =
-                                                                  value as bool;
-                                                            });
-                                                          }))
+                                                           value: emprestimos[x].selecionadoRenov,
+                                                           onChanged: (value) {
+                                                             setState(() {
+                                                                       emprestimos[x].selecionadoRenov=
+                                                                   value as bool;
+                                                             });
+                                                           }
+                                                          ))
                                                 ]),
                                         ],
                                       ),
@@ -1198,21 +1187,13 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                                           5)),
                                                     ),
                                                     onPressed: () {
-                                                      for (EmprestimosModel exemplar
-                                                          in selectUser!
-                                                              .livrosEmprestados) {
-                                                        if (exemplar
-                                                                .selecionadoRenov ==
-                                                            true) {
-                                                          exemplar.dataDevolucao =
-                                                              renovar(exemplar
-                                                                  .dataDevolucao);
-                                                          exemplaresSelecionadosRenovacao.add(exemplar);
+                                                      List<EmprestimosModel> exemplaresSelecionadosRenovacao = [];
+                                                      for (EmprestimosModel dadosEmprestimo in emprestimos) {
+                                                        if (dadosEmprestimo.selecionadoRenov == true) {
+                                                           exemplaresSelecionadosRenovacao.add(dadosEmprestimo);
                                                         }
                                                       }
-                                                      msgConfirmEmprestimo(exemplaresSelecionadosRenovacao, 1);
-                                                      exemplaresSelecionadosRenovacao = [];
-                                                      setState(() {});
+                                                      renovarExemplares(exemplaresSelecionadosRenovacao);
                                                     },
                                                     child: const Text('Renovar',
                                                         style: TextStyle(
@@ -1230,7 +1211,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                       ),
                                     ],
                                   ),
-                                if (selectUser!.livrosEmprestados.isEmpty)
+                                if (emprestimos.isEmpty)
                                   const SizedBox(height: 50),
                                 Divider(),
                               ],
@@ -1334,7 +1315,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                                     .circular(
                                                                         8))),
                                                 onPressed: () {
-                                                  getDate();
+                                                  List<Exemplar>exemplaresSelecionadosEmprestimo = [];
                                                   showLivrosEmprestados;
                                                   for (Exemplar exemplar
                                                       in List.from(
@@ -1342,24 +1323,12 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                     if (exemplar.checkbox ==
                                                         true) {
                                                       exemplaresSelecionadosEmprestimo
-                                                          .add(EmprestimosModel(
-                                                              exemplar.id
-                                                                  .toString(),
-                                                              exemplar.titulo,
-                                                              dataEmprestimo,
-                                                              dataDevolucao));
-
+                                                          .add(exemplar);
                                                       selectedBoxExemplar
                                                           .remove(exemplar);
                                                     }
                                                   }
-                                                  selectUser!.livrosEmprestados.addAll(exemplaresSelecionadosEmprestimo);
-                                                  Provider.of<ExemplarProvider>(context, listen: false).addExemplarEmprestado(exemplaresSelecionadosEmprestimo);
-                                                  setState(() {});
-                                                  msgConfirmEmprestimo(
-                                                      exemplaresSelecionadosEmprestimo, 0);
-                                                  exemplaresSelecionadosEmprestimo =
-                                                      [];
+                                                  realizarEmprestimo(exemplaresSelecionadosEmprestimo);
                                                 },
                                                 child: const Row(
                                                   children: [

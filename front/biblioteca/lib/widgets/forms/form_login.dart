@@ -70,6 +70,7 @@ class _FormLoginState extends State<FormLogin> {
         _login = futureLogin;
 
         if (_login!.aceito) {
+          print(_login!.idSessao);
           _authProvider.login(_login!.idSessao, login);
           Future.delayed(
             const Duration(milliseconds: 200),
@@ -107,17 +108,17 @@ class _FormLoginState extends State<FormLogin> {
                 AppAssets.logo,
                 scale: 2.5,
               ),
-              Container(
-                width: 2,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              ),
-              Image.asset(
-                AppAssets.logoEscola,
-                scale: 2.5,
-              )
+              // Container(
+              //   width: 2,
+              //   height: 70,
+              //   decoration: BoxDecoration(
+              //     color: Theme.of(context).colorScheme.secondary,
+              //   ),
+              // ),
+              // Image.asset(
+              //   AppAssets.logoEscola,
+              //   scale: 2.5,
+              // )
             ],
           ),
           const SizedBox(

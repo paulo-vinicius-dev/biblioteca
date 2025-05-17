@@ -8,6 +8,8 @@ import 'package:biblioteca/data/models/paises_model.dart';
 import 'package:biblioteca/data/providers/paises_provider.dart';
 import 'package:biblioteca/data/models/categorias_model.dart';
 import 'package:biblioteca/data/providers/categoria_provider.dart';
+import 'package:biblioteca/data/models/exemplar_model.dart';
+import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 
@@ -58,8 +60,7 @@ class _FormBookState extends State<FormBook> {
       Provider.of<CategoriaProvider>(context, listen: false)
           .loadCategorias()
           .then((_) {
-        setState(
-            () {}); 
+        setState(() {});
       });
     });
   }
@@ -181,6 +182,23 @@ class _FormBookState extends State<FormBook> {
       if (provider.hasErrors) {
         mensagem = provider.error ?? "Erro ao salvar o livro.";
       } else {
+        int quantidadeExemplares =
+            int.tryParse(_numeroExemplaresController.text) ?? 1;
+
+        for (int i = 0; i < quantidadeExemplares; i++) {
+          ExemplarEnvio novoExemplar = ExemplarEnvio(
+            id: 0,
+            idLivro: newLivro.idDoLivro,
+            cativo: false,
+            status: 0,
+            estado: 0,
+            ativo: true,
+          );
+
+          await Provider.of<ExemplarProvider>(context, listen: false)
+              .addExemplar(novoExemplar);
+        }
+
         mensagem = "Cadastro realizado com sucesso";
       }
 
@@ -226,6 +244,7 @@ class _FormBookState extends State<FormBook> {
 
     try {
       final data = await IsbnService.buscarLivroPorISBN(isbn);
+      if (!mounted) return;
 
       if (data != null) {
         setState(() {
@@ -243,14 +262,12 @@ class _FormBookState extends State<FormBook> {
           }
         });
       } else {
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
               'Livro não encontrado pelo sistema, verifique o ISBN ou preencha o formulario manualmente.'),
         ));
       }
     } catch (e) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Erro ao procurar o livro: $e'),
       ));
@@ -365,7 +382,8 @@ class _FormBookState extends State<FormBook> {
                       TextFormField(
                         controller: _anoPublicacaoController,
                         decoration: const InputDecoration(
-                          label: CampoObrigatorio(label: "Ano de Publicação"),
+                          label: CampoObrigatorio(
+                              label: "Data de Publicação (YYYY-MM-DD)"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {

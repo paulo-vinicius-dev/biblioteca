@@ -36,6 +36,9 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
   @override
   Widget build(BuildContext context) {
     final exemplarProvider = Provider.of<ExemplarProvider>(context);
+    final exemplaresDoLivro = exemplarProvider.exemplares
+        .where((ex) => ex.idLivro == widget.book.idDoLivro)
+        .toList();
 
     return Material(
       child: Column(
@@ -51,8 +54,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
               padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
               child: Column(
                 children: [
-                  Text(
-                      "Total de exemplares: ${exemplarProvider.exemplares.length}"),
+                  Text("Total de exemplares: ${exemplaresDoLivro.length}"),
                   Table(
                     border: TableBorder.all(
                       color: const Color.fromARGB(255, 213, 213, 213),
@@ -99,127 +101,125 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                       ),
 
                       // Linhas da tabela
-                      for (int i = 0;
-                          i < exemplarProvider.exemplares.length;
-                          i++)
-                        if (exemplarProvider.exemplares[i].id ==
-                            widget.book.idDoLivro)
-                          TableRow(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                    '${exemplarProvider.exemplares[i].id}'),
+                      for (int i = 0; i < exemplaresDoLivro.length; i++)
+                        TableRow(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child:
+                                  Text('${exemplarProvider.exemplares[i].id}'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(exemplarProvider.exemplares[i].isbn),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: DropdownButton<String>(
+                                value: exemplarProvider.exemplares[i].estado
+                                    .toString(),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    exemplarProvider.exemplares[i] = Exemplar(
+                                      id: exemplarProvider.exemplares[i].id,
+                                      cativo:
+                                          exemplarProvider.exemplares[i].cativo,
+                                      statusCodigo: exemplarProvider
+                                          .exemplares[i].statusCodigo,
+                                      estado: int.parse(newValue!),
+                                      ativo:
+                                          exemplarProvider.exemplares[i].ativo,
+                                      idLivro: exemplarProvider
+                                          .exemplares[i].idLivro,
+                                      isbn: exemplarProvider.exemplares[i].isbn,
+                                      titulo:
+                                          exemplarProvider.exemplares[i].titulo,
+                                      anoPublicacao: exemplarProvider
+                                          .exemplares[i].anoPublicacao,
+                                      editora: exemplarProvider
+                                          .exemplares[i].editora,
+                                      idPais:
+                                          exemplarProvider.exemplares[i].idPais,
+                                      nomePais: exemplarProvider
+                                          .exemplares[i].nomePais,
+                                      siglaPais: exemplarProvider
+                                          .exemplares[i].siglaPais,
+                                    );
+                                  });
+                                },
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: '0',
+                                    child: Text('Selecionar'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '1',
+                                    child: Text('Bom'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '2',
+                                    child: Text('Danificado'),
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child:
-                                    Text(exemplarProvider.exemplares[i].isbn),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: DropdownButton<String>(
-                                  value: exemplarProvider.exemplares[i].estado
-                                      .toString(),
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      exemplarProvider.exemplares[i] = Exemplar(
-                                        id: exemplarProvider.exemplares[i].id,
-                                        cativo: exemplarProvider
-                                            .exemplares[i].cativo,
-                                        statusCodigo: exemplarProvider
-                                            .exemplares[i].statusCodigo,
-                                        estado: int.parse(newValue!),
-                                        ativo: exemplarProvider
-                                            .exemplares[i].ativo,
-                                        idLivro: exemplarProvider
-                                            .exemplares[i].idLivro,
-                                        isbn:
-                                            exemplarProvider.exemplares[i].isbn,
-                                        titulo: exemplarProvider
-                                            .exemplares[i].titulo,
-                                        anoPublicacao: exemplarProvider
-                                            .exemplares[i].anoPublicacao,
-                                        editora: exemplarProvider
-                                            .exemplares[i].editora,
-                                        idPais: exemplarProvider
-                                            .exemplares[i].idPais,
-                                        nomePais: exemplarProvider
-                                            .exemplares[i].nomePais,
-                                        siglaPais: exemplarProvider
-                                            .exemplares[i].siglaPais,
-                                      );
-                                    });
-                                  },
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: '0',
-                                      child: Text('Selecionar'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: '1',
-                                      child: Text('Bom'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: '2',
-                                      child: Text('Danificado'),
-                                    ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 38, 42, 79),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.edit, color: Colors.white),
+                                    SizedBox(width: 4),
+                                    Text('Editar',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        )),
                                   ],
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 38, 42, 79),
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 5),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.edit, color: Colors.white),
-                                      SizedBox(width: 4),
-                                      Text('Editar',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   ElevatedButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
                       ExemplarEnvio novoExemplar = ExemplarEnvio(
                         id: 0,
+                        idLivro: widget.book.idDoLivro,
                         cativo: false,
                         status: 0,
                         estado: 0,
                         ativo: true,
-                        idLivro: widget.book.idDoLivro,
                       );
 
-                      Provider.of<ExemplarProvider>(context)
+                      await Provider.of<ExemplarProvider>(context,
+                              listen: false)
                           .addExemplar(novoExemplar);
-                      setState(() {});
+                      await _loadExemplares();
                     },
                     label: const Text(
-                      'Novo Livro',
+                      'Novo Exemplar',
                       style: TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add, color: Colors.white),
                     style: ButtonStyle(
                       backgroundColor:
                           WidgetStatePropertyAll(Colors.green.shade800),

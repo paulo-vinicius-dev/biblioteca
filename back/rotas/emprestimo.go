@@ -40,6 +40,10 @@ func erroServicoEmprestimoParaErrHttp(erro servicos.ErroServicoDoEmprestimo, res
 	case servicos.ErroServicoEmprestimoNumeroMaximoDeRenovacoesAtingidos:
 		resposta.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(resposta, "Número máximo de renovações atingidos")
+
+	case servicos.ErroServicoEmprestimoJaConcluido:
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "Não é possível renovar o empréstimo proque já foi concluído!")
 	}
 }
 
@@ -60,6 +64,12 @@ type requisicaoEmprestimoGet struct {
 }
 
 type requisicaoEmprestimoPut struct {
+	IdDaSessao     uint64
+	LoginDoUsuario string
+	IdDoEmprestimo int
+}
+
+type requisicaoEmprestimoDel struct {
 	IdDaSessao     uint64
 	LoginDoUsuario string
 	IdDoEmprestimo int
@@ -205,6 +215,30 @@ func Emprestimo(resposta http.ResponseWriter, requisicao *http.Request) {
 			requisicaoEmprestimoPut.IdDaSessao,
 			requisicaoEmprestimoPut.LoginDoUsuario,
 			requisicaoEmprestimoPut.IdDoEmprestimo,
+		)
+
+		if erro != servicos.ErroServicoEmprestimoNenhum {
+			erroServicoEmprestimoParaErrHttp(erro, resposta)
+			return
+		}
+
+		respostaEmprestimo := paraRespostaEmprestimo(emprestimo, detalhes)
+		respostaTexto, _ := json.Marshal(&respostaEmprestimo)
+
+		fmt.Fprintf(resposta, "%s", respostaTexto)
+
+	case "DELETE":
+		var requisicaoEmprestimoDel requisicaoEmprestimoDel
+		if erro := json.Unmarshal(corpoDaRequisicao, &requisicaoEmprestimoDel); erro != nil {
+			resposta.WriteHeader(http.StatusBadRequest)
+			fmt.Println(erro)
+			fmt.Fprintf(resposta, "A requisição para a rota de empréstimo foi mal feita")
+			return
+		}
+		emprestimo, detalhes, erro := servicos.DevolverEmprestimo(
+			requisicaoEmprestimoDel.IdDaSessao,
+			requisicaoEmprestimoDel.LoginDoUsuario,
+			requisicaoEmprestimoDel.IdDoEmprestimo,
 		)
 
 		if erro != servicos.ErroServicoEmprestimoNenhum {

@@ -436,9 +436,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   Future<void> renovarExemplares(List<EmprestimosModel> emprestimosRenov) async{
     final copia = List.from(emprestimosRenov);
     for(final item in copia){
-      await Provider.of<EmprestimoProvider>(context, listen: false).renovacao(item.IdDoEmprestimo);
+      
+      var status = await Provider.of<EmprestimoProvider>(context, listen: false).renovacao(item.IdDoEmprestimo);
+      if(status == 200){
+        scafoldMsg('Exemplar N°${item.exemplarMap['IdDoExemplarLivro']} Renovaçao realiza com sucesso', 3);
+      }else{
+        scafoldMsg('Exemplar N° ${item.exemplarMap['IdDoExemplarLivro']} Ultrapassou o limite de renovação', 1);
+      }
     }
-    scafoldMsg('Renovaçao realiza com sucesso', 3);
     carregarEmprestimosUsuario(selectUser!.idDoUsuario);
     
   }
@@ -1186,9 +1191,9 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                       for (EmprestimosModel dadosEmprestimo in emprestimos) {
                                                         if (dadosEmprestimo.selecionadoRenov == true) {
                                                            exemplaresSelecionadosRenovacao.add(dadosEmprestimo);
-                                                           renovarExemplares(exemplaresSelecionadosRenovacao);
                                                         }
                                                       }
+                                                      renovarExemplares(exemplaresSelecionadosRenovacao);
                                                     },
                                                     child: const Text('Renovar',
                                                         style: TextStyle(

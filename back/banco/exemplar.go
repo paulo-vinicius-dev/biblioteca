@@ -188,7 +188,6 @@ where el.id_exemplar_livro = $1`
 	return exemplarEncontrado, true
 }
 
-
 func PegarExemplarPeloIdDoLivro(IdDoLivro int) ([]modelos.ExemplarLivro, bool) {
 	conexao := PegarConexao()
 	textoQuery := `
@@ -252,7 +251,7 @@ func AtualizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados mode
 	}
 
 	conexao := PegarConexao()
-	textoQuery := "update exemplar_livro set cativo = $1, status = $2, estado = $3, ativo = $4"
+	textoQuery := "update exemplar_livro set cativo = $1, status = $2, estado = $3, ativo = $4 where id_exemplar_livro = $5"
 	if _, erroQuery := conexao.Query(
 		context.Background(),
 		textoQuery,
@@ -260,6 +259,7 @@ func AtualizarExemplar(exemplarComDadosAntigos, exemplarComDadosAtualizados mode
 		exemplarComDadosAtualizados.Status,
 		exemplarComDadosAtualizados.Estado,
 		exemplarComDadosAtualizados.Ativo,
+		exemplarComDadosAntigos.IdDoExemplarLivro,
 	); erroQuery != nil {
 		panic("Um erro desconhecido acontesceu na atualização do exemplar")
 	}
@@ -275,7 +275,7 @@ func AtualizarExemplarTransacao(transacao pgx.Tx, exemplarComDadosAntigos, exemp
 		return ErroBancoExemplarMudouLivro
 	}
 
-	textoQuery := "update exemplar_livro set cativo = $1, status = $2, estado = $3, ativo = $4"
+	textoQuery := "update exemplar_livro set cativo = $1, status = $2, estado = $3, ativo = $4 where id_exemplar_livro = $5"
 	if _, erroQuery := transacao.Exec(
 		context.Background(),
 		textoQuery,
@@ -283,12 +283,12 @@ func AtualizarExemplarTransacao(transacao pgx.Tx, exemplarComDadosAntigos, exemp
 		exemplarComDadosAtualizados.Status,
 		exemplarComDadosAtualizados.Estado,
 		exemplarComDadosAtualizados.Ativo,
+		exemplarComDadosAntigos.IdDoExemplarLivro,
 	); erroQuery != nil {
 		panic("Um erro desconhecido acontesceu na atualização do exemplar")
 	}
 	return ErroBancoExemplarNenhum
 }
-
 
 func DeletarExemplar(exemplarASerExcluido modelos.ExemplarLivro) ErroBancoExemplar {
 	exemplarDesativado := exemplarASerExcluido

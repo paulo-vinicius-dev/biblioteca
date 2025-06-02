@@ -1,3 +1,4 @@
+import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/screens/library_dashboard.dart'; // Adicione esta linha
 import 'package:biblioteca/data/models/autor_model.dart';
 import 'package:biblioteca/data/models/livro_model.dart';
@@ -15,6 +16,7 @@ import 'package:biblioteca/widgets/tables/author_table_page.dart';
 import 'package:biblioteca/widgets/tables/book_table_page.dart';
 import 'package:biblioteca/widgets/tables/categories_table_page.dart';
 import 'package:biblioteca/widgets/tables/exemplar_table_page.dart';
+import 'package:biblioteca/widgets/tables/history_table.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:biblioteca/widgets/navegacao/menu_navegacao.dart';
 import 'package:biblioteca/utils/theme.dart';
@@ -254,7 +256,12 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                         case AppRoutes.exemplares:
                           final book = settings.arguments as Livro;
                           final ultimaPagina = settings.arguments as String;
-                          page = ExemplaresPage(book: book, ultimaPagina: ultimaPagina);
+                          page = ExemplaresPage(
+                              book: book, ultimaPagina: ultimaPagina);
+                          break;
+                        case AppRoutes.historico:
+                          final usuario = settings.arguments as Usuario;
+                          page = HistoryTablePage(usuario: usuario);
                           break;
                         default:
                           page = const Home();

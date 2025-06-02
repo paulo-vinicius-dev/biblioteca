@@ -22,6 +22,7 @@ import 'package:biblioteca/utils/theme.dart';
 import 'package:biblioteca/widgets/forms/form_user.dart';
 import 'package:biblioteca/widgets/tables/author_table_page.dart';
 import 'package:biblioteca/widgets/tables/book_table_page.dart';
+import 'package:biblioteca/widgets/tables/history_table.dart';
 import 'package:biblioteca/widgets/tables/user_table_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -156,6 +157,7 @@ class Myapp extends StatelessWidget {
           AppRoutes.devolucao: (context) =>  TelaDevolucao(),
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
           AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
+          AppRoutes.historico: (context) => const HistoryTablePage(),
 
           //paginas temporarias para teste
           AppRoutes.relatorios: (context) => const Relatorios(),

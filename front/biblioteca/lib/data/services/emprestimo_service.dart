@@ -9,8 +9,32 @@ class EmprestimoService {
   final ApiService _api = ApiService();
   final String apiRoute = 'emprestimo';
 
-  // Retorna todos os exemplares
-  Future<List<EmprestimosModel>> fetchExemplaresUsuario(
+  //Para buscar todos os emprestimos para o DashBoard
+  Future<List<EmprestimosModel>> fetchTodosEmprestimos(
+      num idDaSessao, String loginDoUsuarioRequerente) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuario": loginDoUsuarioRequerente,
+    };
+    final response = await _api.requisicao(
+      apiRoute,
+      'GET',
+      body,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(response.data);
+    }
+    List<EmprestimosModel> emprestimos = [];
+    final respostaFinal = jsonDecode(response.data);
+    respostaFinal.map((item){
+      final emprestimo = EmprestimosModel.fromMap(item); 
+      emprestimos.add(emprestimo);
+    }).toList();
+    return emprestimos;
+  }
+  // Retorna todos os exemplares 
+  Future<List<EmprestimosModel>> fetchEmprestimosUsuario(
       num idDaSessao, String loginDoUsuarioRequerente, int idUsuario ) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,

@@ -231,12 +231,8 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  exemplar.statusCodigo == 1
-                                      ? Icons.check_circle
-                                      : Icons.cancel,
-                                  color: exemplar.statusCodigo == 1
-                                      ? Colors.green
-                                      : Colors.red,
+                                  Icons.cancel,
+                                  color: Colors.red,
                                 ),
                                 SizedBox(
                                   width: 5,
@@ -298,7 +294,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
             ));
   }
 
-  Future<void> msgConfirmEmprestimo(List<Exemplar> exemplaresEmpres, int tipoMsg) {
+  Future<void> msgConfirmEmprestimo(List<emprestimoMsg> exemplaresEmpres, int tipoMsg) {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -343,7 +339,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                           ),
                           Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Text("Data de Devolução",
+                            child: Text("Data Devolução",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -360,14 +356,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                     fontSize: 15)),
                           )
                         ]),
-                    for (Exemplar exemplar in exemplaresEmpres)
+                    for (emprestimoMsg exemplar in exemplaresEmpres)
                       TableRow(
                           decoration: const BoxDecoration(
                               color: Color.fromRGBO(233, 235, 238, 75)),
                           children: [
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.id.toString(),
+                              child: Text(exemplar.tombamento,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -375,7 +371,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                             ),
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.titulo,
+                              child: Text(exemplar.nome,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -384,7 +380,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                             Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Text(
-                                  getDate(DateTime.now()),
+                                  exemplar.dataPrevistaEntrega,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -392,12 +388,12 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                             ),
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: Text(tipoMsg == 0? 'Empréstimo realizado!': 'Renovação realizada',
+                              child: Text(tipoMsg == 0? 'Empréstimo realizado!': (exemplar.renovou)? 'Renovação realizada!': 'Limite Máximo de Renovação Atingido',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 14,
-                                      color: Colors.green[400])),
+                                      color: tipoMsg == 0? Colors.green[400]: exemplar.renovou? Colors.green[400]:Colors.red[400])),
                             )
                           ])
                   ],
@@ -427,7 +423,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
             ));
   }
 
-  String getDate(DateTime dateNow) {
+  String dataPrevistaDevolucao(DateTime dateNow) {
     DateTime dataDevolucaoDate = dateNow.add(const Duration(days: 7));
     final dataDevolucao = DateFormat('dd/MM/yyyy').format(dataDevolucaoDate);
     return dataDevolucao;
@@ -435,15 +431,22 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
 
   Future<void> renovarExemplares(List<EmprestimosModel> emprestimosRenov) async{
     final copia = List.from(emprestimosRenov);
+    List<emprestimoMsg> listaRenovacao = [];
+    for(EmprestimosModel emprestimo in emprestimosRenov){
+      listaRenovacao.add(emprestimoMsg(tombamento: emprestimo.exemplarMap['IdDoExemplarLivro'].toString(), nome: emprestimo.exemplarMap['Livro']['Titulo'], dataPrevistaEntrega: emprestimo.formatarData(1)));
+    }
     for(final item in copia){
-      
       var status = await Provider.of<EmprestimoProvider>(context, listen: false).renovacao(item.IdDoEmprestimo);
+      final exemplarRenov = listaRenovacao.firstWhere((exemplar)=> exemplar.tombamento == item.exemplarMap['IdDoExemplarLivro'].toString());
       if(status == 200){
-        scafoldMsg('Exemplar N°${item.exemplarMap['IdDoExemplarLivro']} Renovaçao realiza com sucesso', 3);
+        exemplarRenov.renovou = true;
+        exemplarRenov.dataPrevistaEntrega = dataPrevistaDevolucao(DateFormat('dd/MM/yyyy').parse(exemplarRenov.dataPrevistaEntrega));
       }else{
-        scafoldMsg('Exemplar N° ${item.exemplarMap['IdDoExemplarLivro']} Ultrapassou o limite de renovação', 1);
+        exemplarRenov.renovou = false;
       }
     }
+    
+    msgConfirmEmprestimo(listaRenovacao, 1);
     carregarEmprestimosUsuario(selectUser!.idDoUsuario);
     
   }
@@ -461,8 +464,11 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     final statusCode = await Provider.of<EmprestimoProvider>(context,listen: false).addEmprestimo(selectUser!.idDoUsuario, listaIdsExemplares);
 
     if(statusCode == 200){
-      msgConfirmEmprestimo(exemplaresParaEmprestar, 0);
-      
+      List<emprestimoMsg> listaEmprestados = [];
+      for (Exemplar item in exemplaresParaEmprestar){
+        listaEmprestados.add(emprestimoMsg(tombamento: item.id.toString(), nome: item.titulo, dataPrevistaEntrega: dataPrevistaDevolucao(DateTime.now())));
+      }
+      msgConfirmEmprestimo(listaEmprestados, 0);
       carregarEmprestimosUsuario(selectUser!.idDoUsuario);
       
     }else{
@@ -986,11 +992,11 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                       SizedBox(height: 10),
                                       Table(
                                         columnWidths: const {
-                                          0: FlexColumnWidth(0.08),
+                                          0: FlexColumnWidth(0.10),
                                           1: FlexColumnWidth(0.26),
                                           2: FlexColumnWidth(0.14),
                                           3: FlexColumnWidth(0.14),
-                                          4: FlexColumnWidth(0.10),
+                                          4: FlexColumnWidth(0.08),
                                         },
                                         border: TableBorder.all(
                                           color: const Color.fromARGB(
@@ -1039,7 +1045,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                 Padding(
                                                   padding: EdgeInsets.all(7.0),
                                                   child: Text(
-                                                      'Data de Devoluçao',
+                                                      'Previsão Devoluçao',
                                                       textAlign:
                                                           TextAlign.center,
                                                       style: TextStyle(
@@ -1107,7 +1113,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         vertical: 9.4,
                                                         horizontal: 8),
                                                     child: Text(
-                                                        emprestimos[x].dataEmprestimo,
+                                                        emprestimos[x].formatarData(0),
                                                         textAlign:
                                                             TextAlign.center,
                                                         style: TextStyle(
@@ -1121,7 +1127,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         vertical: 9.4,
                                                         horizontal: 8),
                                                     child: Text(
-                                                        emprestimos[x].dataPrevistaEntrega,
+                                                        emprestimos[x].formatarData(1),
                                                         textAlign:
                                                             TextAlign.center,
                                                         style: TextStyle(
@@ -1193,7 +1199,8 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                            exemplaresSelecionadosRenovacao.add(dadosEmprestimo);
                                                         }
                                                       }
-                                                      renovarExemplares(exemplaresSelecionadosRenovacao);
+                                                      if(exemplaresSelecionadosRenovacao.isNotEmpty)
+                                                        renovarExemplares(exemplaresSelecionadosRenovacao);
                                                     },
                                                     child: const Text('Renovar',
                                                         style: TextStyle(
@@ -1413,7 +1420,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                   215, 200, 200, 200)),
                                           columnWidths: const {
                                             0: FlexColumnWidth(0.05),
-                                            1: FlexColumnWidth(0.08),
+                                            1: FlexColumnWidth(0.10),
                                             2: FlexColumnWidth(0.25),
                                             3: FlexColumnWidth(0.12),
                                             4: FlexColumnWidth(0.14),

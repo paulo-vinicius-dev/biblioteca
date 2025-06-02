@@ -1,3 +1,3 @@
 class AppConfig {
-  static const maxPermissoes = 2047;
+  static const maxPermissoes = 16383;
 }

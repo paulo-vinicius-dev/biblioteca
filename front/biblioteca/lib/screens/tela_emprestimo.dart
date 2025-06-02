@@ -61,6 +61,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
       });
     }
   }
+
   scafoldMsg(String msg, int tipo){
     return ScaffoldMessenger.of(context).showSnackBar( SnackBar(
             backgroundColor: tipo == 1? Colors.red: (tipo ==2)? Colors.orange: Colors.green,
@@ -456,6 +457,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     setState(() {
     });
   }
+  
   void realizarEmprestimo(List<Exemplar> exemplaresParaEmprestar) async{
     List<int> listaIdsExemplares = [];
     for(Exemplar item in exemplaresParaEmprestar){

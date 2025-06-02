@@ -19,6 +19,8 @@ class AppRoutes {
   static const novoUsuario = '/novo_usuario';
   static const editarUsuario = '/editar_usuario';
 
+  static const historico = '/historico';
+
   static const autores = '/autores';
   static const novoAutor = '/novo_autor';
   static const editarAutor = '/editar_autor';

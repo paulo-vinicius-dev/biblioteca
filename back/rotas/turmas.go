@@ -6,7 +6,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"io"
 )
+
+type requisicaoTurma struct {
+	Descricao string
+	IdSerie int
+	IdTurno int
+}
 
 type ViewTurma struct {
 	Turma     int
@@ -35,16 +42,51 @@ type RepostaTurmas struct {
 	Turmas []ViewTurma
 }
 
-func Turma(resposta http.ResponseWriter, requisicao *http.Request) {
-	respotaTurmaJson, _ := json.Marshal(&RepostaTurmas{
-		Turmas: modelosTurmaParaViewTurma(servicos.PegarTodasAsTurmas()...),
-	})
 
-	if requisicao.Method != "GET" {
-		resposta.WriteHeader(http.StatusMethodNotAllowed)
-		fmt.Fprintf(resposta, "Apenas o método GET é suportado nessa rota")
+func Turma(resposta http.ResponseWriter, requisicao *http.Request) {
+
+	corpoDaRequisicao, erro := io.ReadAll(requisicao.Body)
+
+	if erro != nil {
+		resposta.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(resposta, "A requisição para a rota de turma foi mal feita")
 		return
 	}
 
-	fmt.Fprintf(resposta, "%s", respotaTurmaJson)
+	switch requisicao.Method {
+		case "GET":
+			respotaTurmaJson, _ := json.Marshal(&RepostaTurmas{
+				Turmas: modelosTurmaParaViewTurma(servicos.PegarTodasAsTurmas()...),
+			})
+			fmt.Fprintf(resposta, "%s", respotaTurmaJson)
+		case "POST":
+			var requisicaoTurma requisicaoTurma
+			if json.Unmarshal(corpoDaRequisicao, &requisicaoTurma) != nil {
+				resposta.WriteHeader(http.StatusBadRequest)
+				fmt.Fprintf(resposta, "A requisição para a rota de turma foi mal feita")
+				return
+			}
+
+			turma, deu_certo := servicos.CriarTurma(modelos.Turma{
+				Descricao: requisicaoTurma.Descricao,
+				Serie: modelos.Serie{IdSerie: requisicaoTurma.IdSerie},
+				Turno: modelos.Turno{IdTurno: requisicaoTurma.IdTurno},
+			})
+
+			if !deu_certo {
+				resposta.WriteHeader(http.StatusBadRequest)
+				fmt.Fprintf(resposta, "A requisição para a rota de turma foi mal feita")
+				return
+			}
+
+			respotaTurmaJson, _ := json.Marshal(&RepostaTurmas{
+				Turmas: modelosTurmaParaViewTurma(turma),
+			})
+			fmt.Fprintf(resposta, "%s", respotaTurmaJson)
+
+	}
+
+
+
+
 }

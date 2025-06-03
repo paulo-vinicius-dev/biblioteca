@@ -4,7 +4,6 @@ import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/emprestimo_provider.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
-
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:provider/provider.dart';
@@ -29,8 +28,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   Exemplar? selectbook;
   Usuario? selectUser;
   late ExemplarProvider providerExemplar;
-  late UsuarioProvider providerUsers;
-  late List<Usuario> users;
   late List<Exemplar> exemplares;
 
   late List<Exemplar> selectedBoxExemplar = [];
@@ -42,17 +39,8 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     _searchController = TextEditingController();
     _searchControllerBooks = TextEditingController();
     providerExemplar = Provider.of<ExemplarProvider>(context, listen: false);
-    providerUsers = Provider.of<UsuarioProvider>(context, listen: false);
     _filteredUsers = [];
-
-    // Carregar usuários
-    if (providerUsers.users.isEmpty) {
-      Provider.of<UsuarioProvider>(context, listen: false)
-          .loadUsuarios()
-          .then((_) {
-        setState(() {});
-      });
-    }
+    
     if (providerExemplar.exemplares.isEmpty) {
       Provider.of<ExemplarProvider>(context, listen: false)
           .loadExemplares()
@@ -61,7 +49,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
       });
     }
   }
-
   scafoldMsg(String msg, int tipo){
     return ScaffoldMessenger.of(context).showSnackBar( SnackBar(
             backgroundColor: tipo == 1? Colors.red: (tipo ==2)? Colors.orange: Colors.green,
@@ -77,22 +64,29 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
           ));
   }
   
-  void searchUsers() {
+   void searchUsers() async{
     final searchQuery = _searchController.text.toLowerCase();
-    selectUser = null;
     if (showSearchBooks) {
+      selectUser = null;
       showBooks = false;
       showSearchBooks = false;
       selectbook = null;
       _searchControllerBooks.text = '';
+      setState(() {
+        
+      });
     }
-    setState(() {
-      search = true;
-      _filteredUsers = users.where((usuario) {
-        return usuario.nome.toLowerCase().contains(searchQuery) ||
-            usuario.login.contains(searchQuery);
-      }).toList();
-    });
+    if(searchQuery.isNotEmpty){
+      try{
+        final resposta = await Provider.of<UsuarioProvider>(context, listen: false).searchUsuarios(searchQuery);
+        setState(() {
+          search = true;
+          _filteredUsers = resposta;
+        });
+      }catch(e){
+        scafoldMsg('Erro ao realizar a pesquisa de usuários. Tente novamente mais tarde.', 1);
+      }
+    }
   }
 
   void searchBooks() {
@@ -487,7 +481,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   @override
   Widget build(BuildContext context) {
     exemplares = providerExemplar.exemplares;
-    users = providerUsers.users;
     return Material(
       child: Column(
         children: [

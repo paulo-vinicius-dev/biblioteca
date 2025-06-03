@@ -20,7 +20,8 @@ class EmprestimoProvider with ChangeNotifier {
       return [];
     } 
   }
-  Future<List<EmprestimosModel>> fetchEmprestimoUsuario(int idAluno) async {
+  
+  Future<List<EmprestimosModel>> fetchEmprestimosUsuario(int idAluno) async {
     try {
      final emprestimos = await emprestimoService.fetchEmprestimosUsuario(idDaSessao, usuarioLogado, idAluno);
      return emprestimos;
@@ -29,6 +30,19 @@ class EmprestimoProvider with ChangeNotifier {
       return [];
     } 
   }
+  
+  Future<List<EmprestimosModel>> fetchEmprestimoEmAndamentoUsuarios(int idAluno) async {
+    try {
+     final emprestimos = await emprestimoService.fetchEmprestimosUsuario(idDaSessao, usuarioLogado, idAluno);
+
+      // O filtro fica no provider agora
+     return emprestimos.where((e) => e.status == 1).toList();
+    } catch (e) {
+      print("Erro ao buscar emprestimos: $e");
+      return [];
+    } 
+  }
+
   Future<int?> addEmprestimo(int idAluno, List<int> exemplaresEmprestados) async {
     try {
      final statusCode = await emprestimoService.addEmprestimo(idDaSessao, usuarioLogado, idAluno, exemplaresEmprestados);

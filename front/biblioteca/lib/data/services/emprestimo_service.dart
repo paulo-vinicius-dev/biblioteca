@@ -27,15 +27,16 @@ class EmprestimoService {
     }
     List<EmprestimosModel> emprestimos = [];
     final respostaFinal = jsonDecode(response.data);
-    respostaFinal.map((item){
-      final emprestimo = EmprestimosModel.fromMap(item); 
+    respostaFinal.map((item) {
+      final emprestimo = EmprestimosModel.fromMap(item);
       emprestimos.add(emprestimo);
     }).toList();
     return emprestimos;
   }
-  // Retorna todos os exemplares 
+
+  // Retorna todos os exemplares
   Future<List<EmprestimosModel>> fetchEmprestimosUsuario(
-      num idDaSessao, String loginDoUsuarioRequerente, int idUsuario ) async {
+      num idDaSessao, String loginDoUsuarioRequerente, int idUsuario) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuario": loginDoUsuarioRequerente,
@@ -53,16 +54,22 @@ class EmprestimoService {
     }
     List<EmprestimosModel> emprestimos = [];
     final respostaFinal = jsonDecode(response.data);
-    respostaFinal.map((item){
-      if(item['Status'] == 1){
-        final emprestimo = EmprestimosModel.fromMap(item); 
-        emprestimos.add(emprestimo);
-      }
-    }).toList();
+
+    
+    emprestimos = List<EmprestimosModel>.from(respostaFinal.map((x) => EmprestimosModel.fromMap(x)));
+
+    // respostaFinal.map((item) {
+    //   if (item['Status'] == 1) {
+    //     final emprestimo = EmprestimosModel.fromMap(item);
+    //     emprestimos.add(emprestimo);
+    //   }
+    // }).toList();
+
     return emprestimos;
   }
+
   Future<List<EmprestimosModel>> fetchEmprestimoExemplar(
-      num idDaSessao, String loginDoUsuarioRequerente, int idExemplar ) async {
+      num idDaSessao, String loginDoUsuarioRequerente, int idExemplar) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuario": loginDoUsuarioRequerente,
@@ -80,9 +87,9 @@ class EmprestimoService {
     }
     List<EmprestimosModel> emprestimos = [];
     final respostaFinal = jsonDecode(response.data);
-    respostaFinal.map((item){
-      if(item['Status'] == 1){
-        final emprestimo = EmprestimosModel.fromMap(item); 
+    respostaFinal.map((item) {
+      if (item['Status'] == 1) {
+        final emprestimo = EmprestimosModel.fromMap(item);
         emprestimos.add(emprestimo);
       }
     }).toList();
@@ -90,11 +97,11 @@ class EmprestimoService {
   }
 
   // Cria um novo emprestimo
-  Future<int?> addEmprestimo(
-      num idDaSessao, String loginDoUsuarioRequerente, int idAluno, List<int>exemplares) async {
+  Future<int?> addEmprestimo(num idDaSessao, String loginDoUsuarioRequerente,
+      int idAluno, List<int> exemplares) async {
     final Map<String, dynamic> body = {
-      "idDaSessao": idDaSessao, 
-      "loginDoUsuario" :loginDoUsuarioRequerente,
+      "idDaSessao": idDaSessao,
+      "loginDoUsuario": loginDoUsuarioRequerente,
       "idDoAluno": idAluno,
       "idsExemplares": exemplares
     };
@@ -110,8 +117,8 @@ class EmprestimoService {
   }
 
   // Altera um exemplar existente
-  Future<Exemplar> alterExemplar(
-      num idDaSessao, String loginDoUsuarioRequerente, Exemplar exemplar) async {
+  Future<Exemplar> alterExemplar(num idDaSessao,
+      String loginDoUsuarioRequerente, Exemplar exemplar) async {
     final Map<String, dynamic> body = {
       "IdDaSessao": idDaSessao,
       "LoginDoUsuario": loginDoUsuarioRequerente,
@@ -138,11 +145,12 @@ class EmprestimoService {
 
     return exemplaresAtingidosFromJson(response.data).exemplares[0];
   }
+
   Future<int?> renovarEmprestimo(
       num idDaSessao, String loginDoUsuarioRequerente, int idEmprestimo) async {
     final Map<String, dynamic> body = {
-      "idDaSessao": idDaSessao, 
-      "loginDoUsuario" :loginDoUsuarioRequerente,
+      "idDaSessao": idDaSessao,
+      "loginDoUsuario": loginDoUsuarioRequerente,
       "idDoEmprestimo": idEmprestimo,
     };
     final response = await _api.requisicao(
@@ -155,11 +163,12 @@ class EmprestimoService {
     }
     return response.statusCode;
   }
+
   Future<int?> DevolverEmprestimo(
       num idDaSessao, String loginDoUsuarioRequerente, int idEmprestimo) async {
     final Map<String, dynamic> body = {
-      "idDaSessao": idDaSessao, 
-      "loginDoUsuario" :loginDoUsuarioRequerente,
+      "idDaSessao": idDaSessao,
+      "loginDoUsuario": loginDoUsuarioRequerente,
       "idDoEmprestimo": idEmprestimo,
     };
     final response = await _api.requisicao(
@@ -172,5 +181,4 @@ class EmprestimoService {
     }
     return response.statusCode;
   }
-
 }

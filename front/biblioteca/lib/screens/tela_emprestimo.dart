@@ -84,6 +84,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
           _filteredUsers = resposta;
         });
       }catch(e){
+        print(e.toString());
         scafoldMsg('Erro ao realizar a pesquisa de usuários. Tente novamente mais tarde.', 1);
       }
     }

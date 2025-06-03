@@ -1,4 +1,5 @@
 import 'package:biblioteca/data/models/livro_model.dart';
+import 'package:biblioteca/data/models/livros_resposta.dart';
 import 'package:biblioteca/data/services/livro_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -51,7 +52,15 @@ class LivroProvider extends ChangeNotifier {
   Future<void> refreshLivros() async {
     await loadLivros();
   }
-
+  Future<List<Livro>> searchLivros(String textoDeBusca) async{
+    LivrosAtingidos? loadedLivros;
+    try{
+      loadedLivros= await _livroService.searchLivros(idDaSessao, usuarioLogado, textoDeBusca);
+      return loadedLivros.livrosAtingidos;
+    }catch(e){
+      throw Exception("UsuarioProvider: Erro ao carregar usuarios pesquisados - $e");
+    }
+  }
   // Adicionar um novo livro
   Future<bool> addLivro(Map<String, dynamic> livro, List<String> autores, List<String> categorias) async {
     _isLoading = true;

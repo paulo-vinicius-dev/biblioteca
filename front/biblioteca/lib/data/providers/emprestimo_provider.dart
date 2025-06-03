@@ -71,9 +71,9 @@ class EmprestimoProvider with ChangeNotifier {
       return [];
     }
   }
-  Future<int?> Devolver(int idEmprestimo) async {
+  Future<int?> devolver(int idEmprestimo) async {
     try {
-     final statusCode = await emprestimoService.DevolverEmprestimo(idDaSessao, usuarioLogado, idEmprestimo);
+     final statusCode = await emprestimoService.devolverEmprestimo(idDaSessao, usuarioLogado, idEmprestimo);
      print('Status Devolucao : ${statusCode}');
      return statusCode;
     } catch (e) {

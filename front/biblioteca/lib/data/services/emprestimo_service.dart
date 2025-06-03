@@ -55,9 +55,10 @@ class EmprestimoService {
     List<EmprestimosModel> emprestimos = [];
     final respostaFinal = jsonDecode(response.data);
 
-    
+
     emprestimos = List<EmprestimosModel>.from(respostaFinal.map((x) => EmprestimosModel.fromMap(x)));
 
+    // O filtro agora fica no provider
     // respostaFinal.map((item) {
     //   if (item['Status'] == 1) {
     //     final emprestimo = EmprestimosModel.fromMap(item);
@@ -164,7 +165,7 @@ class EmprestimoService {
     return response.statusCode;
   }
 
-  Future<int?> DevolverEmprestimo(
+  Future<int?> devolverEmprestimo(
       num idDaSessao, String loginDoUsuarioRequerente, int idEmprestimo) async {
     final Map<String, dynamic> body = {
       "idDaSessao": idDaSessao,

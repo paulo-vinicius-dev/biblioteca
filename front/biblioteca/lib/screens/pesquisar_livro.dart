@@ -17,12 +17,10 @@ class PesquisarLivro extends StatefulWidget {
 
 class _PesquisarLivroState extends State<PesquisarLivro> {
   late TextEditingController _searchController;
-  late List<Livro> livros;
   late List<Livro> filteredBooks = [];
   late Livro? selectBook;
   late bool search = false;
   late ExemplarProvider providerExemplar;
-  late LivroProvider providerLivro;
   late List<Exemplar> exemplares;
   late List<Exemplar> filteredExemplares;
 
@@ -30,13 +28,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
   void initState() {
     super.initState();
     providerExemplar = Provider.of<ExemplarProvider>(context, listen: false);
-    providerLivro = Provider.of<LivroProvider>(context, listen: false);
     _searchController = TextEditingController();
-    if (providerLivro.livros.isEmpty) {
-      Provider.of<LivroProvider>(context, listen: false).loadLivros().then((_) {
-        setState(() {});
-      });
-    }
     if (providerExemplar.exemplares.isEmpty) {
       Provider.of<ExemplarProvider>(context, listen: false)
           .loadExemplares()
@@ -45,7 +37,20 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
       });
     }
   }
-
+  scafoldMsg(String msg, int tipo){
+    return ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+            backgroundColor: tipo == 1? Colors.red: (tipo ==2)? Colors.orange: Colors.green,
+            content: Text(
+              msg,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            duration: const Duration(seconds: 2),
+          ));
+  }
   // falta alterar isso aqui ainda(nada)
   void SearchExemplares(int idDoLivro) {
     filteredExemplares =
@@ -53,22 +58,26 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
     filteredExemplares.sort((a, b) => a.id.compareTo(b.id));
   }
 
-  void searchBooks() {
-    final seachQuery = _searchController.text.toLowerCase().trim();
+  void searchBooks()async{
+    final seachQuery = _searchController.text; // a pesquisa faz diferença de letra maiscula e minuscula
     selectBook = null;
-    setState(() {
-      search = true;
-      filteredBooks = livros
-          .where((livro) =>
-              livro.isbn.contains(seachQuery) ||
-              livro.titulo.toLowerCase().contains(seachQuery))
-          .toList();
-    });
+    if(seachQuery.isNotEmpty){
+      try{
+        final resposta = await Provider.of<LivroProvider>(context, listen: false).searchLivros(seachQuery);
+        setState(() {
+          search = true;
+          print(resposta);
+          filteredBooks = resposta;
+        });
+      }catch(e){
+        print(e.toString());
+        scafoldMsg('Erro ao realizar a pesquisa de livros. Tente novamente mais tarde.', 1);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    livros = providerLivro.livros;
     exemplares = providerExemplar.exemplares;
     return Material(
       child: Column(
@@ -175,7 +184,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                               columnWidths: const {
                                 0: FlexColumnWidth(0.13),
                                 1: FlexColumnWidth(0.30),
-                                2: FlexColumnWidth(0.15),
+                                2: FlexColumnWidth(0.20),
                                 3: FlexColumnWidth(0.14),
                                 4: FlexColumnWidth(0.10),
                                 5: FlexColumnWidth(0.12),
@@ -211,7 +220,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                     Padding(
                                       padding: EdgeInsets.all(8.0),
                                       child: Text(
-                                        'Editora',
+                                        'Autor',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             fontWeight: FontWeight.w500,
@@ -233,7 +242,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                     Padding(
                                       padding: EdgeInsets.all(8.0),
                                       child: Text(
-                                        'Exemplares',
+                                        'Qtd. Exemplares',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             fontWeight: FontWeight.w500,
@@ -288,7 +297,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 13, horizontal: 8),
                                         child: Text(
-                                          filteredBooks[x].editora,
+                                          filteredBooks[x].autores[0]["nome"],
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                               fontWeight: FontWeight.w300,
@@ -428,7 +437,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                             0: FlexColumnWidth(0.07),
                                             1: FlexColumnWidth(0.13),
                                             2: FlexColumnWidth(0.30),
-                                            3: FlexColumnWidth(0.15),
+                                            3: FlexColumnWidth(0.20),
                                             4: FlexColumnWidth(0.14),
                                             5: FlexColumnWidth(0.10),
                                           },
@@ -467,7 +476,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                                 Padding(
                                                   padding: EdgeInsets.all(8.0),
                                                   child: Text(
-                                                    'Editora',
+                                                    'Autor',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontWeight:
@@ -491,7 +500,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                                 Padding(
                                                   padding: EdgeInsets.all(8.0),
                                                   child: Text(
-                                                    'Exemplares',
+                                                    'Qtd. Exemplares',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontWeight:
@@ -547,7 +556,7 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                                       vertical: 10,
                                                       horizontal: 8),
                                                   child: Text(
-                                                    selectBook!.editora,
+                                                    selectBook!.autores[0]['nome'],
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontWeight:
@@ -632,10 +641,11 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         215, 200, 200, 200),
                                   ),
                                   columnWidths: const {
-                                    0: FlexColumnWidth(0.10),
+                                    0: FlexColumnWidth(0.12),
                                     1: FlexColumnWidth(0.30),
                                     2: FlexColumnWidth(0.16),
                                     3: FlexColumnWidth(0.15),
+                                    4: FlexColumnWidth(0.10),
                                   },
                                   children: [
                                     const TableRow(
@@ -680,6 +690,17 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                           padding: EdgeInsets.all(8.0),
                                           child: Text(
                                             'Estado Físico',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.white,
+                                                fontSize: 15),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'Cativo',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w500,
@@ -763,6 +784,17 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                                 vertical: 10, horizontal: 8),
                                             child: Text(
                                               filteredExemplares[x].getEstado,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w300,
+                                                  fontSize: 14.5),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10, horizontal: 8),
+                                            child: Text(
+                                              filteredExemplares[x].cativo? 'Sim':'Não',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w300,

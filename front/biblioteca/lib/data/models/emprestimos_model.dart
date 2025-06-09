@@ -10,8 +10,8 @@ class EmprestimosModel {
   int IdDoEmprestimo;        
 	Map<String, dynamic> exemplarMap;              
 	Map<String, dynamic> usuarioMap;              
-	String dataEmprestimo;       
 	int numeroRenovacoes = 0;      
+	String dataEmprestimo;       
 	String dataPrevistaEntrega;
 	String dataDeDevolucao;
 	int status;

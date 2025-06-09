@@ -3,7 +3,7 @@ import 'package:biblioteca/data/models/modelo_menu.dart';
 import 'package:flutter/material.dart';
 
 List<MenuModelo> menuitens = [
-  MenuModelo("Inicio", Icons.home, [], route: "/inicio"),
+  MenuModelo("Inicio", Icons.home, [], route: "/dashboard"),
   MenuModelo("Pesquisar Livro", Icons.search, [], route: "/pesquisar_livro"),
   MenuModelo("Circulação", Icons.my_library_books_rounded, [
     SubMenuModelo("Empréstimo", "/emprestimo"),

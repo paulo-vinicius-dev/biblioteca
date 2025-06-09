@@ -140,6 +140,11 @@ class _FormLoginState extends State<FormLogin> {
           ),
           const SizedBox(height: 20),
           TextFormField(
+            onFieldSubmitted: (value){
+              if (_formLoginKey.currentState!.validate()) {
+                  _autenticar(_userController.text, _passwordController.text);
+                }
+            },
             controller: _passwordController,
             decoration: InputDecoration(
               labelText: 'Senha',

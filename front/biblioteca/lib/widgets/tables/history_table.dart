@@ -160,7 +160,7 @@ class HistoryTablePageState extends State<HistoryTablePage> {
           children: [
             Padding(
                 padding: EdgeInsets.all(8.0),
-                child: Text('ID Exemplar',
+                child: Text('Tombamento',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
@@ -264,7 +264,7 @@ class HistoryTablePageState extends State<HistoryTablePage> {
 
   Widget _buildStatusCell(int status) {
     return Align(
-      alignment: Alignment.center,
+      alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(

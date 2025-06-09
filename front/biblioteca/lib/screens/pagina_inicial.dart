@@ -264,7 +264,7 @@ class _TelaPaginaIncialState extends State<TelaPaginaIncial> {
                           page = HistoryTablePage(usuario: usuario);
                           break;
                         default:
-                          page = const Home();
+                          page = const LibraryDashboard();
                       }
                       return MaterialPageRoute(builder: (_) => page);
                     },

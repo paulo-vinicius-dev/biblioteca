@@ -26,26 +26,24 @@ class ExemplarService {
     return exemplaresAtingidosFromJson(response.data);
   }
 
-  // Pesquisa os exemplares
-
-  // Future<ExemplaresAtingidos> searchExemplares(num idDaSessao,
-  //     String loginDoUsuarioRequerente, String textoDeBusca) async {
-  //   final Map<String, dynamic> body = {
-  //     "IdDaSessao": idDaSessao,
-  //     "LoginDoUsuario": loginDoUsuarioRequerente,
-  //   };
-
-  //   final response = await _api.requisicao(
-  //     apiRoute,
-  //     'GET',
-  //     body,
-  //   );
-
-  //   if (response.statusCode != 200) {
-  //     throw Exception(response.data);
-  //   }
-  //   return exemplaresAtingidosFromJson(response.data);
-  // }
+  //Pesquisa os exemplare
+  Future<ExemplaresAtingidos> searchExemplares(num idDaSessao,
+      String loginDoUsuarioRequerente, String textoDeBusca) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuario": loginDoUsuarioRequerente,
+      
+    };
+    final response = await _api.requisicao(
+      apiRoute,
+      'GET',
+      body,
+    );
+    if (response.statusCode != 200) {
+      throw Exception(response.data);
+    }
+    return exemplaresAtingidosFromJson(response.data);
+  }
 
   // Cria um novo exemplar
   Future<ExemplarEnvio> addExemplar(num idDaSessao,

@@ -31,6 +31,7 @@ class CategoriaProvider extends ChangeNotifier {
 
       if (apiResponse.responseCode == 200) {
         _categorias = apiResponse.body;
+        _categorias = _categorias.where((c) => c.ativo == true).toList();
       } else {
         _error = apiResponse.body;
       }
@@ -44,7 +45,6 @@ class CategoriaProvider extends ChangeNotifier {
   }
 
   Future<Categoria?> addCategoria(String descricao) async {
-
     _isLoading = true;
     _error = null;
     notifyListeners();

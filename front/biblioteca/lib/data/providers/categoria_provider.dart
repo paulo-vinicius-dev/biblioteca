@@ -30,8 +30,7 @@ class CategoriaProvider extends ChangeNotifier {
           await _categoriaService.fetchCategorias(idDaSessao, usuarioLogado);
 
       if (apiResponse.responseCode == 200) {
-        _categorias = apiResponse.body;
-        _categorias = _categorias.where((c) => c.ativo == true).toList();
+        _categorias = apiResponse.body.where((c)=> c.ativo == true).toList();
       } else {
         _error = apiResponse.body;
       }

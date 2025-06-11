@@ -42,7 +42,7 @@ func PesquisarCategoria(busca string) []modelos.Categoria {
 
 func PegarTodasCategorias() []modelos.Categoria {
 	conexao := PegarConexao()
-	textoQuery := "SELECT id_categoria, descricao FROM categoria"
+	textoQuery := "SELECT id_categoria, descricao, ativo FROM categoria"
 	linhas, erro := conexao.Query(context.Background(), textoQuery)
 	if erro != nil {
 		return []modelos.Categoria{}
@@ -50,7 +50,7 @@ func PegarTodasCategorias() []modelos.Categoria {
 
 	var categoriaTemporaria modelos.Categoria
 	categoriasEncontradas := make([]modelos.Categoria, 0)
-	_, erro = pgx.ForEachRow(linhas, []any{&categoriaTemporaria.IdDaCategoria, &categoriaTemporaria.Descricao}, func() error {
+	_, erro = pgx.ForEachRow(linhas, []any{&categoriaTemporaria.IdDaCategoria, &categoriaTemporaria.Descricao, &categoriaTemporaria.Ativo}, func() error {
 		categoriasEncontradas = append(categoriasEncontradas, categoriaTemporaria)
 		return nil
 	})

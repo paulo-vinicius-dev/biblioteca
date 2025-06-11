@@ -76,11 +76,12 @@ func CriarCategoria(novaCategoria modelos.Categoria) ErroBancoCategoria {
 func PegarCategoriaPeloId(id uint64) (modelos.Categoria, bool) {
 	conexao := PegarConexao()
 	var categoria modelos.Categoria
-	textoQuery := "SELECT id_categoria, descricao FROM categoria WHERE id_categoria = $1"
+	textoQuery := "SELECT id_categoria, descricao, ativo FROM categoria WHERE id_categoria = $1"
 
 	if erro := conexao.QueryRow(context.Background(), textoQuery, id).Scan(
 		&categoria.IdDaCategoria,
 		&categoria.Descricao,
+		&categoria.Ativo,
 	); erro == nil {
 		return categoria, true
 	} else {
@@ -106,7 +107,7 @@ func ExcluirCategoria(IdDaCategoria uint64) ErroBancoCategoria {
 
 	if _, erroQuery := conexao.Exec(
 		context.Background(),
-		"DELETE FROM categoria WHERE id_categoria = $1", IdDaCategoria,
+		"update categoria set ativo = false WHERE id_categoria = $1", IdDaCategoria,
 	); erroQuery != nil {
 		return ErroCategoriaExecutarExclusao
 	}

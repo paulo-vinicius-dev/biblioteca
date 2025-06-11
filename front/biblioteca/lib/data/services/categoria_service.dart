@@ -51,7 +51,7 @@ class CategoriaService {
 
     if(response.statusCode == 200){
 
-      final json = jsonDecode(response.data)["CategoriasAtingidas"];
+      final json = jsonDecode(response.data)["CategoriasAtingidas"][0];
 
       categoria = Categoria.fromJson(json);
 

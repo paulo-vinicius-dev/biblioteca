@@ -1,9 +1,15 @@
 class TipoDeStatus {
+  //status 0: emprestado
+  //status 1: diponivel
+  //status 2: indisponivel
   static const disponivel = "Disponível";
-  static const emprestado = "Indisponível";
+  static const emprestado = "Emprestado";
+  static const indisponivel = "Indisponível";
 }
 
 class TipoEstado {
+  //1 - Bom
+  //0 - Danificado
   static const bom = "Bom";
   static const danificado = "Danificado";
 }
@@ -25,7 +31,7 @@ class ExemplarEnvio {
       required this.ativo});
 
   String get getStatus =>
-      status == 1 ? TipoDeStatus.disponivel : TipoDeStatus.emprestado;
+      status == 1 ? TipoDeStatus.disponivel : status == 0? TipoDeStatus.emprestado: TipoDeStatus.indisponivel;
   String get getEstado => estado == 1 ? TipoEstado.bom : TipoEstado.danificado;
 
   factory ExemplarEnvio.fromJson(Map<String, dynamic> json) {
@@ -85,7 +91,7 @@ class Exemplar {
   });
 
   String get getStatus =>
-      statusCodigo == 1 ? TipoDeStatus.disponivel : TipoDeStatus.emprestado;
+      statusCodigo == 1 ? TipoDeStatus.disponivel : statusCodigo == 0? TipoDeStatus.emprestado: TipoDeStatus.indisponivel;
   String get getEstado => estado == 1 ? TipoEstado.bom : TipoEstado.danificado;
 
   factory Exemplar.fromJson(Map<String, dynamic> json) {

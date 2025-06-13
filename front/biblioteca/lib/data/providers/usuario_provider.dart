@@ -28,6 +28,15 @@ class UsuarioProvider with ChangeNotifier {
       throw Exception("UsuarioProvider: Erro ao carregar os usuários - $e");
     }
   }
+  Future<List<Usuario>> searchUsuarios(String textoDeBusca) async{
+    UsuariosAtingidos? loadedUsuarios;
+    try{
+      loadedUsuarios = await usuarioService.searchUsuarios(idDaSessao, usuarioLogado, textoDeBusca);
+      return loadedUsuarios.usuarioAtingidos.where((usuario) => usuario.ativo && usuario.login != usuarioLogado).toList();
+    } catch(e){
+      throw Exception("UsuarioProvider: Erro ao carregar usuarios pesquisados - $e");
+    }
+  }
 
   Future<void> addUsuario(Usuario usuario) async {
     late Usuario novoUsuario;

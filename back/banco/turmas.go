@@ -4,9 +4,41 @@ import (
 	//"log"
 	"biblioteca/modelos"
 	"context"
+	"fmt"
 
 	pgx "github.com/jackc/pgx/v5"
 )
+
+func CriarTurma(turma modelos.Turma) (modelos.Turma, bool) {
+	conexao := PegarConexao()
+	textoQuery := `
+		insert into turma(id_turma, descricao, serie, turno, data_criacao, data_atualizacao)
+		values(default, $1, $2, $3, default, default)
+	`
+	_, erro := conexao.Exec(
+		context.Background(),
+		textoQuery,
+		turma.Descricao,
+		turma.Serie.IdSerie,
+	        turma.Turno.IdTurno,
+	)
+
+	if erro != nil {
+		fmt.Println(erro)
+		return modelos.Turma{}, false
+	}
+
+	textoQuery = "select max(id_turma) from turma"
+
+	idDaNovaTurma := 0
+	conexao.QueryRow(
+		context.Background(),
+		textoQuery,
+	).Scan(&idDaNovaTurma)
+
+	return PegarTurmaPorId(idDaNovaTurma)
+
+}
 
 func PegarTurmaPorId(id int) (modelos.Turma, bool) {
 	conexao := PegarConexao()

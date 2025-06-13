@@ -23,14 +23,14 @@ class TelaLogin extends StatelessWidget {
             ),
           ),
         ),
-        // Opacity(
-        //   opacity: 0.5,
-        //   child: SizedBox(
-        //     width: double.infinity,
-        //     height: double.infinity,
-        //     child: Image.asset('assets/images/escola_do_mar.jpg', fit: BoxFit.cover),
-        //   ),
-        // ),
+        Opacity(
+          opacity: 0.5,
+          child: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Image.asset('assets/images/escola_do_mar.jpg', fit: BoxFit.cover),
+          ),
+        ),
         Center(
           child: SizedBox(
             width: 500,

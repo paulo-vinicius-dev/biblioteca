@@ -3,13 +3,15 @@
 //   StatusEmprestimoEntregueComAtraso = 2
 //   StatusEmprestimoConcluido = 3
 // )
+import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 
 class EmprestimosModel {
   int IdDoEmprestimo;        
 	Map<String, dynamic> exemplarMap;              
 	Map<String, dynamic> usuarioMap;              
-	String dataEmprestimo;       
 	int numeroRenovacoes = 0;      
+	String dataEmprestimo;       
 	String dataPrevistaEntrega;
 	String dataDeDevolucao;
 	int status;
@@ -26,6 +28,23 @@ class EmprestimosModel {
     required this.status,
     required this.detalhes,
   });
+  // Paramentro para formatar a a data: 
+  //0 - Data do emprestimo; 1 - Data Prevista Entrega; 2 - Data Devolucao;
+  String formatarData(int qualData){
+    late String dataFormatada;
+    switch(qualData){
+      case 0: 
+          dataFormatada = DateFormat('dd/MM/yyyy').format(DateTime.parse(this.dataEmprestimo));
+          break;
+      case 1: 
+          dataFormatada = DateFormat('dd/MM/yyyy').format(DateTime.parse(this.dataPrevistaEntrega));
+          break;
+      case 2: 
+          dataFormatada = DateFormat('dd/MM/yyyy').format(DateTime.parse(this.dataDeDevolucao));
+          break;
+    }
+    return dataFormatada;
+  }
   factory EmprestimosModel.fromMap(Map<String,dynamic> map){
     return EmprestimosModel(
       IdDoEmprestimo: map['IdDoEmprestimo'], 
@@ -39,6 +58,21 @@ class EmprestimosModel {
     );
   }
 }
+//modelo para utilizar na msg de confirmacao de emprestimo e renovacao
+class emprestimoMsg{
+  String tombamento;
+  String nome;
+  String dataPrevistaEntrega;
+  bool renovou = false; // pra saber se a renovaçao desse emprestimo deu certo
+  emprestimoMsg(
+    { 
+      required this.tombamento,
+      required this.nome,
+      required this.dataPrevistaEntrega,
+    }
+  );
+}
+//modelo
 // [
 //   {
 //     "IdDoEmprestimo": 1,

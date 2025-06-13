@@ -108,17 +108,17 @@ class _FormLoginState extends State<FormLogin> {
                 AppAssets.logo,
                 scale: 2.5,
               ),
-              // Container(
-              //   width: 2,
-              //   height: 70,
-              //   decoration: BoxDecoration(
-              //     color: Theme.of(context).colorScheme.secondary,
-              //   ),
-              // ),
-              // Image.asset(
-              //   AppAssets.logoEscola,
-              //   scale: 2.5,
-              // )
+              Container(
+                width: 2,
+                height: 70,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+              Image.asset(
+                AppAssets.logoEscola,
+                scale: 2.5,
+              )
             ],
           ),
           const SizedBox(
@@ -140,6 +140,11 @@ class _FormLoginState extends State<FormLogin> {
           ),
           const SizedBox(height: 20),
           TextFormField(
+            onFieldSubmitted: (value){
+              if (_formLoginKey.currentState!.validate()) {
+                  _autenticar(_userController.text, _passwordController.text);
+                }
+            },
             controller: _passwordController,
             decoration: InputDecoration(
               labelText: 'Senha',

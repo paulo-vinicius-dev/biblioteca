@@ -58,6 +58,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
           if (selectedBoxExemplar.any((item)=> item.IdDoEmprestimo == selectbook[0].IdDoEmprestimo)) {
             msgSnackBar('Exemplar já adicionado na lista', 1);
           } else {
+            selectbook[0].selecionadoRenov = true;
             selectedBoxExemplar.add(selectbook[0]);
           }
         }
@@ -110,7 +111,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                           ),
                           Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Text("Data de Devolução",
+                            child: Text("Previsão Devolução",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -151,7 +152,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                             Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Text(
-                                  exemplar.dataPrevistaEntrega,
+                                  exemplar.formatarData(1),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -192,6 +193,14 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                 )
               ],
             ));
+  }
+  Future<void> DevolverExemplares(List<EmprestimosModel> emprestimosRenov) async{
+    final copia = List.from(emprestimosRenov);
+    for(EmprestimosModel item in copia){
+      print('Item: ${item.IdDoEmprestimo}');
+      await Provider.of<EmprestimoProvider>(context, listen: false).devolver(item.IdDoEmprestimo);
+    }
+    
   }
   @override
   Widget build(BuildContext context) {
@@ -293,6 +302,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                                     if(listaParaDevolucao.isEmpty){
                                       msgSnackBar('Nenhum exemplar selecionado', 1);
                                     }else{
+                                      DevolverExemplares(listaParaDevolucao);
                                       msgConfirmEmprestimo(listaParaDevolucao).then((_){
                                      for (EmprestimosModel exemplar
                                         in List.from(selectedBoxExemplar)) {
@@ -371,11 +381,11 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                           width: 1150,
                           child: Table(
                             columnWidths: const {
-                              0: FlexColumnWidth(0.08),
+                              0: FlexColumnWidth(0.10),
                               1: FlexColumnWidth(0.26),
                               2: FlexColumnWidth(0.14),
                               3: FlexColumnWidth(0.14),
-                              4: FlexColumnWidth(0.10),
+                              4: FlexColumnWidth(0.08),
                             },
                             border: TableBorder.all(
                               color: const Color.fromARGB(215, 200, 200, 200),
@@ -415,7 +425,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                                     ),
                                     Padding(
                                       padding: EdgeInsets.all(7.0),
-                                      child: Text('Data de Devoluçao',
+                                      child: Text('Previsão Devolução',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                               fontWeight: FontWeight.w500,
@@ -466,7 +476,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                                             vertical: 9.4, horizontal: 8),
                                         child: Text(
                                             selectedBoxExemplar[x]
-                                                .dataEmprestimo,
+                                                .formatarData(0),
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w300,   
@@ -477,7 +487,7 @@ class _TelaDevolucaoState extends State<TelaDevolucao> {
                                             vertical: 9.4, horizontal: 8),
                                         child: Text(
                                             selectedBoxExemplar[x]
-                                                .dataPrevistaEntrega,
+                                                .formatarData(1),
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w300,

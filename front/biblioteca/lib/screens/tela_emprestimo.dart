@@ -4,7 +4,6 @@ import 'package:biblioteca/data/models/usuario_model.dart';
 import 'package:biblioteca/data/providers/emprestimo_provider.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
-
 import 'package:flutter/material.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:provider/provider.dart';
@@ -29,8 +28,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   Exemplar? selectbook;
   Usuario? selectUser;
   late ExemplarProvider providerExemplar;
-  late UsuarioProvider providerUsers;
-  late List<Usuario> users;
   late List<Exemplar> exemplares;
 
   late List<Exemplar> selectedBoxExemplar = [];
@@ -42,17 +39,8 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     _searchController = TextEditingController();
     _searchControllerBooks = TextEditingController();
     providerExemplar = Provider.of<ExemplarProvider>(context, listen: false);
-    providerUsers = Provider.of<UsuarioProvider>(context, listen: false);
     _filteredUsers = [];
 
-    // Carregar usuários
-    if (providerUsers.users.isEmpty) {
-      Provider.of<UsuarioProvider>(context, listen: false)
-          .loadUsuarios()
-          .then((_) {
-        setState(() {});
-      });
-    }
     if (providerExemplar.exemplares.isEmpty) {
       Provider.of<ExemplarProvider>(context, listen: false)
           .loadExemplares()
@@ -66,32 +54,40 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
             backgroundColor: tipo == 1? Colors.red: (tipo ==2)? Colors.orange: Colors.green,
             content: Text(
               msg,
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ));
   }
   
-  void searchUsers() {
+   void searchUsers() async{
     final searchQuery = _searchController.text.toLowerCase();
-    selectUser = null;
     if (showSearchBooks) {
+      selectUser = null;
       showBooks = false;
       showSearchBooks = false;
       selectbook = null;
       _searchControllerBooks.text = '';
+      setState(() {
+        
+      });
     }
-    setState(() {
-      search = true;
-      _filteredUsers = users.where((usuario) {
-        return usuario.nome.toLowerCase().contains(searchQuery) ||
-            usuario.login.contains(searchQuery);
-      }).toList();
-    });
+    if(searchQuery.isNotEmpty){
+      try{
+        final resposta = await Provider.of<UsuarioProvider>(context, listen: false).searchUsuarios(searchQuery);
+        setState(() {
+          search = true;
+          _filteredUsers = resposta;
+        });
+      }catch(e){
+        print(e.toString());
+        scafoldMsg('Erro ao realizar a pesquisa de usuários. Tente novamente mais tarde.', 1);
+      }
+    }
   }
 
   void searchBooks() {
@@ -203,47 +199,43 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                             color: Color.fromRGBO(233, 235, 238, 75)),
                         children: [
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Text(exemplar.id.toString(),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.w300, fontSize: 14)),
                           ),
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Text(exemplar.titulo,
                                 textAlign: TextAlign.left,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.w300, fontSize: 14)),
                           ),
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Text(
                                 DateFormat('dd/MM/YYYY')
                                     .format(exemplar.anoPublicacao),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.w300, fontSize: 14)),
                           ),
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  exemplar.statusCodigo == 1
-                                      ? Icons.check_circle
-                                      : Icons.cancel,
-                                  color: exemplar.statusCodigo == 1
-                                      ? Colors.green
-                                      : Colors.red,
+                                const Icon(
+                                  Icons.cancel,
+                                  color: Colors.red,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 5,
                                 ),
                                 Text(exemplar.getStatus,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.w300,
                                         fontSize: 14)),
                               ],
@@ -259,7 +251,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                   children: [
                     TextButton(
                         style: TextButton.styleFrom(
-                            padding: EdgeInsets.all(11),
+                            padding:const EdgeInsets.all(11),
                             backgroundColor: Colors.red[400],
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
@@ -274,10 +266,10 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                     if (exemplar.statusCodigo == 1)
                       Row(
                         children: [
-                          SizedBox(width: 20),
+                          const SizedBox(width: 20),
                           TextButton(
                               style: TextButton.styleFrom(
-                                  padding: EdgeInsets.all(11),
+                                  padding: const EdgeInsets.all(11),
                                   backgroundColor: Colors.green[400],
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
@@ -298,14 +290,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
             ));
   }
 
-  Future<void> msgConfirmEmprestimo(List<Exemplar> exemplaresEmpres, int tipoMsg) {
+  Future<void> msgConfirmEmprestimo(List<emprestimoMsg> exemplaresEmpres, int tipoMsg) {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
               title:  Text(
                 tipoMsg == 0? 'Confirmação de Empréstimo':'Confimação de Renovação',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               content: Container(
                 width: 800,
@@ -343,7 +335,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                           ),
                           Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Text("Data de Devolução",
+                            child: Text("Data Devolução",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -360,44 +352,44 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                     fontSize: 15)),
                           )
                         ]),
-                    for (Exemplar exemplar in exemplaresEmpres)
+                    for (emprestimoMsg exemplar in exemplaresEmpres)
                       TableRow(
                           decoration: const BoxDecoration(
                               color: Color.fromRGBO(233, 235, 238, 75)),
                           children: [
                             Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.id.toString(),
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(exemplar.tombamento,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 14)),
                             ),
                             Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(exemplar.titulo,
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(exemplar.nome,
                                   textAlign: TextAlign.left,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 14)),
                             ),
                             Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                  getDate(DateTime.now()),
+                                  exemplar.dataPrevistaEntrega,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 14)),
                             ),
                             Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(tipoMsg == 0? 'Empréstimo realizado!': 'Renovação realizada',
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(tipoMsg == 0? 'Empréstimo realizado!': (exemplar.renovou)? 'Renovação realizada!': 'Limite Máximo de Renovação Atingido',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 14,
-                                      color: Colors.green[400])),
+                                      color: tipoMsg == 0? Colors.green[400]: exemplar.renovou? Colors.green[400]:Colors.red[400])),
                             )
                           ])
                   ],
@@ -409,7 +401,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                   children: [
                     TextButton(
                         style: TextButton.styleFrom(
-                            padding: EdgeInsets.all(11),
+                            padding: const EdgeInsets.all(11),
                             backgroundColor: Colors.green[400],
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
@@ -427,7 +419,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
             ));
   }
 
-  String getDate(DateTime dateNow) {
+  String dataPrevistaDevolucao(DateTime dateNow) {
     DateTime dataDevolucaoDate = dateNow.add(const Duration(days: 7));
     final dataDevolucao = DateFormat('dd/MM/yyyy').format(dataDevolucaoDate);
     return dataDevolucao;
@@ -435,24 +427,32 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
 
   Future<void> renovarExemplares(List<EmprestimosModel> emprestimosRenov) async{
     final copia = List.from(emprestimosRenov);
+    List<emprestimoMsg> listaRenovacao = [];
+    for(EmprestimosModel emprestimo in emprestimosRenov){
+      listaRenovacao.add(emprestimoMsg(tombamento: emprestimo.exemplarMap['IdDoExemplarLivro'].toString(), nome: emprestimo.exemplarMap['Livro']['Titulo'], dataPrevistaEntrega: emprestimo.formatarData(1)));
+    }
     for(final item in copia){
-      
       var status = await Provider.of<EmprestimoProvider>(context, listen: false).renovacao(item.IdDoEmprestimo);
+      final exemplarRenov = listaRenovacao.firstWhere((exemplar)=> exemplar.tombamento == item.exemplarMap['IdDoExemplarLivro'].toString());
       if(status == 200){
-        scafoldMsg('Exemplar N°${item.exemplarMap['IdDoExemplarLivro']} Renovaçao realiza com sucesso', 3);
+        exemplarRenov.renovou = true;
+        exemplarRenov.dataPrevistaEntrega = dataPrevistaDevolucao(DateFormat('dd/MM/yyyy').parse(exemplarRenov.dataPrevistaEntrega));
       }else{
-        scafoldMsg('Exemplar N° ${item.exemplarMap['IdDoExemplarLivro']} Ultrapassou o limite de renovação', 1);
+        exemplarRenov.renovou = false;
       }
     }
+    
+    msgConfirmEmprestimo(listaRenovacao, 1);
     carregarEmprestimosUsuario(selectUser!.idDoUsuario);
     
   }
 
   void carregarEmprestimosUsuario(int idUsuario) async{
-    emprestimos = await Provider.of<EmprestimoProvider>(context, listen:  false).fetchEmprestimoUsuario(idUsuario);
+    emprestimos = await Provider.of<EmprestimoProvider>(context, listen:  false).fetchEmprestimoEmAndamentoUsuarios(idUsuario);
     setState(() {
     });
   }
+  
   void realizarEmprestimo(List<Exemplar> exemplaresParaEmprestar) async{
     List<int> listaIdsExemplares = [];
     for(Exemplar item in exemplaresParaEmprestar){
@@ -461,8 +461,11 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
     final statusCode = await Provider.of<EmprestimoProvider>(context,listen: false).addEmprestimo(selectUser!.idDoUsuario, listaIdsExemplares);
 
     if(statusCode == 200){
-      msgConfirmEmprestimo(exemplaresParaEmprestar, 0);
-      
+      List<emprestimoMsg> listaEmprestados = [];
+      for (Exemplar item in exemplaresParaEmprestar){
+        listaEmprestados.add(emprestimoMsg(tombamento: item.id.toString(), nome: item.titulo, dataPrevistaEntrega: dataPrevistaDevolucao(DateTime.now())));
+      }
+      msgConfirmEmprestimo(listaEmprestados, 0);
       carregarEmprestimosUsuario(selectUser!.idDoUsuario);
       
     }else{
@@ -479,7 +482,6 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
   @override
   Widget build(BuildContext context) {
     exemplares = providerExemplar.exemplares;
-    users = providerUsers.users;
     return Material(
       child: Column(
         children: [
@@ -642,15 +644,15 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                   TableRow(
                                     decoration: BoxDecoration(
                                         color: x % 2 == 0
-                                            ? Color.fromRGBO(233, 235, 238, 75)
-                                            : Color.fromRGBO(255, 255, 255, 1)),
+                                            ? const Color.fromRGBO(233, 235, 238, 75)
+                                            : const Color.fromRGBO(255, 255, 255, 1)),
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 13, horizontal: 8),
                                         child: Text(_filteredUsers[x].nome,
                                             textAlign: TextAlign.left,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w300,
                                                 fontSize: 14.5)),
                                       ),
@@ -659,7 +661,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                             vertical: 13, horizontal: 8),
                                         child: Text(_filteredUsers[x].getTurma,
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w300,
                                                 fontSize: 14.5)),
                                       ),
@@ -668,7 +670,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                             vertical: 13, horizontal: 8),
                                         child: Text(_filteredUsers[x].getTurno,
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w300,
                                                 fontSize: 14.5)),
                                       ),
@@ -677,7 +679,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                             vertical: 13, horizontal: 8),
                                         child: Text(_filteredUsers[x].email,
                                             textAlign: TextAlign.left,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w300,
                                                 fontSize: 14.5)),
                                       ),
@@ -687,7 +689,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                         child: Text(
                                             _filteredUsers[x].getTipoDeUsuario,
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w300,
                                                 fontSize: 14.5)),
                                       ),
@@ -714,7 +716,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                           },
                                           child: const Text('Selecionar',
                                               style: TextStyle(
-                                                color: const Color.fromARGB(
+                                                color: Color.fromARGB(
                                                     255, 250, 244, 244),
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: 14,
@@ -738,14 +740,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 6.5),
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(230, 227, 242, 253),
+                                    color: const Color.fromARGB(230, 227, 242, 253),
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withOpacity(0.1),
                                         blurRadius: 4,
                                         spreadRadius: 1,
-                                        offset: Offset(0, 2),
+                                        offset: const Offset(0, 2),
                                       ),
                                     ],
                                   ),
@@ -761,13 +763,13 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                               const EdgeInsets.only(left: 4),
                                           child: Row(
                                             children: [
-                                              Icon(
+                                              const Icon(
                                                 Icons.person,
                                                 color: Color.fromARGB(
                                                     255, 46, 125, 50),
                                                 size: 26,
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 width: 7,
                                               ),
                                               Text(
@@ -876,7 +878,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                       horizontal: 8),
                                                   child: Text(selectUser!.nome,
                                                       textAlign: TextAlign.left,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           fontSize: 14.5)),
@@ -890,7 +892,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                       selectUser!.getTurma,
                                                       textAlign:
                                                           TextAlign.center,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           fontSize: 14.5)),
@@ -904,7 +906,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                       selectUser!.getTurno,
                                                       textAlign:
                                                           TextAlign.center,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           fontSize: 14.5)),
@@ -916,7 +918,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                       horizontal: 8),
                                                   child: Text(selectUser!.email,
                                                       textAlign: TextAlign.left,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           fontSize: 14.5)),
@@ -929,7 +931,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                           .getTipoDeUsuario,
                                                       textAlign:
                                                           TextAlign.center,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           fontSize: 14.5)),
@@ -950,13 +952,13 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                         padding: const EdgeInsets.only(left: 4),
                                         child: Row(
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.library_books,
                                               color: Color.fromARGB(
                                                   255, 46, 125, 50),
                                               size: 25,
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 8,
                                             ),
                                             Text(
@@ -983,14 +985,14 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                       Divider(
                                           thickness: 2,
                                           color: Colors.grey[400]),
-                                      SizedBox(height: 10),
+                                      const SizedBox(height: 10),
                                       Table(
                                         columnWidths: const {
-                                          0: FlexColumnWidth(0.08),
+                                          0: FlexColumnWidth(0.10),
                                           1: FlexColumnWidth(0.26),
                                           2: FlexColumnWidth(0.14),
                                           3: FlexColumnWidth(0.14),
-                                          4: FlexColumnWidth(0.10),
+                                          4: FlexColumnWidth(0.08),
                                         },
                                         border: TableBorder.all(
                                           color: const Color.fromARGB(
@@ -1039,7 +1041,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                 Padding(
                                                   padding: EdgeInsets.all(7.0),
                                                   child: Text(
-                                                      'Data de Devoluçao',
+                                                      'Previsão Devoluçao',
                                                       textAlign:
                                                           TextAlign.center,
                                                       style: TextStyle(
@@ -1067,9 +1069,9 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                             TableRow(
                                                 decoration: BoxDecoration(
                                                   color: x % 2 == 0
-                                                      ? Color.fromRGBO(
+                                                      ? const Color.fromRGBO(
                                                           233, 235, 238, 75)
-                                                      : Color.fromRGBO(
+                                                      : const Color.fromRGBO(
                                                           255, 255, 255, 1),
                                                 ),
                                                 children: [
@@ -1082,7 +1084,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         emprestimos[x].exemplarMap['IdDoExemplarLivro'].toString(),
                                                         textAlign:
                                                             TextAlign.center,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),
@@ -1096,7 +1098,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         emprestimos[x].exemplarMap['Livro']['Titulo'],
                                                         textAlign:
                                                             TextAlign.left,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),
@@ -1107,10 +1109,10 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         vertical: 9.4,
                                                         horizontal: 8),
                                                     child: Text(
-                                                        emprestimos[x].dataEmprestimo,
+                                                        emprestimos[x].formatarData(0),
                                                         textAlign:
                                                             TextAlign.center,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),
@@ -1121,10 +1123,10 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                         vertical: 9.4,
                                                         horizontal: 8),
                                                     child: Text(
-                                                        emprestimos[x].dataPrevistaEntrega,
+                                                        emprestimos[x].formatarData(1),
                                                         textAlign:
                                                             TextAlign.center,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),
@@ -1193,7 +1195,8 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                            exemplaresSelecionadosRenovacao.add(dadosEmprestimo);
                                                         }
                                                       }
-                                                      renovarExemplares(exemplaresSelecionadosRenovacao);
+                                                      if(exemplaresSelecionadosRenovacao.isNotEmpty)
+                                                        renovarExemplares(exemplaresSelecionadosRenovacao);
                                                     },
                                                     child: const Text('Renovar',
                                                         style: TextStyle(
@@ -1213,7 +1216,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                   ),
                                 if (emprestimos.isEmpty)
                                   const SizedBox(height: 50),
-                                Divider(),
+                                const Divider(),
                               ],
                             ),
                           ),
@@ -1221,7 +1224,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 50,
                               ),
                               Text("Pesquisar Exemplar",
@@ -1413,7 +1416,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                   215, 200, 200, 200)),
                                           columnWidths: const {
                                             0: FlexColumnWidth(0.05),
-                                            1: FlexColumnWidth(0.08),
+                                            1: FlexColumnWidth(0.10),
                                             2: FlexColumnWidth(0.25),
                                             3: FlexColumnWidth(0.12),
                                             4: FlexColumnWidth(0.14),
@@ -1489,9 +1492,9 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                               TableRow(
                                                 decoration: BoxDecoration(
                                                     color: x % 2 == 0
-                                                        ? Color.fromRGBO(
+                                                        ? const Color.fromRGBO(
                                                             233, 235, 238, 75)
-                                                        : Color.fromRGBO(
+                                                        : const Color.fromRGBO(
                                                             255, 255, 255, 1)),
                                                 children: [
                                                   Padding(
@@ -1524,7 +1527,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                             .toString(),
                                                         textAlign:
                                                             TextAlign.center,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),
@@ -1541,7 +1544,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                             .titulo,
                                                         textAlign:
                                                             TextAlign.left,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),
@@ -1560,7 +1563,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                                 .anoPublicacao),
                                                         textAlign:
                                                             TextAlign.center,
-                                                        style: TextStyle(
+                                                        style:const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),
@@ -1577,7 +1580,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                             .editora,
                                                         textAlign:
                                                             TextAlign.center,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),
@@ -1596,7 +1599,7 @@ class _PaginaEmprestimoState extends State<PaginaEmprestimo> {
                                                             : 'Não',
                                                         textAlign:
                                                             TextAlign.center,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             fontSize: 14.5)),

@@ -1,9 +1,9 @@
+import 'package:biblioteca/data/models/exemplar_model.dart';
 import 'package:biblioteca/data/models/livro_model.dart';
+import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biblioteca/data/models/exemplar_model.dart';
-import 'package:biblioteca/data/providers/exemplares_provider.dart';
 
 class ExemplaresPage extends StatefulWidget {
   final Livro book;
@@ -123,6 +123,16 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                 child: DropdownButton<String>(
                                   value: exemplarProvider.exemplares[i].estado
                                       .toString(),
+                                  isDense: true,
+                                  menuMaxHeight: 150,
+                                  underline: Container(
+                                    height: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
                                   onChanged: (newValue) {
                                     setState(() {
                                       exemplarProvider.exemplares[i] = Exemplar(

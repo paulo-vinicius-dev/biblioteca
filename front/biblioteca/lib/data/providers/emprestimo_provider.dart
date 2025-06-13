@@ -10,15 +10,39 @@ class EmprestimoProvider with ChangeNotifier {
   final String usuarioLogado;
   EmprestimoProvider(this.idDaSessao, this.usuarioLogado);
 
-  Future<List<EmprestimosModel>> fetchEmprestimoUsuario(int idAluno) async {
+  //Para buscar todos os emprestimos para o DashBoard
+  Future<List<EmprestimosModel>> fetchTodosEmprestimos() async {
     try {
-     final emprestimos = await emprestimoService.fetchExemplaresUsuario(idDaSessao, usuarioLogado, idAluno);
+     final emprestimos = await emprestimoService.fetchTodosEmprestimos(idDaSessao, usuarioLogado);
      return emprestimos;
     } catch (e) {
-      print("Erro ao criar empréstimo: $e");
+      print("Erro ao buscar emprestimos: $e");
       return [];
     } 
   }
+  
+  Future<List<EmprestimosModel>> fetchEmprestimosUsuario(int idAluno) async {
+    try {
+     final emprestimos = await emprestimoService.fetchEmprestimosUsuario(idDaSessao, usuarioLogado, idAluno);
+     return emprestimos;
+    } catch (e) {
+      print("Erro ao buscar emprestimos: $e");
+      return [];
+    } 
+  }
+  
+  Future<List<EmprestimosModel>> fetchEmprestimoEmAndamentoUsuarios(int idAluno) async {
+    try {
+     final emprestimos = await emprestimoService.fetchEmprestimosUsuario(idDaSessao, usuarioLogado, idAluno);
+
+      // O filtro fica no provider agora
+     return emprestimos.where((e) => e.status == 1).toList();
+    } catch (e) {
+      print("Erro ao buscar emprestimos: $e");
+      return [];
+    } 
+  }
+
   Future<int?> addEmprestimo(int idAluno, List<int> exemplaresEmprestados) async {
     try {
      final statusCode = await emprestimoService.addEmprestimo(idDaSessao, usuarioLogado, idAluno, exemplaresEmprestados);
@@ -45,6 +69,16 @@ class EmprestimoProvider with ChangeNotifier {
     }catch(e){
       print('Erro ao pesquisar emprestimo: ${e}');
       return [];
+    }
+  }
+  Future<int?> devolver(int idEmprestimo) async {
+    try {
+     final statusCode = await emprestimoService.devolverEmprestimo(idDaSessao, usuarioLogado, idEmprestimo);
+     print('Status Devolucao : ${statusCode}');
+     return statusCode;
+    } catch (e) {
+      print("Erro ao renovar Devolver Exemplar: $e");
+      return null;
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'package:biblioteca/data/models/emprestimos_model.dart';
+import 'package:biblioteca/data/providers/emprestimo_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -5,25 +7,79 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:biblioteca/screens/telas_testes.dart';
 import 'package:biblioteca/widgets/dashboard/summary_cards.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
-
-class LibraryDashboard extends StatelessWidget {
+import 'package:provider/provider.dart';
+class LibraryDashboard extends StatefulWidget {
   const LibraryDashboard({super.key});
 
   @override
+  State<LibraryDashboard> createState() => _LibraryDashboardState();
+}
+
+class _LibraryDashboardState extends State<LibraryDashboard> {
+
+  // Simulação...
+  int loansToday = 0;
+  int returnsToday = 0;
+  int delaysToday = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchTodosEmprestimos();
+  }
+  calcularOsDadosDashBoard(){
+    //calcular os emprestimos de hoje
+    final hoje = DateTime.now();
+    final dataHojeFormatada= DateTime(hoje.year, hoje.month, hoje.day);
+    
+    int qtdEmprestimosHoje = emprestimos.where((item){
+      final data = DateFormat('yyyy-MM-dd').parse(item.dataEmprestimo);
+      final dataFormatada = DateTime(data.year, data.month, data.day);
+      return dataHojeFormatada == dataFormatada;
+    }).length;
+    //calcular os empresprestimos em atraso
+    int qtdEmprestimosAtrasados = emprestimos.where((item){
+      final data = DateFormat('yyyy-MM-dd').parse(item.dataPrevistaEntrega);
+      final dataFormatada = DateTime(data.year, data.month, data.day);
+      return dataHojeFormatada.isAfter(dataFormatada);
+    }).length;
+    
+    //devolucao de hoje
+    int qtdEmprestimsDevolvidosHoje = emprestimos.where((item){
+      final data = DateFormat('yyyy-MM-dd').parse(item.dataDeDevolucao);
+      final dataFormatada = DateTime(data.year, data.month, data.day);
+      return (dataFormatada == dataHojeFormatada) && (item.status == 3 ||item.status == 2);
+    }).length;
+    print('Finalizou');
+    setState(() {
+      loansToday = qtdEmprestimosHoje;
+      returnsToday = qtdEmprestimsDevolvidosHoje;
+      delaysToday = qtdEmprestimosAtrasados;
+    });
+  }
+  List<EmprestimosModel> emprestimos = [];
+    Future<void> fetchTodosEmprestimos () async{
+      try{
+        final resposta = await Provider.of<EmprestimoProvider>(context, listen: false).fetchTodosEmprestimos();
+        emprestimos = resposta;
+        calcularOsDadosDashBoard();
+      }catch(e){
+        print('Erro ao carregar os emprestimos: ${e.toString()}');
+      }
+      setState(() {
+        emprestimos;
+      });
+  }
+  @override
   Widget build(BuildContext context) {
     initializeDateFormatting('pt_BR', null);
-
     final DateTime now = DateTime.now();
     final DateTime monday = now.subtract(Duration(days: now.weekday - 1));
     final List<String> weekDays = List.generate(7, (index) {
       final DateTime date = monday.add(Duration(days: index));
       return DateFormat('EEE, dd/MM', 'pt_BR').format(date);
     });
-
-    // Simulação...
-    const int loansToday = 10;
-    const int returnsToday = 4;
-    const int delaysToday = 3;
+    
 
     final List<FlSpot> loanSpots = [
       const FlSpot(0, 8), // Segunda

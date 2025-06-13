@@ -260,9 +260,13 @@ class BookTablePageState extends State<BookTablePage> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      Provider.of<LivroProvider>(context)
-                                          .deleteLivro(
-                                              paginatedBooks[x].idDoLivro);
+                                      try {
+                                        Provider.of<LivroProvider>(context, listen: false)
+                                            .deleteLivro(
+                                                paginatedBooks[x].idDoLivro);
+                                      } catch (e) {
+                                        print("erro ao deletar: $e");
+                                      }
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,

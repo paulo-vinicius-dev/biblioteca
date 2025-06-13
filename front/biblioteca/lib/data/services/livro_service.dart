@@ -97,16 +97,23 @@ class LivroService {
   }
 
   // Deletar Livro
-  Future<void> deleteLivro(int id) async {
+  Future<void> deleteLivro(
+      num idDaSessao, String loginDoUsuarioRequerente, int id) async {
     final Map<String, dynamic> body = {
-      "id": id,
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
+      "Id": id,
     };
+
+    print("Service tentando deletar livro com body: $body \n");
 
     final response = await _api.requisicao(
       apiRoute,
       'DELETE',
       body,
     );
+
+    
 
     if (response.statusCode != 200) {
       throw Exception('Erro ao deletar livro: ${response.data}');

@@ -402,7 +402,7 @@ func PegarAutoresAssociadosAoLivro(idLivro int) ([]modelos.AutorResposta, error)
 func PegarCategoriasAssociadosAoLivro(idLivro int) ([]modelos.Categoria, error) {
 	conexao := PegarConexao()
 	consulta := `
-		SELECT c.id_categoria, c.descricao 
+		SELECT c.id_categoria, c.descricao, c.ativo
 		FROM categoria c
 		INNER JOIN livro_categoria lc ON c.id_categoria = lc.id_categoria
 		WHERE lc.id_livro = $1
@@ -414,7 +414,7 @@ func PegarCategoriasAssociadosAoLivro(idLivro int) ([]modelos.Categoria, error) 
 	var categorias []modelos.Categoria
 	for linhas.Next() {
 		var categoria modelos.Categoria
-		linhas.Scan(&categoria.IdDaCategoria, &categoria.Descricao)
+		linhas.Scan(&categoria.IdDaCategoria, &categoria.Descricao, &categoria.Ativo)
 		categorias = append(categorias, categoria)
 	}
 

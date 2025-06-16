@@ -69,14 +69,14 @@ class LivroProvider extends ChangeNotifier {
 
     try {
       if (_livros.any((l) => l.isbn == livro["Isbn"])) {
-        throw Exception("Livro com ISBN ${livro["Isbn"]} já existe.");
+        _error = "Livro com ISBN ${livro["Isbn"]} já existe.";
+        return false;
       }
 
-      print(
-          "Provider: Tentando enviar o Livro: \n $idDaSessao \n $usuarioLogado \n $livro \n autores \n $categorias");
       await _livroService.addLivro(
           idDaSessao, usuarioLogado, livro, autores, categorias);
       _livrosEnvio.add(livro);
+      await loadLivros();
       return true;
     } catch (e) {
       _error = "Erro ao inserir novo Livro:\n$e";
@@ -119,11 +119,13 @@ class LivroProvider extends ChangeNotifier {
       if (!_livros.any((livro) => livro.idDoLivro == idLivro)) {
         throw Exception("Livro com ID $idLivro não encontrado.");
       }
-      print("Provider tentando deletar livro de ID: $idLivro");
+      
       await _livroService.deleteLivro(idDaSessao, usuarioLogado, idLivro);
       _livros.removeWhere((livro) => livro.idDoLivro == idLivro);
+      
+      await loadLivros();
     } catch (e) {
-      _error = "Erro ao deletar o Livro:\n$e";
+      _error = e.toString().replaceAll('Exception: ', '');
     } finally {
       _isLoading = false;
       notifyListeners();

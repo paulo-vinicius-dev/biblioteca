@@ -259,13 +259,55 @@ class BookTablePageState extends State<BookTablePage> {
                               child: Row(
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       try {
-                                        Provider.of<LivroProvider>(context, listen: false)
-                                            .deleteLivro(
-                                                paginatedBooks[x].idDoLivro);
+                                        // Caixa de confirmação
+                                        final bool? confirm = await showDialog<bool>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Confirmar exclusão'),
+                                              content: Text('Tem certeza que deseja excluir o livro "${paginatedBooks[x].titulo}"?'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  child: const Text('Cancelar'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop(false);
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: const Text('Excluir'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop(true);
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+
+                                        if (confirm == true) {
+                                          await Provider.of<LivroProvider>(context, listen: false)
+                                              .deleteLivro(paginatedBooks[x].idDoLivro);
+                                          
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Livro excluído com sucesso'),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                          }
+                                        }
                                       } catch (e) {
-                                        print("erro ao deletar: $e");
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('Erro ao excluir livro: $e'),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(

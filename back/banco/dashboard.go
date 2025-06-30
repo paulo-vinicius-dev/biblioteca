@@ -18,8 +18,8 @@ func PegarDashboard() modelos.Dashboard {
 	where data_criacao >= $1 and
 	data_criacao <= $2 and
 	acao = 1
-	group by data_criacao
-	order by data_criacao desc;`
+	group by Date(data_criacao)
+	order by Date(data_criacao) desc;`
 
 	agora := time.Now()
 	domingo := agora.AddDate(0, 0, -int(agora.Weekday()))
@@ -53,8 +53,8 @@ func PegarDashboard() modelos.Dashboard {
 	where data_criacao >= $1 and
 	data_criacao <= $2 and
 	acao = 3
-	group by data_criacao
-	order by data_criacao desc;`
+	group by Date(data_criacao)
+	order by Date(data_criacao) desc;`
 	linhas, erro = conexao.Query(context.Background(), textoQueryDevolucoes, domingoStr, sabadoStr)
 	if (erro != nil) {
 		fmt.Println(erro)
@@ -106,8 +106,8 @@ func PegarQtdDevolucoesAtrasadoSemana() [7]int {
 	now() > data_prevista_devolucao and
 	data_devolucao is null and
 	acao = 3
-	group by de.data_criacao
-	order by de.data_criacao desc;`
+	group by Date(de.data_criacao)
+	order by Date(de.data_criacao) desc;`
 
 	linhas, erro := conexao.Query(context.Background(), textoQuery, domingoStr, sabadoStr)
 	if (erro != nil) {

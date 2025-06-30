@@ -8,8 +8,6 @@ import 'package:biblioteca/data/models/paises_model.dart';
 import 'package:biblioteca/data/providers/paises_provider.dart';
 import 'package:biblioteca/data/models/categorias_model.dart';
 import 'package:biblioteca/data/providers/categoria_provider.dart';
-import 'package:biblioteca/data/models/exemplar_model.dart';
-import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:biblioteca/utils/routes.dart';
 
@@ -32,8 +30,6 @@ class _FormBookState extends State<FormBook> {
   final TextEditingController _editoraController = TextEditingController();
   final TextEditingController _anoPublicacaoController =
       TextEditingController();
-  final TextEditingController _numeroExemplaresController =
-      TextEditingController(text: "1");
   final TextEditingController _paisController = TextEditingController();
   final List<TextEditingController> _authorsControllers = [
     TextEditingController()
@@ -146,7 +142,6 @@ class _FormBookState extends State<FormBook> {
     _isbnController.clear();
     _editoraController.clear();
     _anoPublicacaoController.clear();
-    _numeroExemplaresController.text = "1";
     _paisSelecionado = null;
     _authorsControllers.clear();
     _authorsControllers.add(TextEditingController());
@@ -249,7 +244,6 @@ class _FormBookState extends State<FormBook> {
     _editoraController.dispose();
     _anoPublicacaoController.dispose();
     _paisController.dispose();
-    _numeroExemplaresController.dispose();
 
     for (var controller in _authorsControllers) {
       controller.dispose();
@@ -276,7 +270,7 @@ class _FormBookState extends State<FormBook> {
           _anoPublicacaoController.text = data['year'] != null ? '${data['year']}' : '';
 
           
-          if (data['authors'] != null) {
+          if (data['authors'] != null || data['authors'].length > 0) {
             _authorsControllers.clear();
             for (String autor in data['authors']) {
               _authorsControllers.add(TextEditingController(text: autor));
@@ -405,7 +399,7 @@ class _FormBookState extends State<FormBook> {
                         controller: _anoPublicacaoController,
                         decoration: const InputDecoration(
                           label: CampoObrigatorio(
-                              label: "Data de Publicação (YYYY-MM-DD)"),
+                              label: "Ano de Publicação"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
@@ -580,30 +574,6 @@ class _FormBookState extends State<FormBook> {
                             ],
                           );
                         }),
-                      ),
-                      const SizedBox(height: 20.0),
-
-                      // Número de Exemplares
-                      TextFormField(
-                        controller: _numeroExemplaresController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          label:
-                              CampoObrigatorio(label: "Número de Exemplares"),
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Preencha esse campo";
-                          }
-
-                          final numero = int.tryParse(value);
-                          if (numero == null || numero < 1) {
-                            return "Informe um número válido (mínimo 1)";
-                          }
-
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 20.0),
 

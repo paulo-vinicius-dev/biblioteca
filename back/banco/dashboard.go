@@ -38,6 +38,9 @@ func PegarDashboard() modelos.Dashboard {
 	}
 
 	pgx.ForEachRow(linhas, []any{&qtdEmprestimo}, func() error {
+		if (diaSemana < 0) {
+			return nil
+		}
 		dash.QtdEmprestimoSemana[diaSemana] = qtdEmprestimo
 		diaSemana -= 1
 		return nil
@@ -58,6 +61,9 @@ func PegarDashboard() modelos.Dashboard {
 		return dash
 	}
 	pgx.ForEachRow(linhas, []any{&qtdDevolucoes}, func() error {
+		if (diaSemana < 0) {
+			return nil
+		}
 		dash.QtdDevolucaoSemana[diaSemana] = qtdDevolucoes
 		diaSemana -= 1
 		return nil
@@ -111,6 +117,9 @@ func PegarQtdDevolucoesAtrasadoSemana() [7]int {
 	qtdDevolucoes := 0
 	diaSemana := int(agora.Weekday())
 	pgx.ForEachRow(linhas, []any{&qtdDevolucoes}, func() error {
+		if (diaSemana < 0) {
+			return nil
+		}
 		resultado[diaSemana] = qtdDevolucoes
 		diaSemana -= 1
 		return nil

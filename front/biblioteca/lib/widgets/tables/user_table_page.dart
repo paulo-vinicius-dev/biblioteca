@@ -15,7 +15,7 @@ class UserTablePage extends StatefulWidget {
 
 class UserTablePageState extends State<UserTablePage> {
   //TextEditingController _buscaController = TextEditingController();
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];

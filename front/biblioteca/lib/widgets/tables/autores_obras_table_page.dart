@@ -18,6 +18,12 @@ class _ObrasPageState extends State<ObrasPage> {
   bool isLoading = true;
   List<Livro> livrosDoAutor = [];
 
+  int rowsPerPage = 10;
+  final List<int> rowsPerPageOptions = [5, 10, 15, 20];
+  int currentPage = 1;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchText = '';
+
   @override
   void initState() {
     super.initState();
@@ -55,13 +61,41 @@ class _ObrasPageState extends State<ObrasPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ExemplaresPage(book: livro, ultimaPagina: "Autores",),
+        builder: (context) => ExemplaresPage(
+          book: livro,
+          ultimaPagina: "Autores",
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Livro> filteredLivros = livrosDoAutor;
+    if (_searchText.isNotEmpty) {
+      filteredLivros = filteredLivros
+          .where((livro) =>
+              livro.titulo.toLowerCase().contains(_searchText) ||
+              livro.isbn.toLowerCase().contains(_searchText) ||
+              _getCategoriaDescricao(livro).toLowerCase().contains(_searchText))
+          .toList();
+    }
+
+    // Paginação
+    int totalPages = (filteredLivros.length / rowsPerPage).ceil();
+    int startIndex = (currentPage - 1) * rowsPerPage;
+    int endIndex = (startIndex + rowsPerPage) < filteredLivros.length
+        ? (startIndex + rowsPerPage)
+        : filteredLivros.length;
+    List<Livro> paginatedLivros = filteredLivros.sublist(startIndex, endIndex);
+
+    // Lógica dos botões de página
+    int startPage = currentPage - 4 < 1 ? 1 : currentPage - 4;
+    int endPage = startPage + 8 > totalPages ? totalPages : startPage + 8;
+    if (endPage - startPage < 8 && startPage > 1) {
+      startPage = endPage - 8 < 1 ? 1 : endPage - 8;
+    }
+
     return Material(
       child: Column(
         children: [
@@ -79,6 +113,61 @@ class _ObrasPageState extends State<ObrasPage> {
               padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
               child: Column(
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Registros por página
+                        Row(
+                          children: [
+                            const Text('Exibir'),
+                            const SizedBox(width: 8),
+                            DropdownButton<int>(
+                              value: rowsPerPage,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    rowsPerPage = value;
+                                    currentPage = 1;
+                                  });
+                                }
+                              },
+                              items: rowsPerPageOptions.map((int value) {
+                                return DropdownMenuItem<int>(
+                                    value: value,
+                                    child: Text(value.toString()));
+                              }).toList(),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text('registros por página'),
+                          ],
+                        ),
+                        // Pesquisar
+                        SizedBox(
+                          width: 300,
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: const InputDecoration(
+                              labelText: 'Pesquisar',
+                              prefixIcon: Icon(Icons.search),
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 12),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _searchText = value.toLowerCase();
+                                currentPage = 1;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   Table(
                     border: TableBorder.all(
                       color: const Color.fromARGB(215, 200, 200, 200),
@@ -97,7 +186,13 @@ class _ObrasPageState extends State<ObrasPage> {
                         children: [
                           Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Text(''),
+                            child: Text(
+                              'Ação',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 15),
+                            ),
                           ),
                           Padding(
                             padding: EdgeInsets.all(8.0),
@@ -131,8 +226,13 @@ class _ObrasPageState extends State<ObrasPage> {
                           ),
                         ],
                       ),
-                      for (var livro in livrosDoAutor)
+                      for (int i = 0; i < paginatedLivros.length; i++)
                         TableRow(
+                          decoration: BoxDecoration(
+                            color: i % 2 == 0
+                                ? const Color.fromRGBO(233, 235, 238, 75)
+                                : const Color.fromRGBO(255, 255, 255, 1),
+                          ),
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -144,24 +244,82 @@ class _ObrasPageState extends State<ObrasPage> {
                                   minWidth: 25,
                                   minHeight: 25,
                                 ),
-                                onPressed: () => _abrirExemplares(livro),
+                                onPressed: () =>
+                                    _abrirExemplares(paginatedLivros[i]),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(livro.titulo),
+                              child: Text(paginatedLivros[i].titulo),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(livro.isbn),
+                              child: Text(paginatedLivros[i].isbn),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(_getCategoriaDescricao(livro)),
+                              child: Text(
+                                  _getCategoriaDescricao(paginatedLivros[i])),
                             ),
                           ],
                         ),
                     ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          onPressed: currentPage > 1
+                              ? () {
+                                  setState(() {
+                                    currentPage--;
+                                  });
+                                }
+                              : null,
+                        ),
+                        for (int i = startPage; i <= endPage; i++)
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                currentPage = i;
+                              });
+                            },
+                            child: Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                color: i == currentPage
+                                    ? Colors.blueGrey
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(4.0),
+                                border: Border.all(color: Colors.grey),
+                              ),
+                              child: Text(
+                                i.toString(),
+                                style: TextStyle(
+                                  color: i == currentPage
+                                      ? Colors.white
+                                      : Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          onPressed: currentPage < totalPages
+                              ? () {
+                                  setState(() {
+                                    currentPage++;
+                                  });
+                                }
+                              : null,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

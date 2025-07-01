@@ -19,6 +19,8 @@ class BookTablePageState extends State<BookTablePage> {
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
+  TextEditingController _searchController = TextEditingController();
+  String _searchText = '';
 
   @override
   void initState() {
@@ -46,6 +48,18 @@ class BookTablePageState extends State<BookTablePage> {
 
   Material tableLivro(BuildContext context) {
     List<Livro> books = Provider.of<LivroProvider>(context).livros;
+
+    // Filtro de busca
+    if (_searchText.isNotEmpty) {
+      books = books
+          .where((b) =>
+              b.titulo.toLowerCase().contains(_searchText) ||
+              b.isbn.toLowerCase().contains(_searchText) ||
+              b.editora.toLowerCase().contains(_searchText) ||
+              b.anoPublicacao.toString().contains(_searchText))
+          .toList();
+    }
+
     int totalPages = (books.length / rowsPerPage).ceil();
 
     // Calcula o índice inicial e final dos livros exibidos
@@ -106,31 +120,62 @@ class BookTablePageState extends State<BookTablePage> {
                   height: 20.0,
                 ),
 
-                // Tabela de livros
+                // Registros por página e campo de Pesquisa
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Exibir '),
-                      DropdownButton<int>(
-                        value: rowsPerPage,
-                        onChanged: (value) {
-                          if (value != null) {
+                      // Registros por página
+                      Row(
+                        children: [
+                          const Text('Exibir'),
+                          const SizedBox(width: 8),
+                          DropdownButton<int>(
+                            value: rowsPerPage,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  rowsPerPage = value;
+                                  currentPage = 1;
+                                });
+                              }
+                            },
+                            items: rowsPerPageOptions.map((int value) {
+                              return DropdownMenuItem<int>(
+                                  value: value, child: Text(value.toString()));
+                            }).toList(),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('registros por página'),
+                        ],
+                      ),
+                      // Pesquisar
+                      SizedBox(
+                        width: 300,
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: const InputDecoration(
+                            labelText: 'Pesquisar',
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 12),
+                          ),
+                          onChanged: (value) {
                             setState(() {
-                              rowsPerPage = value;
+                              _searchText = value.toLowerCase();
                               currentPage = 1;
                             });
-                          }
-                        },
-                        items: rowsPerPageOptions.map((int value) {
-                          return DropdownMenuItem<int>(
-                              value: value, child: Text(value.toString()));
-                        }).toList(),
+                          },
+                        ),
                       ),
-                      const Text(' registros por página'),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+                // Tabela de livros
                 Table(
                   border: TableBorder.all(
                       color: const Color.fromARGB(215, 200, 200, 200)),
@@ -242,9 +287,7 @@ class BookTablePageState extends State<BookTablePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                  paginatedBooks[x]
-                                      .anoPublicacao
-                                      .toString(),
+                                  paginatedBooks[x].anoPublicacao.toString(),
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w300,
@@ -261,23 +304,28 @@ class BookTablePageState extends State<BookTablePage> {
                                     onPressed: () async {
                                       try {
                                         // Caixa de confirmação
-                                        final bool? confirm = await showDialog<bool>(
+                                        final bool? confirm =
+                                            await showDialog<bool>(
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title: const Text('Confirmar exclusão'),
-                                              content: Text('Tem certeza que deseja excluir o livro "${paginatedBooks[x].titulo}"?'),
+                                              title: const Text(
+                                                  'Confirmar exclusão'),
+                                              content: Text(
+                                                  'Tem certeza que deseja excluir o livro "${paginatedBooks[x].titulo}"?'),
                                               actions: <Widget>[
                                                 TextButton(
                                                   child: const Text('Cancelar'),
                                                   onPressed: () {
-                                                    Navigator.of(context).pop(false);
+                                                    Navigator.of(context)
+                                                        .pop(false);
                                                   },
                                                 ),
                                                 TextButton(
                                                   child: const Text('Excluir'),
                                                   onPressed: () {
-                                                    Navigator.of(context).pop(true);
+                                                    Navigator.of(context)
+                                                        .pop(true);
                                                   },
                                                 ),
                                               ],
@@ -286,13 +334,18 @@ class BookTablePageState extends State<BookTablePage> {
                                         );
 
                                         if (confirm == true) {
-                                          await Provider.of<LivroProvider>(context, listen: false)
-                                              .deleteLivro(paginatedBooks[x].idDoLivro);
-                                          
+                                          await Provider.of<LivroProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .deleteLivro(
+                                                  paginatedBooks[x].idDoLivro);
+
                                           if (mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
                                               const SnackBar(
-                                                content: Text('Livro excluído com sucesso'),
+                                                content: Text(
+                                                    'Livro excluído com sucesso'),
                                                 backgroundColor: Colors.green,
                                               ),
                                             );
@@ -300,9 +353,11 @@ class BookTablePageState extends State<BookTablePage> {
                                         }
                                       } catch (e) {
                                         if (mounted) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
                                             SnackBar(
-                                              content: Text('Erro ao excluir livro: $e'),
+                                              content: Text(
+                                                  'Erro ao excluir livro: $e'),
                                               backgroundColor: Colors.red,
                                             ),
                                           );

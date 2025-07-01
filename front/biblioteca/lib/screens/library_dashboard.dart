@@ -35,11 +35,16 @@ class _LibraryDashboardState extends State<LibraryDashboard> {
   Widget build(BuildContext context) {
     initializeDateFormatting('pt_BR', null);
     final DateTime now = DateTime.now();
-    final DateTime monday = now.subtract(Duration(days: now.weekday - 1));
+
+    final DateTime sunday = now.subtract(Duration(days: now.weekday % 7));
+
     final List<String> weekDays = List.generate(7, (index) {
-      final DateTime date = monday.add(Duration(days: index));
+      final DateTime date = sunday.add(Duration(days: index));
       return DateFormat('EEE, dd/MM', 'pt_BR').format(date);
     });
+
+    // Índice do dia atual (domingo = 0, segunda = 1, ..., sábado = 6)
+    final int todayIndex = now.weekday % 7;
 
     return Consumer<DashboardProvider>(
       builder: (context, dashProvider, child) {
@@ -54,7 +59,7 @@ class _LibraryDashboardState extends State<LibraryDashboard> {
           return const Center(child: Text('Nenhum dado disponível.'));
         }
 
-        // Monta os dados dos gráficos a partir do backend
+        // Monta os dados do gráfico a partir do banco
         final List<FlSpot> loanSpots = List.generate(
             7,
             (i) => FlSpot(
@@ -89,12 +94,11 @@ class _LibraryDashboardState extends State<LibraryDashboard> {
                       children: [
                         const SizedBox(height: 20),
                         SummaryCards(
-                          loansToday:
-                              dashboard.qtdEmprestimoSemana[now.weekday - 1],
+                          loansToday: dashboard.qtdEmprestimoSemana[todayIndex],
                           returnsToday:
-                              dashboard.qtdDevolucaoSemana[now.weekday - 1],
-                          delaysToday: dashboard
-                              .qtdLivrosAtrasadosSemana[now.weekday - 1],
+                              dashboard.qtdDevolucaoSemana[todayIndex],
+                          delaysToday:
+                              dashboard.qtdLivrosAtrasadosSemana[todayIndex],
                           onReportsPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(

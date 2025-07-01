@@ -17,6 +17,8 @@ class AuthorTablePageState extends State<AuthorTablePage> {
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
+  TextEditingController _searchController = TextEditingController();
+  String _searchText = '';
 
   @override
   void initState() {
@@ -47,6 +49,17 @@ class AuthorTablePageState extends State<AuthorTablePage> {
 
   Material tableAutor(BuildContext context, List<Autor> autores) {
     List<Autor> authors = autores;
+
+    // Filtro de busca
+    if (_searchText.isNotEmpty) {
+      authors = authors
+          .where((a) =>
+              a.nome.toLowerCase().contains(_searchText) ||
+              (a.nacionalidade?.toLowerCase().contains(_searchText) ?? false) ||
+              (a.sexo?.toLowerCase().contains(_searchText) ?? false) ||
+              (a.anoNascimento?.toString().contains(_searchText) ?? false))
+          .toList();
+    }
 
     int totalPages = (authors.length / rowsPerPage).ceil();
 
@@ -109,32 +122,63 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                   height: 20.0,
                 ),
 
-                // Tabela de autores
+                // Registros por página e campo de Pesquisa
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Exibir '),
-                      DropdownButton<int>(
-                        value: rowsPerPage,
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              rowsPerPage = value;
-                              currentPage =
-                                  1; // Reinicia para a primeira página
-                            });
-                          }
-                        },
-                        items: rowsPerPageOptions.map((int value) {
-                          return DropdownMenuItem<int>(
-                              value: value, child: Text(value.toString()));
-                        }).toList(),
+                      // Registros por página
+                      Row(
+                        children: [
+                          const Text('Exibir'),
+                          const SizedBox(width: 8),
+                          DropdownButton<int>(
+                            value: rowsPerPage,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  rowsPerPage = value;
+                                  currentPage = 1;
+                                });
+                              }
+                            },
+                            items: rowsPerPageOptions.map((int value) {
+                              return DropdownMenuItem<int>(
+                                  value: value, child: Text(value.toString()));
+                            }).toList(),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('registros por página'),
+                        ],
                       ),
-                      const Text(' registros por página'),
+                      // Pesquisar
+                      SizedBox(
+                        width: 300,
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: const InputDecoration(
+                            labelText: 'Pesquisar',
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 12),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _searchText = value.toLowerCase();
+                              currentPage = 1;
+                            });
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Tabela de autores
                 Table(
                   border: TableBorder.all(
                       color: const Color.fromARGB(215, 200, 200, 200)),
@@ -393,7 +437,8 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => ObrasPage(autor: paginatedAuthors[x])),
+                                            builder: (context) => ObrasPage(
+                                                autor: paginatedAuthors[x])),
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(

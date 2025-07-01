@@ -69,14 +69,12 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
   }
 
   Material getPage(CategoriaProvider provider, List<Categoria> categories) {
-    // 1. Filtra primeiro
     if (_searchText.isNotEmpty) {
       categories = categories
           .where((c) => c.descricao.toLowerCase().contains(_searchText))
           .toList();
     }
 
-    // 2. Depois faz a paginação
     int totalPages = (categories.length / rowsPerPage).ceil();
 
     // Calcula o índice inicial e final dos usuários exibidos

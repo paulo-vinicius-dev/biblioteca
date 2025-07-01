@@ -15,6 +15,7 @@ class UserTablePage extends StatefulWidget {
 
 class UserTablePageState extends State<UserTablePage> {
   //TextEditingController _buscaController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
@@ -22,6 +23,8 @@ class UserTablePageState extends State<UserTablePage> {
 
   bool _isInit = true;
   bool _isLoading = false;
+
+  String _searchText = '';
 
   @override
   void didChangeDependencies() {
@@ -53,6 +56,16 @@ class UserTablePageState extends State<UserTablePage> {
   Material getPage() {
     UsuarioProvider provider = Provider.of<UsuarioProvider>(context);
     List<Usuario> users = provider.users;
+    if (_searchText.isNotEmpty) {
+      users = users
+          .where((u) =>
+              u.nome.toLowerCase().contains(_searchText) ||
+              u.getTurma.toLowerCase().contains(_searchText) ||
+              u.getTurno.toLowerCase().contains(_searchText) ||
+              u.login.toLowerCase().contains(_searchText) ||
+              u.getTipoDeUsuario.toLowerCase().contains(_searchText))
+          .toList();
+    }
     int totalPages = (users.length / rowsPerPage).ceil();
 
     // Calcula o índice inicial e final dos usuários exibidos
@@ -115,32 +128,64 @@ class UserTablePageState extends State<UserTablePage> {
                   height: 20.0,
                 ),
 
-                // Tabela de usuários
+                // Registros por página e campo de Pesquisa
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Exibir'),
-                      DropdownButton<int>(
-                        value: rowsPerPage,
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              rowsPerPage = value;
-                              currentPage =
-                                  1; // Reinicia para a primeira página
-                            });
-                          }
-                        },
-                        items: rowsPerPageOptions.map((int value) {
-                          return DropdownMenuItem<int>(
-                              value: value, child: Text(value.toString()));
-                        }).toList(),
+                      // Registros por página
+                      Row(
+                        children: [
+                          const Text('Exibir'),
+                          const SizedBox(width: 8),
+                          DropdownButton<int>(
+                            value: rowsPerPage,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  rowsPerPage = value;
+                                  currentPage =
+                                      1; // Reinicia para a primeira página
+                                });
+                              }
+                            },
+                            items: rowsPerPageOptions.map((int value) {
+                              return DropdownMenuItem<int>(
+                                  value: value, child: Text(value.toString()));
+                            }).toList(),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('registros por página'),
+                        ],
                       ),
-                      const Text('registros por página'),
+                      // Pesquisar
+                      SizedBox(
+                        width: 300,
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: const InputDecoration(
+                            labelText: 'Pesquisar',
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 12),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _searchText = value.toLowerCase();
+                              currentPage = 1;
+                            });
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Tabela de usuários
                 Table(
                   border: TableBorder.all(
                       color: const Color.fromARGB(215, 200, 200, 200)),
@@ -293,67 +338,6 @@ class UserTablePageState extends State<UserTablePage> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      Navigator.pushNamed(
-                                          context, AppRoutes.historico,
-                                          arguments: paginatedUsers[x]);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 128, 128, 128),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 5),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                    ),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.library_books_rounded,
-                                            color: Colors.white),
-                                        SizedBox(width: 4),
-                                        Text('Histórico',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 3),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                          context, AppRoutes.editarUsuario,
-                                          arguments: paginatedUsers[x]);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 38, 42, 79),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 5),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                    ),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.edit, color: Colors.white),
-                                        SizedBox(width: 4),
-                                        Text('Editar',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 3),
-                                  ElevatedButton(
-                                    onPressed: () {
                                       showDialog(
                                           context: context,
                                           builder: (context) {
@@ -440,6 +424,69 @@ class UserTablePageState extends State<UserTablePage> {
                                         Icon(Icons.delete, color: Colors.white),
                                         SizedBox(width: 4),
                                         Text('Excluir',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  // Botão Editar (agora segundo)
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, AppRoutes.editarUsuario,
+                                          arguments: paginatedUsers[x]);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 38, 42, 79),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.edit, color: Colors.white),
+                                        SizedBox(width: 4),
+                                        Text('Editar',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  // Botão Histórico (agora último)
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, AppRoutes.historico,
+                                          arguments: paginatedUsers[x]);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 128, 128, 128),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.library_books_rounded,
+                                            color: Colors.white),
+                                        SizedBox(width: 4),
+                                        Text('Histórico',
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,

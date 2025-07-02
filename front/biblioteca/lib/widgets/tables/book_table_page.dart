@@ -215,7 +215,7 @@ class BookTablePageState extends State<BookTablePage> {
                     // Cabeçalho da tabela
                     TableRow(
                       decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 44, 62, 80),
+                        color: Color.fromARGB(255, 38, 42, 79),
                       ),
                       children: [
                         // Título
@@ -628,7 +628,7 @@ class BookTablePageState extends State<BookTablePage> {
                             padding: const EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
                               color: i == currentPage
-                                  ? Colors.blueGrey
+                                  ? Color.fromARGB(255, 38, 42, 79)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(4.0),
                               border: Border.all(color: Colors.grey),

@@ -22,6 +22,9 @@ class HistoryTablePageState extends State<HistoryTablePage> {
   bool _isLoading = true;
   late List<EmprestimosModel> emprestimos;
 
+  final TextEditingController _searchController = TextEditingController();
+  String _searchText = '';
+
   @override
   void initState() {
     super.initState();
@@ -87,14 +90,30 @@ class HistoryTablePageState extends State<HistoryTablePage> {
       );
     }
 
-    int totalPages = (emprestimos.length / rowsPerPage).ceil();
+    List<EmprestimosModel> filteredEmprestimos = emprestimos;
+    if (_searchText.isNotEmpty) {
+      filteredEmprestimos = filteredEmprestimos
+          .where((e) =>
+              e.exemplarMap['IdDoExemplarLivro']
+                  .toString()
+                  .contains(_searchText) ||
+              (e.exemplarMap['Livro']['Titulo'] as String)
+                  .toLowerCase()
+                  .contains(_searchText) ||
+              _formatDate(e.dataEmprestimo).contains(_searchText) ||
+              _formatDate(e.dataDeDevolucao).contains(_searchText) ||
+              _getStatusText(e.status).toLowerCase().contains(_searchText))
+          .toList();
+    }
+
+    int totalPages = (filteredEmprestimos.length / rowsPerPage).ceil();
     int startIndex = (currentPage - 1) * rowsPerPage;
-    int endIndex = (startIndex + rowsPerPage) < emprestimos.length
+    int endIndex = (startIndex + rowsPerPage) < filteredEmprestimos.length
         ? (startIndex + rowsPerPage)
-        : emprestimos.length;
+        : filteredEmprestimos.length;
 
     List<EmprestimosModel> paginatedEmprestimos =
-        emprestimos.sublist(startIndex, endIndex);
+        filteredEmprestimos.sublist(startIndex, endIndex);
 
     return Material(
       child: Column(
@@ -121,24 +140,53 @@ class HistoryTablePageState extends State<HistoryTablePage> {
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Exibir'),
-          DropdownButton<int>(
-            value: rowsPerPage,
-            onChanged: (value) {
-              if (value != null) {
+          // Registros por página
+          Row(
+            children: [
+              const Text('Exibir'),
+              const SizedBox(width: 8),
+              DropdownButton<int>(
+                value: rowsPerPage,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      rowsPerPage = value;
+                      currentPage = 1;
+                    });
+                  }
+                },
+                items: rowsPerPageOptions.map((int value) {
+                  return DropdownMenuItem<int>(
+                      value: value, child: Text(value.toString()));
+                }).toList(),
+              ),
+              const SizedBox(width: 8),
+              const Text('registros por página'),
+            ],
+          ),
+          // Pesquisar
+          SizedBox(
+            width: 300,
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                labelText: 'Pesquisar',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              ),
+              onChanged: (value) {
                 setState(() {
-                  rowsPerPage = value;
+                  _searchText = value.toLowerCase();
                   currentPage = 1;
                 });
-              }
-            },
-            items: rowsPerPageOptions.map((int value) {
-              return DropdownMenuItem<int>(
-                  value: value, child: Text(value.toString()));
-            }).toList(),
+              },
+            ),
           ),
-          const Text(' registros por página'),
         ],
       ),
     );
@@ -156,7 +204,7 @@ class HistoryTablePageState extends State<HistoryTablePage> {
       },
       children: [
         const TableRow(
-          decoration: BoxDecoration(color: Color.fromARGB(255, 44, 62, 80)),
+          decoration: BoxDecoration(color: Color.fromARGB(255, 38, 42, 79)),
           children: [
             Padding(
                 padding: EdgeInsets.all(8.0),
@@ -328,8 +376,9 @@ class HistoryTablePageState extends State<HistoryTablePage> {
                 margin: const EdgeInsets.symmetric(horizontal: 4.0),
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color:
-                      i == currentPage ? Colors.blueGrey : Colors.transparent,
+                  color: i == currentPage
+                      ? Color.fromARGB(255, 38, 42, 79)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(4.0),
                   border: Border.all(color: Colors.grey),
                 ),

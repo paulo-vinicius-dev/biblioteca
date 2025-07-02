@@ -23,6 +23,8 @@ class _ObrasPageState extends State<ObrasPage> {
   int currentPage = 1;
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
+  String _sortColumn = 'titulo'; // 'titulo', 'isbn', 'categoria'
+  bool _isAscending = true;
 
   @override
   void initState() {
@@ -69,6 +71,17 @@ class _ObrasPageState extends State<ObrasPage> {
     );
   }
 
+  void _sortLivros(String column) {
+    setState(() {
+      if (_sortColumn == column) {
+        _isAscending = !_isAscending;
+      } else {
+        _sortColumn = column;
+        _isAscending = true;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Livro> filteredLivros = livrosDoAutor;
@@ -80,6 +93,23 @@ class _ObrasPageState extends State<ObrasPage> {
               _getCategoriaDescricao(livro).toLowerCase().contains(_searchText))
           .toList();
     }
+
+    // Ordenação
+    filteredLivros.sort((a, b) {
+      int cmp;
+      if (_sortColumn == 'titulo') {
+        cmp = a.titulo.toLowerCase().compareTo(b.titulo.toLowerCase());
+      } else if (_sortColumn == 'isbn') {
+        cmp = a.isbn.toLowerCase().compareTo(b.isbn.toLowerCase());
+      } else if (_sortColumn == 'categoria') {
+        cmp = _getCategoriaDescricao(a)
+            .toLowerCase()
+            .compareTo(_getCategoriaDescricao(b).toLowerCase());
+      } else {
+        cmp = 0;
+      }
+      return _isAscending ? cmp : -cmp;
+    });
 
     // Paginação
     int totalPages = (filteredLivros.length / rowsPerPage).ceil();
@@ -179,13 +209,13 @@ class _ObrasPageState extends State<ObrasPage> {
                       3: FlexColumnWidth(2), // categoria
                     },
                     children: [
-                      const TableRow(
-                        decoration: BoxDecoration(
+                      TableRow(
+                        decoration: const BoxDecoration(
                           color: Color.fromARGB(255, 44, 62, 80),
                         ),
                         children: [
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Text(
                               'Ação',
                               style: TextStyle(
@@ -194,34 +224,102 @@ class _ObrasPageState extends State<ObrasPage> {
                                   fontSize: 15),
                             ),
                           ),
+                          // Título
                           Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'Título',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15),
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: () {
+                                _sortLivros('titulo');
+                              },
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    'Título',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                        fontSize: 15),
+                                  ),
+                                  if (_sortColumn == 'titulo')
+                                    Icon(
+                                      _isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
+                          // ISBN
                           Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'ISBN',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15),
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  if (_sortColumn == 'isbn') {
+                                    _isAscending = !_isAscending;
+                                  } else {
+                                    _sortColumn = 'isbn';
+                                    _isAscending = true;
+                                  }
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    'ISBN',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                        fontSize: 15),
+                                  ),
+                                  if (_sortColumn == 'isbn')
+                                    Icon(
+                                      _isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
+                          // Categoria
                           Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'Categoria',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15),
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  if (_sortColumn == 'categoria') {
+                                    _isAscending = !_isAscending;
+                                  } else {
+                                    _sortColumn = 'categoria';
+                                    _isAscending = true;
+                                  }
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    'Categoria',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                        fontSize: 15),
+                                  ),
+                                  if (_sortColumn == 'categoria')
+                                    Icon(
+                                      _isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         ],

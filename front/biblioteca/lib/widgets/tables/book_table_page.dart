@@ -22,6 +22,9 @@ class BookTablePageState extends State<BookTablePage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
 
+  String _sortColumn = 'titulo'; // 'titulo', 'isbn', 'editora', 'anoPublicacao'
+  bool _isAscending = true;
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +62,28 @@ class BookTablePageState extends State<BookTablePage> {
               b.anoPublicacao.toString().contains(_searchText))
           .toList();
     }
+
+    // Ordenação
+    books.sort((a, b) {
+      int cmp;
+      switch (_sortColumn) {
+        case 'titulo':
+          cmp = a.titulo.toLowerCase().compareTo(b.titulo.toLowerCase());
+          break;
+        case 'isbn':
+          cmp = a.isbn.toLowerCase().compareTo(b.isbn.toLowerCase());
+          break;
+        case 'editora':
+          cmp = a.editora.toLowerCase().compareTo(b.editora.toLowerCase());
+          break;
+        case 'anoPublicacao':
+          cmp = a.anoPublicacao.compareTo(b.anoPublicacao);
+          break;
+        default:
+          cmp = 0;
+      }
+      return _isAscending ? cmp : -cmp;
+    });
 
     int totalPages = (books.length / rowsPerPage).ceil();
 
@@ -188,47 +213,153 @@ class BookTablePageState extends State<BookTablePage> {
                   },
                   children: [
                     // Cabeçalho da tabela
-                    const TableRow(
-                      decoration: BoxDecoration(
+                    TableRow(
+                      decoration: const BoxDecoration(
                         color: Color.fromARGB(255, 44, 62, 80),
                       ),
                       children: [
+                        // Título
                         Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Título',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'titulo') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'titulo';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Título',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'titulo')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
                                     color: Colors.white,
-                                    fontSize: 15))),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('ISBN',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // ISBN
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Editora',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'isbn') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'isbn';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'ISBN',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'isbn')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Editora
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Data de Publicação',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'editora') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'editora';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Editora',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'editora')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Ano de Publicação
                         Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'anoPublicacao') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'anoPublicacao';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Data de Publicação',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'anoPublicacao')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Opções
+                        const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',
                               textAlign: TextAlign.left,

@@ -155,11 +155,63 @@ class HistoryTablePageState extends State<HistoryTablePage> {
           const BreadCrumb(
               breadcrumb: ["Início", "Usuários", "Histórico"],
               icon: Icons.co_present_rounded),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (widget.usuario != null)
+                  Text(
+                    'Histórico de ${widget.usuario!.nome}',
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 38, 42, 79),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Icon(Icons.menu_book, color: Colors.blueGrey),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Total de empréstimos: ${emprestimos.length}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Color.fromARGB(255, 38, 42, 79),
+                      ),
+                    ),
+                    const SizedBox(width: 24),
+                    const Icon(Icons.schedule, color: Colors.orange),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Em andamento: ${emprestimos.where((e) => e.status == 1).length}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Color.fromARGB(255, 38, 42, 79),
+                      ),
+                    ),
+                    const SizedBox(width: 24),
+                    const Icon(Icons.check_circle, color: Colors.green),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Concluído: ${emprestimos.where((e) => e.status == 3).length}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Color.fromARGB(255, 38, 42, 79),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
           SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 40),
             child: Column(
               children: [
                 _buildPaginationControls(),
+                const SizedBox(height: 16), // espaçamento padrao via gambiarra
                 _buildTable(paginatedEmprestimos),
                 _buildPaginationButtons(totalPages),
               ],
@@ -434,7 +486,12 @@ class HistoryTablePageState extends State<HistoryTablePage> {
               _buildDateCell(
                   _formatDate(paginatedEmprestimos[x].dataEmprestimo)),
               _buildDateCell(
-                  _formatDate(paginatedEmprestimos[x].dataDeDevolucao)),
+                (paginatedEmprestimos[x].status == 2 ||
+                            paginatedEmprestimos[x].status == 3) &&
+                        paginatedEmprestimos[x].dataDeDevolucao.isNotEmpty
+                    ? _formatDate(paginatedEmprestimos[x].dataDeDevolucao)
+                    : '-',
+              ),
               _buildStatusCell(paginatedEmprestimos[x].status),
             ],
           ),

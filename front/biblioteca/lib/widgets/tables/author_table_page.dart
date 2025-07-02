@@ -20,6 +20,11 @@ class AuthorTablePageState extends State<AuthorTablePage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
 
+  // Ordenação
+  String _sortColumn =
+      'nome'; // 'nome', 'anoNascimento', 'nacionalidade', 'sexo'
+  bool _isAscending = true;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -60,6 +65,32 @@ class AuthorTablePageState extends State<AuthorTablePage> {
               (a.anoNascimento?.toString().contains(_searchText) ?? false))
           .toList();
     }
+
+    // Ordenação
+    authors.sort((a, b) {
+      int cmp;
+      switch (_sortColumn) {
+        case 'nome':
+          cmp = a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
+          break;
+        case 'anoNascimento':
+          cmp = (a.anoNascimento ?? 0).compareTo(b.anoNascimento ?? 0);
+          break;
+        case 'nacionalidade':
+          cmp = (a.nacionalidade ?? '')
+              .toLowerCase()
+              .compareTo((b.nacionalidade ?? '').toLowerCase());
+          break;
+        case 'sexo':
+          cmp = (a.sexo ?? '')
+              .toLowerCase()
+              .compareTo((b.sexo ?? '').toLowerCase());
+          break;
+        default:
+          cmp = 0;
+      }
+      return _isAscending ? cmp : -cmp;
+    });
 
     int totalPages = (authors.length / rowsPerPage).ceil();
 
@@ -190,48 +221,158 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                     4: IntrinsicColumnWidth()
                   },
                   children: [
-                    // Cabeçalho da tabela
-                    const TableRow(
-                      decoration: BoxDecoration(
+                    // Cabeçalho da tabela com ordenação
+                    TableRow(
+                      decoration: const BoxDecoration(
                         color: Color.fromARGB(255, 44, 62, 80),
                       ),
                       children: [
+                        // Nome
                         Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Nome',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'nome') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'nome';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Nome',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'nome')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
                                     color: Colors.white,
-                                    fontSize: 15))),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Ano de Nascimento',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Ano de Nascimento
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Nacionalidade',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'anoNascimento') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'anoNascimento';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Ano de Nascimento',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'anoNascimento')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Nacionalidade
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Sexo',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'nacionalidade') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'nacionalidade';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Nacionalidade',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'nacionalidade')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Sexo
                         Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'sexo') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'sexo';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Sexo',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'sexo')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Opções
+                        const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',
                               textAlign: TextAlign.left,

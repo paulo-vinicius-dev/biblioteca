@@ -25,6 +25,10 @@ class HistoryTablePageState extends State<HistoryTablePage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
 
+  String _sortColumn =
+      'tombamento'; // 'tombamento', 'livro', 'dataEmprestimo', 'dataDevolucao', 'status'
+  bool _isAscending = true;
+
   @override
   void initState() {
     super.initState();
@@ -105,6 +109,36 @@ class HistoryTablePageState extends State<HistoryTablePage> {
               _getStatusText(e.status).toLowerCase().contains(_searchText))
           .toList();
     }
+
+    // Sorting
+    filteredEmprestimos.sort((a, b) {
+      int cmp;
+      switch (_sortColumn) {
+        case 'tombamento':
+          cmp = a.exemplarMap['IdDoExemplarLivro']
+              .toString()
+              .compareTo(b.exemplarMap['IdDoExemplarLivro'].toString());
+          break;
+        case 'livro':
+          cmp = (a.exemplarMap['Livro']['Titulo'] as String)
+              .toLowerCase()
+              .compareTo(
+                  (b.exemplarMap['Livro']['Titulo'] as String).toLowerCase());
+          break;
+        case 'dataEmprestimo':
+          cmp = a.dataEmprestimo.compareTo(b.dataEmprestimo);
+          break;
+        case 'dataDevolucao':
+          cmp = a.dataDeDevolucao.compareTo(b.dataDeDevolucao);
+          break;
+        case 'status':
+          cmp = _getStatusText(a.status).compareTo(_getStatusText(b.status));
+          break;
+        default:
+          cmp = 0;
+      }
+      return _isAscending ? cmp : -cmp;
+    });
 
     int totalPages = (filteredEmprestimos.length / rowsPerPage).ceil();
     int startIndex = (currentPage - 1) * rowsPerPage;
@@ -203,52 +237,184 @@ class HistoryTablePageState extends State<HistoryTablePage> {
         4: FlexColumnWidth(0.15),
       },
       children: [
-        const TableRow(
-          decoration: BoxDecoration(color: Color.fromARGB(255, 38, 42, 79)),
+        TableRow(
+          decoration:
+              const BoxDecoration(color: Color.fromARGB(255, 38, 42, 79)),
           children: [
+            // Tombamento
             Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Tombamento',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500,
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    if (_sortColumn == 'tombamento') {
+                      _isAscending = !_isAscending;
+                    } else {
+                      _sortColumn = 'tombamento';
+                      _isAscending = true;
+                    }
+                  });
+                },
+                child: Row(
+                  children: [
+                    const Text(
+                      'Tombamento',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontSize: 15),
+                    ),
+                    if (_sortColumn == 'tombamento')
+                      Icon(
+                        _isAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
                         color: Colors.white,
-                        fontSize: 15))),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Livro',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                      fontSize: 15)),
+                        size: 18,
+                      ),
+                  ],
+                ),
+              ),
             ),
+            // Livro
             Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Data Empréstimo',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                      fontSize: 15)),
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    if (_sortColumn == 'livro') {
+                      _isAscending = !_isAscending;
+                    } else {
+                      _sortColumn = 'livro';
+                      _isAscending = true;
+                    }
+                  });
+                },
+                child: Row(
+                  children: [
+                    const Text(
+                      'Livro',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontSize: 15),
+                    ),
+                    if (_sortColumn == 'livro')
+                      Icon(
+                        _isAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                  ],
+                ),
+              ),
             ),
+            // Data Empréstimo
             Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Data Devolução',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                      fontSize: 15)),
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    if (_sortColumn == 'dataEmprestimo') {
+                      _isAscending = !_isAscending;
+                    } else {
+                      _sortColumn = 'dataEmprestimo';
+                      _isAscending = true;
+                    }
+                  });
+                },
+                child: Row(
+                  children: [
+                    const Text(
+                      'Data Empréstimo',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontSize: 15),
+                    ),
+                    if (_sortColumn == 'dataEmprestimo')
+                      Icon(
+                        _isAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                  ],
+                ),
+              ),
             ),
+            // Data Devolução
             Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Status',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                      fontSize: 15)),
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    if (_sortColumn == 'dataDevolucao') {
+                      _isAscending = !_isAscending;
+                    } else {
+                      _sortColumn = 'dataDevolucao';
+                      _isAscending = true;
+                    }
+                  });
+                },
+                child: Row(
+                  children: [
+                    const Text(
+                      'Data Devolução',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontSize: 15),
+                    ),
+                    if (_sortColumn == 'dataDevolucao')
+                      Icon(
+                        _isAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            // Status
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    if (_sortColumn == 'status') {
+                      _isAscending = !_isAscending;
+                    } else {
+                      _sortColumn = 'status';
+                      _isAscending = true;
+                    }
+                  });
+                },
+                child: Row(
+                  children: [
+                    const Text(
+                      'Status',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontSize: 15),
+                    ),
+                    if (_sortColumn == 'status')
+                      Icon(
+                        _isAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

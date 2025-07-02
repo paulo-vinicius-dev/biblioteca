@@ -25,6 +25,7 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
 
   bool _isInit = true;
   bool _isLoading = false;
+  bool _isAscending = true;
 
   late List<Categoria> categorias;
 
@@ -74,6 +75,13 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
           .where((c) => c.descricao.toLowerCase().contains(_searchText))
           .toList();
     }
+
+    // Ordenação
+    categories.sort((a, b) {
+      return _isAscending
+          ? a.descricao.toLowerCase().compareTo(b.descricao.toLowerCase())
+          : b.descricao.toLowerCase().compareTo(a.descricao.toLowerCase());
+    });
 
     int totalPages = (categories.length / rowsPerPage).ceil();
 
@@ -211,18 +219,39 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
                   },
                   children: [
                     // Cabeçalho da tabela
-                    const TableRow(
-                      decoration:
-                          BoxDecoration(color: Color.fromARGB(255, 44, 62, 80)),
+                    TableRow(
+                      decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 44, 62, 80)),
                       children: [
                         Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Categoria',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                    fontSize: 15))),
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _isAscending = !_isAscending;
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Categoria',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                Icon(
+                                  _isAscending
+                                      ? Icons.arrow_upward
+                                      : Icons.arrow_downward,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',

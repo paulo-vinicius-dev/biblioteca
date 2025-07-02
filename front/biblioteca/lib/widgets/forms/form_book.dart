@@ -159,7 +159,8 @@ class _FormBookState extends State<FormBook> {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor, preencha todos os campos obrigatórios corretamente'),
+          content: Text(
+              'Por favor, preencha todos os campos obrigatórios corretamente'),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 3),
         ),
@@ -199,7 +200,8 @@ class _FormBookState extends State<FormBook> {
         List<String> autores =
             _authorsControllers.map((controller) => controller.text).toList();
         List<String> categorias = [];
-        if (_categoriaSelecionada != null && _categoriaSelecionada!.isNotEmpty) {
+        if (_categoriaSelecionada != null &&
+            _categoriaSelecionada!.isNotEmpty) {
           categorias.add(_categoriaSelecionada!);
         }
         categorias.addAll(_categoriesControllers
@@ -273,9 +275,9 @@ class _FormBookState extends State<FormBook> {
         setState(() {
           _tituloController.text = data['title'] ?? '';
           _editoraController.text = data['publisher'] ?? '';
-          _anoPublicacaoController.text = data['year'] != null ? '${data['year']}' : '';
+          _anoPublicacaoController.text =
+              data['year'] != null ? '${data['year']}' : '';
 
-          
           if (data['authors'] != null) {
             _authorsControllers.clear();
             for (String autor in data['authors']) {
@@ -405,7 +407,7 @@ class _FormBookState extends State<FormBook> {
                         controller: _anoPublicacaoController,
                         decoration: const InputDecoration(
                           label: CampoObrigatorio(
-                              label: "Data de Publicação (YYYY-MM-DD)"),
+                              label: "Ano de Publicação (YYYY)"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
@@ -522,7 +524,8 @@ class _FormBookState extends State<FormBook> {
                                         ? DropdownButtonFormField<String>(
                                             value: _categoriaSelecionada,
                                             decoration: const InputDecoration(
-                                              label: Text("Categoria Principal"),
+                                              label:
+                                                  Text("Categoria Principal"),
                                               border: OutlineInputBorder(),
                                             ),
                                             items: categoriasPrincipais

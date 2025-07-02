@@ -14,17 +14,19 @@ class UserTablePage extends StatefulWidget {
 }
 
 class UserTablePageState extends State<UserTablePage> {
-  //TextEditingController _buscaController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
 
-  int rowsPerPage = 10; // Quantidade de linhas por página
+  int rowsPerPage = 10;
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
-  int currentPage = 1; // Página atual
+  int currentPage = 1;
 
   bool _isInit = true;
   bool _isLoading = false;
-
   String _searchText = '';
+
+  // Ordenação
+  String _sortColumn = 'nome'; // 'nome', 'turma', 'turno', 'login', 'tipo'
+  bool _isAscending = true;
 
   @override
   void didChangeDependencies() {
@@ -56,6 +58,8 @@ class UserTablePageState extends State<UserTablePage> {
   Material getPage() {
     UsuarioProvider provider = Provider.of<UsuarioProvider>(context);
     List<Usuario> users = provider.users;
+
+    // Filtro
     if (_searchText.isNotEmpty) {
       users = users
           .where((u) =>
@@ -66,15 +70,39 @@ class UserTablePageState extends State<UserTablePage> {
               u.getTipoDeUsuario.toLowerCase().contains(_searchText))
           .toList();
     }
-    int totalPages = (users.length / rowsPerPage).ceil();
 
-    // Calcula o índice inicial e final dos usuários exibidos
+    // Ordenação
+    users.sort((a, b) {
+      int cmp;
+      switch (_sortColumn) {
+        case 'nome':
+          cmp = a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
+          break;
+        case 'turma':
+          cmp = a.getTurma.toLowerCase().compareTo(b.getTurma.toLowerCase());
+          break;
+        case 'turno':
+          cmp = a.getTurno.toLowerCase().compareTo(b.getTurno.toLowerCase());
+          break;
+        case 'login':
+          cmp = a.login.toLowerCase().compareTo(b.login.toLowerCase());
+          break;
+        case 'tipo':
+          cmp = a.getTipoDeUsuario
+              .toLowerCase()
+              .compareTo(b.getTipoDeUsuario.toLowerCase());
+          break;
+        default:
+          cmp = 0;
+      }
+      return _isAscending ? cmp : -cmp;
+    });
+
+    int totalPages = (users.length / rowsPerPage).ceil();
     int startIndex = (currentPage - 1) * rowsPerPage;
     int endIndex = (startIndex + rowsPerPage) < users.length
         ? (startIndex + rowsPerPage)
         : users.length;
-
-    // Seleciona os usuários que serão exibidos na página atual
     List<Usuario> paginatedUsers = users.sublist(startIndex, endIndex);
 
     // Lógica para definir os botões de página (máximo 10 botões)
@@ -198,56 +226,193 @@ class UserTablePageState extends State<UserTablePage> {
                     5: IntrinsicColumnWidth(),
                   },
                   children: [
-                    // Cabeçalho da tabela
-                    const TableRow(
-                      decoration:
-                          BoxDecoration(color: Color.fromARGB(255, 44, 62, 80)),
+                    // Cabeçalho da tabela com ordenação
+                    TableRow(
+                      decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 44, 62, 80)),
                       children: [
+                        // Nome
                         Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Nome',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'nome') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'nome';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Nome',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'nome')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
                                     color: Colors.white,
-                                    fontSize: 15))),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Turma',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Turma
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Turno',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'turma') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'turma';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Turma',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'turma')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Turno
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Login',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'turno') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'turno';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Turno',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'turno')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Login
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Tipo de Usuario',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 15)),
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'login') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'login';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Login',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'login')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Tipo de Usuário
                         Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'tipo') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'tipo';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Tipo de Usuario',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                if (_sortColumn == 'tipo')
+                                  Icon(
+                                    _isAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Opções
+                        const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',
                               textAlign: TextAlign.left,

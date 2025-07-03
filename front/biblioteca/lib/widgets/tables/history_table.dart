@@ -172,7 +172,8 @@ class HistoryTablePageState extends State<HistoryTablePage> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Icon(Icons.menu_book, color: Colors.blueGrey),
+                    const Icon(Icons.menu_book,
+                        color: Color.fromARGB(255, 38, 42, 79)),
                     const SizedBox(width: 6),
                     Text(
                       'Total de empréstimos: ${emprestimos.length}',
@@ -644,13 +645,13 @@ class HistoryTablePageState extends State<HistoryTablePage> {
   Color _getStatusColor(int status) {
     switch (status) {
       case 1:
-        return const Color(0xFF1976D2);
+        return Colors.orange;
       case 2:
-        return const Color(0xFFED6C02);
+        return Colors.orangeAccent;
       case 3:
-        return const Color(0xFF2E7D32);
+        return Colors.green;
       default:
-        return const Color(0xFF9E9E9E);
+        return Colors.grey;
     }
   }
 

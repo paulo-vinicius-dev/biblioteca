@@ -1,8 +1,0 @@
-*bug da categoria no cadastro de livro - v 
-*fazer o editar do exemplar e mudar os dados exibidos na tabela -V 
-*livros: corrigir remover data de publicação - V
-*tela categoria: problema ao excluir categoria - V
-*lidar com os códigos de erros http - X
-*atualizar a situaçã do exemplar após o empréstimo - v
-*tela de cadastro de livros est á aceitando livro que não tem país - V
-*fazer com que anos menores que 1000 não sejam válidos na tela de cadastro de livro - 

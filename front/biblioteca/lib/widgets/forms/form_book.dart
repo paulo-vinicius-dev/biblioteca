@@ -416,7 +416,7 @@ class _FormBookState extends State<FormBook> {
                           }
                           try {
                             var ano = int.parse(value);
-                            if (ano > DateTime.now().year || ano < 1) {
+                            if (ano > DateTime.now().year || ano < 1 || ano.toString().length < 4) {
                               return "Ano inválido";
                             }
                           } catch (e) {

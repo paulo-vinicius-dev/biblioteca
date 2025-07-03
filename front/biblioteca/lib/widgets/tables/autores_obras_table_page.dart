@@ -133,6 +133,48 @@ class _ObrasPageState extends State<ObrasPage> {
             breadcrumb: ['Inicio', 'Autores', 'Obras: ${widget.autor.nome}'],
             icon: Icons.menu_book_outlined,
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 40),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Obras de ${widget.autor.nome}',
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 38, 42, 79),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0, left: 40, right: 40),
+            child: Row(
+              children: [
+                const Icon(Icons.menu_book,
+                    color: Color.fromARGB(255, 38, 42, 79)),
+                const SizedBox(width: 6),
+                Text(
+                  'Total de obras: ${livrosDoAutor.length}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Color.fromARGB(255, 38, 42, 79),
+                  ),
+                ),
+                const SizedBox(width: 24),
+                const Icon(Icons.category, color: Colors.orange),
+                const SizedBox(width: 6),
+                Text(
+                  'Categorias: ${livrosDoAutor.map((l) => _getCategoriaDescricao(l)).where((cat) => cat != 'Sem categoria').toSet().length}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Color.fromARGB(255, 38, 42, 79),
+                  ),
+                ),
+                const SizedBox(width: 24),
+              ],
+            ),
+          ),
           if (isLoading)
             const Padding(
               padding: EdgeInsets.all(40),
@@ -140,7 +182,7 @@ class _ObrasPageState extends State<ObrasPage> {
             )
           else
             SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 40),
               child: Column(
                 children: [
                   Padding(
@@ -211,7 +253,7 @@ class _ObrasPageState extends State<ObrasPage> {
                     children: [
                       TableRow(
                         decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 44, 62, 80),
+                          color: Color.fromARGB(255, 38, 42, 79),
                         ),
                         children: [
                           Padding(
@@ -391,7 +433,7 @@ class _ObrasPageState extends State<ObrasPage> {
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
                                 color: i == currentPage
-                                    ? Colors.blueGrey
+                                    ? Color.fromARGB(255, 38, 42, 79)
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(4.0),
                                 border: Border.all(color: Colors.grey),

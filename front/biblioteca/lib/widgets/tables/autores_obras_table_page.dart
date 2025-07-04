@@ -256,8 +256,8 @@ class _ObrasPageState extends State<ObrasPage> {
                           color: Color.fromARGB(255, 38, 42, 79),
                         ),
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Text(
                               'Ação',
                               style: TextStyle(
@@ -271,7 +271,14 @@ class _ObrasPageState extends State<ObrasPage> {
                             padding: const EdgeInsets.all(8.0),
                             child: InkWell(
                               onTap: () {
-                                _sortLivros('titulo');
+                                setState(() {
+                                  if (_sortColumn == 'titulo') {
+                                    _isAscending = !_isAscending;
+                                  } else {
+                                    _sortColumn = 'titulo';
+                                    _isAscending = true;
+                                  }
+                                });
                               },
                               child: Row(
                                 children: [
@@ -282,14 +289,15 @@ class _ObrasPageState extends State<ObrasPage> {
                                         color: Colors.white,
                                         fontSize: 15),
                                   ),
-                                  if (_sortColumn == 'titulo')
-                                    Icon(
-                                      _isAscending
-                                          ? Icons.arrow_upward
-                                          : Icons.arrow_downward,
-                                      color: Colors.white,
-                                      size: 18,
-                                    ),
+                                  Icon(
+                                    _sortColumn == 'titulo'
+                                        ? (_isAscending
+                                            ? Icons.arrow_upward
+                                            : Icons.arrow_downward)
+                                        : Icons.unfold_more,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
                                 ],
                               ),
                             ),
@@ -317,14 +325,15 @@ class _ObrasPageState extends State<ObrasPage> {
                                         color: Colors.white,
                                         fontSize: 15),
                                   ),
-                                  if (_sortColumn == 'isbn')
-                                    Icon(
-                                      _isAscending
-                                          ? Icons.arrow_upward
-                                          : Icons.arrow_downward,
-                                      color: Colors.white,
-                                      size: 18,
-                                    ),
+                                  Icon(
+                                    _sortColumn == 'isbn'
+                                        ? (_isAscending
+                                            ? Icons.arrow_upward
+                                            : Icons.arrow_downward)
+                                        : Icons.unfold_more,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
                                 ],
                               ),
                             ),
@@ -352,14 +361,15 @@ class _ObrasPageState extends State<ObrasPage> {
                                         color: Colors.white,
                                         fontSize: 15),
                                   ),
-                                  if (_sortColumn == 'categoria')
-                                    Icon(
-                                      _isAscending
-                                          ? Icons.arrow_upward
-                                          : Icons.arrow_downward,
-                                      color: Colors.white,
-                                      size: 18,
-                                    ),
+                                  Icon(
+                                    _sortColumn == 'categoria'
+                                        ? (_isAscending
+                                            ? Icons.arrow_upward
+                                            : Icons.arrow_downward)
+                                        : Icons.unfold_more,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
                                 ],
                               ),
                             ),

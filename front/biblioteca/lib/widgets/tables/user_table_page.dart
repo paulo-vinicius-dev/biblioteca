@@ -255,14 +255,15 @@ class UserTablePageState extends State<UserTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'nome')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'nome'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -291,14 +292,15 @@ class UserTablePageState extends State<UserTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'turma')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'turma'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -327,14 +329,15 @@ class UserTablePageState extends State<UserTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'turno')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'turno'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -363,14 +366,15 @@ class UserTablePageState extends State<UserTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'login')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'login'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -399,14 +403,15 @@ class UserTablePageState extends State<UserTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'tipo')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'tipo'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),

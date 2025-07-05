@@ -251,14 +251,15 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'nome')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'nome'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -287,14 +288,15 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'anoNascimento')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'anoNascimento'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -323,14 +325,15 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'nacionalidade')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'nacionalidade'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -359,14 +362,15 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'sexo')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'sexo'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),

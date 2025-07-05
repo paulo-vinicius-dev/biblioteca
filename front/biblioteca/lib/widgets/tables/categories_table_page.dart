@@ -29,6 +29,8 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
 
   late List<Categoria> categorias;
 
+  String _sortColumn = 'descricao';
+
   @override
   void didChangeDependencies() {
     if (_isInit) {
@@ -228,7 +230,12 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
                           child: InkWell(
                             onTap: () {
                               setState(() {
-                                _isAscending = !_isAscending;
+                                if (_sortColumn == 'descricao') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'descricao';
+                                  _isAscending = true;
+                                }
                               });
                             },
                             child: Row(
@@ -242,17 +249,19 @@ class _CategoriesTablePageState extends State<CategoriesTablePage> {
                                       fontSize: 15),
                                 ),
                                 Icon(
-                                  _isAscending
-                                      ? Icons.arrow_upward
-                                      : Icons.arrow_downward,
+                                  _sortColumn == 'descricao'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
                                   color: Colors.white,
-                                  size: 18,
+                                  size: 16,
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',
                               textAlign: TextAlign.left,

@@ -241,14 +241,15 @@ class BookTablePageState extends State<BookTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'titulo')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'titulo'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -276,14 +277,15 @@ class BookTablePageState extends State<BookTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'isbn')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'isbn'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -311,14 +313,15 @@ class BookTablePageState extends State<BookTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'editora')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'editora'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),
@@ -346,14 +349,15 @@ class BookTablePageState extends State<BookTablePage> {
                                       color: Colors.white,
                                       fontSize: 15),
                                 ),
-                                if (_sortColumn == 'anoPublicacao')
-                                  Icon(
-                                    _isAscending
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                Icon(
+                                  _sortColumn == 'anoPublicacao'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                               ],
                             ),
                           ),

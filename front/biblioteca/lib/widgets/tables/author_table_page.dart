@@ -61,8 +61,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
           .where((a) =>
               a.nome.toLowerCase().contains(_searchText) ||
               (a.nacionalidade?.toLowerCase().contains(_searchText) ?? false) ||
-              (a.sexo?.toLowerCase().contains(_searchText) ?? false) ||
-              (a.anoNascimento?.toString().contains(_searchText) ?? false))
+              (a.sexo?.toLowerCase().contains(_searchText) ?? false))
           .toList();
     }
 
@@ -72,9 +71,6 @@ class AuthorTablePageState extends State<AuthorTablePage> {
       switch (_sortColumn) {
         case 'nome':
           cmp = a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
-          break;
-        case 'anoNascimento':
-          cmp = (a.anoNascimento ?? 0).compareTo(b.anoNascimento ?? 0);
           break;
         case 'nacionalidade':
           cmp = (a.nacionalidade ?? '')
@@ -264,43 +260,6 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                             ),
                           ),
                         ),
-                        // Ano de Nascimento
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                if (_sortColumn == 'anoNascimento') {
-                                  _isAscending = !_isAscending;
-                                } else {
-                                  _sortColumn = 'anoNascimento';
-                                  _isAscending = true;
-                                }
-                              });
-                            },
-                            child: Row(
-                              children: [
-                                const Text(
-                                  'Ano de Nascimento',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                      fontSize: 15),
-                                ),
-                                Icon(
-                                  _sortColumn == 'anoNascimento'
-                                      ? (_isAscending
-                                          ? Icons.arrow_upward
-                                          : Icons.arrow_downward)
-                                      : Icons.unfold_more,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
                         // Nacionalidade
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -408,22 +367,6 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                       fontWeight: FontWeight.w300,
                                       fontSize:
                                           14.5)), // Alinhamento horizontal
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                  paginatedAuthors[x].anoNascimento == null
-                                      ? ''
-                                      : paginatedAuthors[x]
-                                          .anoNascimento
-                                          .toString(),
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 14.5)),
                             ),
                           ),
                           Align(

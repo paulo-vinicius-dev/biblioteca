@@ -343,7 +343,7 @@ class BookTablePageState extends State<BookTablePage> {
                             child: Row(
                               children: [
                                 const Text(
-                                  'Data de Publicação',
+                                  'Ano de Publicação',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w500,
                                       color: Colors.white,

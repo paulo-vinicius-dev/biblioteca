@@ -407,7 +407,7 @@ class _FormBookState extends State<FormBook> {
                         controller: _anoPublicacaoController,
                         decoration: const InputDecoration(
                           label: CampoObrigatorio(
-                              label: "Ano de Publicação (YYYY)"),
+                              label: "Ano de Publicação"),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {

@@ -57,7 +57,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
   Widget build(BuildContext context) {
     final exemplarProvider = Provider.of<ExemplarProvider>(context);
     final exemplaresDoLivro = exemplarProvider.exemplares
-        .where((ex) => ex.idLivro == widget.book.idDoLivro)
+        .where((ex) => ex.idLivro == widget.book.idDoLivro && ex.ativo == true)
         .toList();
 
     // Filtro de busca
@@ -357,6 +357,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                       2: FlexColumnWidth(1),
                       3: FlexColumnWidth(1),
                       4: IntrinsicColumnWidth(),
+                      5: IntrinsicColumnWidth(),
                     },
                     children: [
                       TableRow(
@@ -468,6 +469,17 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                               ),
                             ),
                           ),
+                          // Ações
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'Ações',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       for (int i = 0; i < paginatedExemplares.length; i++)
@@ -478,10 +490,12 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                 : const Color.fromRGBO(255, 255, 255, 1),
                           ),
                           children: [
+                            // Exemplar
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text('${paginatedExemplares[i].id}'),
                             ),
+                            // Situação
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
@@ -490,6 +504,7 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                     : 'Emprestado',
                               ),
                             ),
+                            // Estado
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: DropdownButton<String>(
@@ -544,12 +559,87 @@ class _ExemplaresPageState extends State<ExemplaresPage> {
                                 ],
                               ),
                             ),
+                            // Cativo
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 paginatedExemplares[i].cativo == true
                                     ? 'Sim'
                                     : 'Não',
+                              ),
+                            ),
+                            // Botão de apagar
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.delete,
+                                    color: Colors.white),
+                                label: const Text('Apagar',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Confirmar exclusão'),
+                                        content: Text(
+                                            'Tem certeza que deseja apagar o exemplar de ID ${paginatedExemplares[i].id}?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: const Text('Cancelar'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop(false);
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: const Text('Apagar'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop(true);
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                  if (confirm == true) {
+                                    try {
+                                      await exemplarProvider.deleteExemplar(
+                                          paginatedExemplares[i].id);
+                                      await _loadExemplares();
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                'Exemplar apagado com sucesso'),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                                'Erro ao apagar exemplar: $e'),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  }
+                                },
                               ),
                             ),
                           ],

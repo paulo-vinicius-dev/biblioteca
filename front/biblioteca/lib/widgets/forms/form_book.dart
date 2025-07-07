@@ -30,8 +30,6 @@ class _FormBookState extends State<FormBook> {
   final TextEditingController _editoraController = TextEditingController();
   final TextEditingController _anoPublicacaoController =
       TextEditingController();
-  final TextEditingController _numeroExemplaresController =
-      TextEditingController(text: "1");
   final TextEditingController _paisController = TextEditingController();
   final List<TextEditingController> _authorsControllers = [
     TextEditingController()
@@ -144,7 +142,6 @@ class _FormBookState extends State<FormBook> {
     _isbnController.clear();
     _editoraController.clear();
     _anoPublicacaoController.clear();
-    _numeroExemplaresController.text = "1";
     _paisSelecionado = null;
     _authorsControllers.clear();
     _authorsControllers.add(TextEditingController());
@@ -180,7 +177,19 @@ class _FormBookState extends State<FormBook> {
         newLivro.anoPublicacao = int.parse(_anoPublicacaoController.text);
         newLivro.pais = int.parse(_paisSelecionado!);
 
-        await provider.editLivro(newLivro.toJson());
+        List<String> autores =
+            _authorsControllers.map((controller) => controller.text).toList();
+        List<String> categorias = [];
+        if (_categoriaSelecionada != null &&
+            _categoriaSelecionada!.isNotEmpty) {
+          categorias.add(_categoriaSelecionada!);
+        }
+        categorias.addAll(_categoriesControllers
+            .map((controller) => controller.text)
+            .where((text) => text.isNotEmpty)
+            .toList());
+
+        await provider.editLivro(newLivro.toJson(), autores, categorias);
 
         mensagem = provider.hasErrors
             ? "Ocorreu um erro ao tentar alterar este registro, por favor confira os dados inseridos"
@@ -249,7 +258,6 @@ class _FormBookState extends State<FormBook> {
     _editoraController.dispose();
     _anoPublicacaoController.dispose();
     _paisController.dispose();
-    _numeroExemplaresController.dispose();
 
     for (var controller in _authorsControllers) {
       controller.dispose();
@@ -414,7 +422,9 @@ class _FormBookState extends State<FormBook> {
                           }
                           try {
                             var ano = int.parse(value);
-                            if (ano > DateTime.now().year || ano < 1 || ano.toString().length < 4) {
+                            if (ano > DateTime.now().year ||
+                                ano < 1 ||
+                                ano.toString().length < 4) {
                               return "Ano inválido";
                             }
                           } catch (e) {
@@ -581,30 +591,6 @@ class _FormBookState extends State<FormBook> {
                             ],
                           );
                         }),
-                      ),
-                      const SizedBox(height: 20.0),
-
-                      // Número de Exemplares
-                      TextFormField(
-                        controller: _numeroExemplaresController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          label:
-                              CampoObrigatorio(label: "Número de Exemplares"),
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Preencha esse campo";
-                          }
-
-                          final numero = int.tryParse(value);
-                          if (numero == null || numero < 1) {
-                            return "Informe um número válido (mínimo 1)";
-                          }
-
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 20.0),
 

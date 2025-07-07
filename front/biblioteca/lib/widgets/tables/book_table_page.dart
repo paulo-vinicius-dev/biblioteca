@@ -524,7 +524,13 @@ class BookTablePageState extends State<BookTablePage> {
                                   const SizedBox(width: 3),
                                   ElevatedButton(
                                     onPressed: () {
-                                      // Editar
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return livroDialog(
+                                              context, paginatedBooks[x]);
+                                        },
+                                      );
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
@@ -665,6 +671,168 @@ class BookTablePageState extends State<BookTablePage> {
           ),
         ],
       ),
+    );
+  }
+
+  AlertDialog livroDialog(BuildContext context, Livro livro) {
+    final _formKey = GlobalKey<FormState>();
+    final TextEditingController _tituloController =
+        TextEditingController(text: livro.titulo);
+    final TextEditingController _isbnController =
+        TextEditingController(text: livro.isbn);
+    final TextEditingController _editoraController =
+        TextEditingController(text: livro.editora);
+    final TextEditingController _anoController =
+        TextEditingController(text: livro.anoPublicacao.toString());
+    // País, autores e categorias podem ser adaptados conforme necessidade
+
+    return AlertDialog(
+      title: const Text('Editar Livro'),
+      content: SizedBox(
+        width: 500,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _tituloController,
+                  decoration: const InputDecoration(
+                    labelText: 'Título',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Campo obrigatório'
+                      : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _isbnController,
+                  decoration: const InputDecoration(
+                    labelText: 'ISBN',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Campo obrigatório'
+                      : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _editoraController,
+                  decoration: const InputDecoration(
+                    labelText: 'Editora',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Campo obrigatório'
+                      : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _anoController,
+                  decoration: const InputDecoration(
+                    labelText: 'Ano de Publicação',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Campo obrigatório'
+                      : null,
+                ),
+                // Adicione campos para país, autores e categorias se necessário
+              ],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 128, 128, 128),
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            if (_formKey.currentState!.validate()) {
+              // Extrair nomes dos autores e categorias
+              List<String> nomesAutores = [];
+              if (livro.autores.isNotEmpty) {
+                nomesAutores = livro.autores
+                    .map((a) {
+                      if (a is Map && a.containsKey('nome')) {
+                        return a['nome'].toString();
+                      } else if (a is String) {
+                        return a;
+                      }
+                      return '';
+                    })
+                    .where((nome) => nome.trim().isNotEmpty)
+                    .toList()
+                    .cast<String>();
+              }
+              List<String> nomesCategorias = [];
+              if (livro.categorias.isNotEmpty) {
+                nomesCategorias = livro.categorias
+                    .map((c) {
+                      if (c is Map && c.containsKey('descricao')) {
+                        return c['descricao'].toString();
+                      } else if (c is String) {
+                        return c;
+                      }
+                      return '';
+                    })
+                    .where((nome) => nome.trim().isNotEmpty)
+                    .toList()
+                    .cast<String>();
+              }
+              final livroEditado = {
+                "Id": livro.idDoLivro,
+                "Isbn": _isbnController.text,
+                "Titulo": _tituloController.text,
+                "AnoPublicacao":
+                    int.tryParse(_anoController.text) ?? livro.anoPublicacao,
+                "Editora": _editoraController.text,
+                "Pais": livro.pais is Map
+                    ? livro.pais["idDoPais"] ??
+                        livro.pais["IdDoPais"] ??
+                        livro.pais
+                    : livro.pais,
+              };
+              await Provider.of<LivroProvider>(context, listen: false)
+                  .editLivro(livroEditado, nomesAutores, nomesCategorias);
+              await Provider.of<LivroProvider>(context, listen: false)
+                  .loadLivros();
+              Navigator.of(context).pop();
+              setState(() {});
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 38, 42, 79),
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Salvar', style: TextStyle(fontSize: 16)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

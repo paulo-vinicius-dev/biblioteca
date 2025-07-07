@@ -177,7 +177,19 @@ class _FormBookState extends State<FormBook> {
         newLivro.anoPublicacao = int.parse(_anoPublicacaoController.text);
         newLivro.pais = int.parse(_paisSelecionado!);
 
-        await provider.editLivro(newLivro.toJson());
+        List<String> autores =
+            _authorsControllers.map((controller) => controller.text).toList();
+        List<String> categorias = [];
+        if (_categoriaSelecionada != null &&
+            _categoriaSelecionada!.isNotEmpty) {
+          categorias.add(_categoriaSelecionada!);
+        }
+        categorias.addAll(_categoriesControllers
+            .map((controller) => controller.text)
+            .where((text) => text.isNotEmpty)
+            .toList());
+
+        await provider.editLivro(newLivro.toJson(), autores, categorias);
 
         mensagem = provider.hasErrors
             ? "Ocorreu um erro ao tentar alterar este registro, por favor confira os dados inseridos"
@@ -410,7 +422,9 @@ class _FormBookState extends State<FormBook> {
                           }
                           try {
                             var ano = int.parse(value);
-                            if (ano > DateTime.now().year || ano < 1 || ano.toString().length < 4) {
+                            if (ano > DateTime.now().year ||
+                                ano < 1 ||
+                                ano.toString().length < 4) {
                               return "Ano inválido";
                             }
                           } catch (e) {

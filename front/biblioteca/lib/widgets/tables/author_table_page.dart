@@ -17,6 +17,13 @@ class AuthorTablePageState extends State<AuthorTablePage> {
   int rowsPerPage = 10; // Quantidade de linhas por página
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
   int currentPage = 1; // Página atual
+  final TextEditingController _searchController = TextEditingController();
+  String _searchText = '';
+
+  // Ordenação
+  String _sortColumn =
+      'nome'; // 'nome', 'anoNascimento', 'nacionalidade', 'sexo'
+  bool _isAscending = true;
 
   @override
   void initState() {
@@ -47,6 +54,39 @@ class AuthorTablePageState extends State<AuthorTablePage> {
 
   Material tableAutor(BuildContext context, List<Autor> autores) {
     List<Autor> authors = autores;
+
+    // Filtro de busca
+    if (_searchText.isNotEmpty) {
+      authors = authors
+          .where((a) =>
+              a.nome.toLowerCase().contains(_searchText) ||
+              (a.nacionalidade?.toLowerCase().contains(_searchText) ?? false) ||
+              (a.sexo?.toLowerCase().contains(_searchText) ?? false))
+          .toList();
+    }
+
+    // Ordenação
+    authors.sort((a, b) {
+      int cmp;
+      switch (_sortColumn) {
+        case 'nome':
+          cmp = a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
+          break;
+        case 'nacionalidade':
+          cmp = (a.nacionalidade ?? '')
+              .toLowerCase()
+              .compareTo((b.nacionalidade ?? '').toLowerCase());
+          break;
+        case 'sexo':
+          cmp = (a.sexo ?? '')
+              .toLowerCase()
+              .compareTo((b.sexo ?? '').toLowerCase());
+          break;
+        default:
+          cmp = 0;
+      }
+      return _isAscending ? cmp : -cmp;
+    });
 
     int totalPages = (authors.length / rowsPerPage).ceil();
 
@@ -109,32 +149,63 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                   height: 20.0,
                 ),
 
-                // Tabela de autores
+                // Registros por página e campo de Pesquisa
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Exibir '),
-                      DropdownButton<int>(
-                        value: rowsPerPage,
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              rowsPerPage = value;
-                              currentPage =
-                                  1; // Reinicia para a primeira página
-                            });
-                          }
-                        },
-                        items: rowsPerPageOptions.map((int value) {
-                          return DropdownMenuItem<int>(
-                              value: value, child: Text(value.toString()));
-                        }).toList(),
+                      // Registros por página
+                      Row(
+                        children: [
+                          const Text('Exibir'),
+                          const SizedBox(width: 8),
+                          DropdownButton<int>(
+                            value: rowsPerPage,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  rowsPerPage = value;
+                                  currentPage = 1;
+                                });
+                              }
+                            },
+                            items: rowsPerPageOptions.map((int value) {
+                              return DropdownMenuItem<int>(
+                                  value: value, child: Text(value.toString()));
+                            }).toList(),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('registros por página'),
+                        ],
                       ),
-                      const Text(' registros por página'),
+                      // Pesquisar
+                      SizedBox(
+                        width: 300,
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: const InputDecoration(
+                            labelText: 'Pesquisar',
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 12),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _searchText = value.toLowerCase();
+                              currentPage = 1;
+                            });
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Tabela de autores
                 Table(
                   border: TableBorder.all(
                       color: const Color.fromARGB(215, 200, 200, 200)),
@@ -146,48 +217,125 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                     4: IntrinsicColumnWidth()
                   },
                   children: [
-                    // Cabeçalho da tabela
-                    const TableRow(
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 44, 62, 80),
+                    // Cabeçalho da tabela com ordenação
+                    TableRow(
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 38, 42, 79),
                       ),
                       children: [
+                        // Nome
                         Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Nome',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                    fontSize: 15))),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Ano de Nascimento',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'nome') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'nome';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Nome',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                Icon(
+                                  _sortColumn == 'nome'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
                                   color: Colors.white,
-                                  fontSize: 15)),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Nacionalidade
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Nacionalidade',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'nacionalidade') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'nacionalidade';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Nacionalidade',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                Icon(
+                                  _sortColumn == 'nacionalidade'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
                                   color: Colors.white,
-                                  fontSize: 15)),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Sexo
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Sexo',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'sexo') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'sexo';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Sexo',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                Icon(
+                                  _sortColumn == 'sexo'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
                                   color: Colors.white,
-                                  fontSize: 15)),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        Padding(
+                        // Opções
+                        const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',
                               textAlign: TextAlign.left,
@@ -219,22 +367,6 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                       fontWeight: FontWeight.w300,
                                       fontSize:
                                           14.5)), // Alinhamento horizontal
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                  paginatedAuthors[x].anoNascimento == null
-                                      ? ''
-                                      : paginatedAuthors[x]
-                                          .anoNascimento
-                                          .toString(),
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 14.5)),
                             ),
                           ),
                           Align(
@@ -393,7 +525,8 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => ObrasPage(autor: paginatedAuthors[x])),
+                                            builder: (context) => ObrasPage(
+                                                autor: paginatedAuthors[x])),
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -457,7 +590,7 @@ class AuthorTablePageState extends State<AuthorTablePage> {
                             padding: const EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
                               color: i == currentPage
-                                  ? Colors.blueGrey
+                                  ? Color.fromARGB(255, 38, 42, 79)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(4.0),
                               border: Border.all(color: Colors.grey),

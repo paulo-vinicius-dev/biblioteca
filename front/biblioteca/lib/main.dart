@@ -8,6 +8,7 @@ import 'package:biblioteca/data/providers/menu_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/data/providers/paises_provider.dart';
+import 'package:biblioteca/data/providers/dashboard_provider.dart';
 import 'package:biblioteca/screens/library_dashboard.dart';
 import 'package:biblioteca/screens/login.dart';
 import 'package:biblioteca/screens/pagina_inicial.dart';
@@ -80,6 +81,7 @@ class Myapp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider<AuthProvider>(
           create: (_) => AuthProvider(),
         ),
@@ -154,7 +156,7 @@ class Myapp extends StatelessWidget {
           AppRoutes.editarUsuario: (ctx) => const FormUser(),
           AppRoutes.livros: (context) => const BookTablePage(),
           AppRoutes.autores: (context) => const AuthorTablePage(),
-          AppRoutes.devolucao: (context) =>  const TelaDevolucao(),
+          AppRoutes.devolucao: (context) => const TelaDevolucao(),
           AppRoutes.pesquisarLivro: (context) => const PesquisarLivro(),
           AppRoutes.emprestimo: (context) => const PaginaEmprestimo(),
           AppRoutes.historico: (context) => const HistoryTablePage(),

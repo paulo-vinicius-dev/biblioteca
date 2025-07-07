@@ -1,3 +1,6 @@
+
+SET search_path TO biblioteca;
+
 -- Tabela autor
 INSERT INTO autor (nome, nacionalidade, sexo) VALUES
 ('Machado de Assis', 30, 'M'), -- Brasil (id 30)
@@ -143,7 +146,105 @@ INSERT INTO livro_categoria (id_livro, id_categoria) VALUES
 (22, 2),
 (23, 2);
 
+INSERT INTO turma (descricao, serie, turno) VALUES
+  -- Edificações
+  ('Edificações', 1, 1),
+  ('Edificações', 1, 2),
+  ('Edificações', 1, 3),
+  ('Edificações', 1, 4),
+  ('Edificações', 2, 1),
+  ('Edificações', 2, 2),
+  ('Edificações', 2, 3),
+  ('Edificações', 2, 4),
+  ('Edificações', 3, 1),
+  ('Edificações', 3, 2),
+  ('Edificações', 3, 3),
+  ('Edificações', 3, 4),
+
+  -- Informática
+  ('Informática', 1, 1),
+  ('Informática', 1, 2),
+  ('Informática', 1, 3),
+  ('Informática', 1, 4),
+  ('Informática', 2, 1),
+  ('Informática', 2, 2),
+  ('Informática', 2, 3),
+  ('Informática', 2, 4),
+  ('Informática', 3, 1),
+  ('Informática', 3, 2),
+  ('Informática', 3, 3),
+  ('Informática', 3, 4),
+
+  -- Eletrotécnica
+  ('Eletrotécnica', 1, 1),
+  ('Eletrotécnica', 1, 2),
+  ('Eletrotécnica', 1, 3),
+  ('Eletrotécnica', 1, 4),
+  ('Eletrotécnica', 2, 1),
+  ('Eletrotécnica', 2, 2),
+  ('Eletrotécnica', 2, 3),
+  ('Eletrotécnica', 2, 4),
+  ('Eletrotécnica', 3, 1),
+  ('Eletrotécnica', 3, 2),
+  ('Eletrotécnica', 3, 3),
+  ('Eletrotécnica', 3, 4),
+
+  -- Análises Clínicas
+  ('Análises Clínicas', 1, 1),
+  ('Análises Clínicas', 1, 2),
+  ('Análises Clínicas', 1, 3),
+  ('Análises Clínicas', 1, 4),
+  ('Análises Clínicas', 2, 1),
+  ('Análises Clínicas', 2, 2),
+  ('Análises Clínicas', 2, 3),
+  ('Análises Clínicas', 2, 4),
+  ('Análises Clínicas', 3, 1),
+  ('Análises Clínicas', 3, 2),
+  ('Análises Clínicas', 3, 3),
+  ('Análises Clínicas', 3, 4),
+
+  -- Pesca
+  ('Pesca', 1, 1),
+  ('Pesca', 1, 2),
+  ('Pesca', 1, 3),
+  ('Pesca', 1, 4),
+  ('Pesca', 2, 1),
+  ('Pesca', 2, 2),
+  ('Pesca', 2, 3),
+  ('Pesca', 2, 4),
+  ('Pesca', 3, 1),
+  ('Pesca', 3, 2),
+  ('Pesca', 3, 3),
+  ('Pesca', 3, 4);
 
 
+ INSERT INTO usuario (login, cpf, nome, email, telefone, data_nascimento, senha, permissoes, turma) VALUES
+-- Turmas 1 a 60 (usuários com turma atribuída)
+('user1', '11111111111', 'Alice Silva', 'alice.silva@biblioteca.com', '11911111111', '2001-05-12', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 1),
+('user2', '22222222222', 'Bruno Costa', 'bruno.costa@biblioteca.com', '11922222222', '2000-08-23', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 2),
+('user3', '33333333333', 'Carla Oliveira', 'carla.oliveira@biblioteca.com', '11933333333', '1999-02-15', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 3),
+('user4', '44444444444', 'Daniel Souza', 'daniel.souza@biblioteca.com', '11944444444', '2002-09-30', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 4),
+('user5', '55555555555', 'Eduarda Lima', 'eduarda.lima@biblioteca.com', '11955555555', '2001-07-18', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 5),
+('user6', '66666666666', 'Felipe Martins', 'felipe.martins@biblioteca.com', '11966666666', '2000-11-05', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 6),
+('user7', '77777777777', 'Gabriela Almeida', 'gabriela.almeida@biblioteca.com', '11977777777', '2003-03-22', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 7),
+('user8', '88888888888', 'Henrique Barbosa', 'henrique.barbosa@biblioteca.com', '11988888888', '2002-12-01', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 8),
+('user9', '99999999999', 'Isabela Rocha', 'isabela.rocha@biblioteca.com', '11999999999', '2001-06-14', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 9),
+('user10', '10101010101', 'João Mendes', 'joao.mendes@biblioteca.com', '11910101010', '2000-04-09', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 10),
 
+('user11', '12121212121', 'Karen Fernandes', 'karen.fernandes@biblioteca.com', '11912121212', '2001-01-20', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 11),
+('user12', '13131313131', 'Leonardo Gomes', 'leonardo.gomes@biblioteca.com', '11913131313', '2002-02-28', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 12),
+('user13', '14141414141', 'Mariana Vieira', 'mariana.vieira@biblioteca.com', '11914141414', '1999-10-11', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 13),
+('user14', '15151515151', 'Nicolas Ramos', 'nicolas.ramos@biblioteca.com', '11915151515', '2003-05-27', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 14),
+('user15', '16161616161', 'Olivia Teixeira', 'olivia.teixeira@biblioteca.com', '11916161616', '2001-03-16', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, 15),
+
+-- Usuários sem turma (turma = NULL)
+('user16', '17171717171', 'Paulo Cunha', 'paulo.cunha@biblioteca.com', '11917171717', '1998-12-25', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL),
+('user17', '18181818181', 'Renata Pires', 'renata.pires@biblioteca.com', '11918181818', '1997-07-04', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL),
+('user18', '19191919191', 'Sandro Lopes', 'sandro.lopes@biblioteca.com', '11919191919', '1996-11-19', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL),
+('user19', '20202020202', 'Tatiane Melo', 'tatiane.melo@biblioteca.com', '11920202020', '1995-09-07', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL),
+('user20', '21212121212', 'Victor Nogueira', 'victor.nogueira@biblioteca.com', '11921212121', '1994-02-02', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL);
+
+ 
+ 
+ 
 

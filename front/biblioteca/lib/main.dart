@@ -5,6 +5,7 @@ import 'package:biblioteca/data/providers/emprestimo_provider.dart';
 import 'package:biblioteca/data/providers/exemplares_provider.dart';
 import 'package:biblioteca/data/providers/login_provider.dart';
 import 'package:biblioteca/data/providers/menu_provider.dart';
+import 'package:biblioteca/data/providers/turmas_provider.dart';
 import 'package:biblioteca/data/providers/usuario_provider.dart';
 import 'package:biblioteca/data/providers/livro_provider.dart';
 import 'package:biblioteca/data/providers/paises_provider.dart';
@@ -88,6 +89,7 @@ class Myapp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LoginProvider()),
         ChangeNotifierProvider(create: (context) => MenuState()),
         ChangeNotifierProvider(create: (context) => AutorProvider()),
+        ChangeNotifierProvider(create: (context) => TurmasProvider()),
         ProxyProvider<AuthProvider, CategoriaProvider>(
           create: (_) => CategoriaProvider(0, ''),
           update: (_, authProvider, usuarioProvider) => CategoriaProvider(

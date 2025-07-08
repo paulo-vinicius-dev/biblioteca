@@ -46,7 +46,7 @@ class TurmasProvider extends ChangeNotifier {
       if (apiResponse.responseCode > 299) {
         _error = apiResponse.body;
       } else {
-        _turmas.add(turma);
+        _turmas.add(apiResponse.body);
       }
     } catch (e) {
       _error = "Erro ao inserir nova Turma:\n$e";

@@ -308,9 +308,10 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 13, horizontal: 8),
                                         child: Text(
-                                          DateFormat('dd/MM/yyyy').format(
-                                            filteredBooks[x].anoPublicacao,
-                                          ),
+                                          '${filteredBooks[x].anoPublicacao}',
+                                          // DateFormat('dd/MM/yyyy').format(
+                                          //   filteredBooks[x].anoPublicacao,
+                                          // ),
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                               fontWeight: FontWeight.w300,
@@ -569,10 +570,11 @@ class _PesquisarLivroState extends State<PesquisarLivro> {
                                                       vertical: 10,
                                                       horizontal: 8),
                                                   child: Text(
-                                                    DateFormat('dd/MM/yyyy')
-                                                        .format(
-                                                      selectBook!.anoPublicacao,
-                                                    ),
+                                                    '${selectBook!.anoPublicacao}',
+                                                    // DateFormat('dd/MM/yyyy')
+                                                    //     .format(
+                                                    //   selectBook!.anoPublicacao,
+                                                    // ),
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontWeight:

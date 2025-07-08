@@ -61,7 +61,7 @@ class LivroService {
       "Id": livro["IdDoLivro"],
       "Isbn": livro["Isbn"],
       "Titulo": livro["Titulo"],
-      "AnoPublicacao": livro["AnoPublicacao"].toString(),
+      "AnoPublicacao": livro["AnoPublicacao"],
       "Editora": livro["Editora"],
       "Pais": livro["Pais"],
       "NomeDosAutores": autores,
@@ -74,16 +74,30 @@ class LivroService {
       body,
     );
 
-    print("Service: Tentando enviar o Livro: $body");
-
     if (response.statusCode != 200) {
       throw Exception('Erro ao adicionar livro: ${response.data}');
     }
   }
 
   // Alterar Livro
-  Future<void> alterLivro(Map<String, dynamic> livro) async {
-    final Map<String, dynamic> body = livro;
+  Future<void> alterLivro(
+      num idDaSessao,
+      String loginDoUsuarioRequerente,
+      Map<String, dynamic> livro,
+      List<String> autores,
+      List<String> categorias) async {
+    final Map<String, dynamic> body = {
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
+      "Id": livro["Id"],
+      "Isbn": livro["Isbn"],
+      "Titulo": livro["Titulo"],
+      "AnoPublicacao": livro["AnoPublicacao"],
+      "Editora": livro["Editora"],
+      "Pais": livro["Pais"],
+      "NomeDosAutores": autores,
+      "NomeDasCategorias": categorias,
+    };
 
     final response = await _api.requisicao(
       apiRoute,
@@ -97,9 +111,12 @@ class LivroService {
   }
 
   // Deletar Livro
-  Future<void> deleteLivro(int id) async {
+  Future<void> deleteLivro(
+      num idDaSessao, String loginDoUsuarioRequerente, int id) async {
     final Map<String, dynamic> body = {
-      "id": id,
+      "IdDaSessao": idDaSessao,
+      "LoginDoUsuarioRequerente": loginDoUsuarioRequerente,
+      "Id": id,
     };
 
     final response = await _api.requisicao(
@@ -108,8 +125,16 @@ class LivroService {
       body,
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Erro ao deletar livro: ${response.data}');
+    if (response.statusCode != 204) {
+      if (response.statusCode == 400) {
+        throw Exception('Dados inválidos: ${response.data}');
+      } else if (response.statusCode == 401) {
+        throw Exception('Sessão inválida ou expirada');
+      } else if (response.statusCode == 403) {
+        throw Exception('Sem permissão para excluir o livro');
+      } else {
+        throw Exception('Erro ao deletar livro: ${response.data}');
+      }
     }
   }
 }

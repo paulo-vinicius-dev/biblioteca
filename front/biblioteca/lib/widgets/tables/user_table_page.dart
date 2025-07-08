@@ -14,14 +14,19 @@ class UserTablePage extends StatefulWidget {
 }
 
 class UserTablePageState extends State<UserTablePage> {
-  //TextEditingController _buscaController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
-  int rowsPerPage = 10; // Quantidade de linhas por página
+  int rowsPerPage = 10;
   final List<int> rowsPerPageOptions = [5, 10, 15, 20];
-  int currentPage = 1; // Página atual
+  int currentPage = 1;
 
   bool _isInit = true;
   bool _isLoading = false;
+  String _searchText = '';
+
+  // Ordenação
+  String _sortColumn = 'nome'; // 'nome', 'turma', 'turno', 'login', 'tipo'
+  bool _isAscending = true;
 
   @override
   void didChangeDependencies() {
@@ -53,15 +58,51 @@ class UserTablePageState extends State<UserTablePage> {
   Material getPage() {
     UsuarioProvider provider = Provider.of<UsuarioProvider>(context);
     List<Usuario> users = provider.users;
-    int totalPages = (users.length / rowsPerPage).ceil();
 
-    // Calcula o índice inicial e final dos usuários exibidos
+    // Filtro
+    if (_searchText.isNotEmpty) {
+      users = users
+          .where((u) =>
+              u.nome.toLowerCase().contains(_searchText) ||
+              u.getTurma.toLowerCase().contains(_searchText) ||
+              u.getTurno.toLowerCase().contains(_searchText) ||
+              u.login.toLowerCase().contains(_searchText) ||
+              u.getTipoDeUsuario.toLowerCase().contains(_searchText))
+          .toList();
+    }
+
+    // Ordenação
+    users.sort((a, b) {
+      int cmp;
+      switch (_sortColumn) {
+        case 'nome':
+          cmp = a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
+          break;
+        case 'turma':
+          cmp = a.getTurma.toLowerCase().compareTo(b.getTurma.toLowerCase());
+          break;
+        case 'turno':
+          cmp = a.getTurno.toLowerCase().compareTo(b.getTurno.toLowerCase());
+          break;
+        case 'login':
+          cmp = a.login.toLowerCase().compareTo(b.login.toLowerCase());
+          break;
+        case 'tipo':
+          cmp = a.getTipoDeUsuario
+              .toLowerCase()
+              .compareTo(b.getTipoDeUsuario.toLowerCase());
+          break;
+        default:
+          cmp = 0;
+      }
+      return _isAscending ? cmp : -cmp;
+    });
+
+    int totalPages = (users.length / rowsPerPage).ceil();
     int startIndex = (currentPage - 1) * rowsPerPage;
     int endIndex = (startIndex + rowsPerPage) < users.length
         ? (startIndex + rowsPerPage)
         : users.length;
-
-    // Seleciona os usuários que serão exibidos na página atual
     List<Usuario> paginatedUsers = users.sublist(startIndex, endIndex);
 
     // Lógica para definir os botões de página (máximo 10 botões)
@@ -115,32 +156,64 @@ class UserTablePageState extends State<UserTablePage> {
                   height: 20.0,
                 ),
 
-                // Tabela de usuários
+                // Registros por página e campo de Pesquisa
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Exibir'),
-                      DropdownButton<int>(
-                        value: rowsPerPage,
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              rowsPerPage = value;
-                              currentPage =
-                                  1; // Reinicia para a primeira página
-                            });
-                          }
-                        },
-                        items: rowsPerPageOptions.map((int value) {
-                          return DropdownMenuItem<int>(
-                              value: value, child: Text(value.toString()));
-                        }).toList(),
+                      // Registros por página
+                      Row(
+                        children: [
+                          const Text('Exibir'),
+                          const SizedBox(width: 8),
+                          DropdownButton<int>(
+                            value: rowsPerPage,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  rowsPerPage = value;
+                                  currentPage =
+                                      1; // Reinicia para a primeira página
+                                });
+                              }
+                            },
+                            items: rowsPerPageOptions.map((int value) {
+                              return DropdownMenuItem<int>(
+                                  value: value, child: Text(value.toString()));
+                            }).toList(),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('registros por página'),
+                        ],
                       ),
-                      const Text('registros por página'),
+                      // Pesquisar
+                      SizedBox(
+                        width: 300,
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: const InputDecoration(
+                            labelText: 'Pesquisar',
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 12),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _searchText = value.toLowerCase();
+                              currentPage = 1;
+                            });
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Tabela de usuários
                 Table(
                   border: TableBorder.all(
                       color: const Color.fromARGB(215, 200, 200, 200)),
@@ -153,56 +226,198 @@ class UserTablePageState extends State<UserTablePage> {
                     5: IntrinsicColumnWidth(),
                   },
                   children: [
-                    // Cabeçalho da tabela
-                    const TableRow(
-                      decoration:
-                          BoxDecoration(color: Color.fromARGB(255, 44, 62, 80)),
+                    // Cabeçalho da tabela com ordenação
+                    TableRow(
+                      decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 38, 42, 79)),
                       children: [
+                        // Nome
                         Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Nome',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                    fontSize: 15))),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Turma',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'nome') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'nome';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Nome',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                Icon(
+                                  _sortColumn == 'nome'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
                                   color: Colors.white,
-                                  fontSize: 15)),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Turma
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Turno',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'turma') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'turma';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Turma',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                Icon(
+                                  _sortColumn == 'turma'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
                                   color: Colors.white,
-                                  fontSize: 15)),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Turno
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Login',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'turno') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'turno';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Turno',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                Icon(
+                                  _sortColumn == 'turno'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
                                   color: Colors.white,
-                                  fontSize: 15)),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Login
                         Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Tipo de Usuario',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'login') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'login';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Login',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                Icon(
+                                  _sortColumn == 'login'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
                                   color: Colors.white,
-                                  fontSize: 15)),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Tipo de Usuário
                         Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (_sortColumn == 'tipo') {
+                                  _isAscending = !_isAscending;
+                                } else {
+                                  _sortColumn = 'tipo';
+                                  _isAscending = true;
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Tipo de Usuario',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                                Icon(
+                                  _sortColumn == 'tipo'
+                                      ? (_isAscending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward)
+                                      : Icons.unfold_more,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Opções
+                        const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text('Opções',
                               textAlign: TextAlign.left,
@@ -291,67 +506,6 @@ class UserTablePageState extends State<UserTablePage> {
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                          context, AppRoutes.historico,
-                                          arguments: paginatedUsers[x]);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 128, 128, 128),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 5),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                    ),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.library_books_rounded,
-                                            color: Colors.white),
-                                        SizedBox(width: 4),
-                                        Text('Histórico',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 3),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                          context, AppRoutes.editarUsuario,
-                                          arguments: paginatedUsers[x]);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 38, 42, 79),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 5),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                    ),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.edit, color: Colors.white),
-                                        SizedBox(width: 4),
-                                        Text('Editar',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 3),
                                   ElevatedButton(
                                     onPressed: () {
                                       showDialog(
@@ -447,6 +601,69 @@ class UserTablePageState extends State<UserTablePage> {
                                       ],
                                     ),
                                   ),
+                                  const SizedBox(width: 3),
+                                  // Botão Editar (agora segundo)
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, AppRoutes.editarUsuario,
+                                          arguments: paginatedUsers[x]);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 38, 42, 79),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.edit, color: Colors.white),
+                                        SizedBox(width: 4),
+                                        Text('Editar',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  // Botão Histórico (agora último)
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, AppRoutes.historico,
+                                          arguments: paginatedUsers[x]);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 128, 128, 128),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.library_books_rounded,
+                                            color: Colors.white),
+                                        SizedBox(width: 4),
+                                        Text('Histórico',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -484,7 +701,7 @@ class UserTablePageState extends State<UserTablePage> {
                             padding: const EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
                               color: i == currentPage
-                                  ? Colors.blueGrey
+                                  ? Color.fromARGB(255, 38, 42, 79)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(4.0),
                               border: Border.all(color: Colors.grey),

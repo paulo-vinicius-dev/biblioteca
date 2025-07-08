@@ -28,6 +28,7 @@ class ApiService {
     return await _dio.request(
       url,
       options: Options(
+        validateStatus: (status) => true,
         method: method,
         headers: _headers,
       ),

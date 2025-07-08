@@ -1,7 +1,6 @@
-import 'package:biblioteca/data/models/categorias_model.dart';
 import 'package:biblioteca/data/models/turma.dart';
-import 'package:biblioteca/data/providers/categoria_provider.dart';
 import 'package:biblioteca/data/providers/turmas_provider.dart';
+import 'package:biblioteca/data/turnos_series.dart';
 import 'package:biblioteca/widgets/forms/campo_obrigatorio.dart';
 import 'package:biblioteca/widgets/navegacao/bread_crumb.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +17,8 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _turnoController = TextEditingController();
+  final TextEditingController _serieController = TextEditingController();
 
   String _searchText = '';
 
@@ -53,8 +54,7 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
 
   @override
   Widget build(BuildContext context) {
-    TurmasProvider turmasProvider =
-        Provider.of<TurmasProvider>(context);
+    TurmasProvider turmasProvider = Provider.of<TurmasProvider>(context);
     turmas = context.watch<TurmasProvider>().turma;
 
     if (_isLoading) {
@@ -66,12 +66,19 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
     }
   }
 
-  // Future<void> salvarCategoria(TurmasProvider turmasProvider) async {
-  //   Categoria? cat =
-  //       await turmasProvider.addCategoria(_descriptionController.text);
+  Future<void> salvarTurma(TurmasProvider turmasProvider) async {
+    Turma newTurma = Turma(
+                  turma: 0,
+                  descricao: _descriptionController.text,
+                  serie: int.parse(_serieController.text),
+                  turno: int.parse(_turnoController.text));
 
-  //   setState(() {});
-  // }
+
+    await turmasProvider.addTurma(newTurma);
+
+
+    setState(() {});
+  }
 
   Material getPage(TurmasProvider provider, List<Turma> turmas) {
     if (_searchText.isNotEmpty) {
@@ -96,8 +103,7 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
         : turmas.length;
 
     // Seleciona os usuários que serão exibidos na página atual
-    List<Turma> paginatedTurmas =
-        turmas.sublist(startIndex, endIndex);
+    List<Turma> paginatedTurmas = turmas.sublist(startIndex, endIndex);
 
     // Lógica para definir os botões de página (máximo 10 botões)
     int startPage = currentPage - 4 < 1 ? 1 : currentPage - 4;
@@ -111,8 +117,7 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
         children: [
           // Barra de navegação
           const BreadCrumb(
-              breadcrumb: ["Início", "Turmas"],
-              icon: Icons.co_present_rounded),
+              breadcrumb: ["Início", "Turmas"], icon: Icons.co_present_rounded),
 
           // Corpo da página
           SingleChildScrollView(
@@ -311,10 +316,8 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
                                       showDialog(
                                           context: context,
                                           builder: (context) {
-                                            return turmaDialog(
-                                                context,
-                                                provider,
-                                                paginatedTurmas[x]);
+                                            return turmaDialog(context,
+                                                provider, paginatedTurmas[x]);
                                           });
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -476,7 +479,7 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
                             padding: const EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
                               color: i == currentPage
-                                  ? Color.fromARGB(255, 38, 42, 79)
+                                  ? const Color.fromARGB(255, 38, 42, 79)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(4.0),
                               border: Border.all(color: Colors.grey),
@@ -512,8 +515,8 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
     );
   }
 
-  AlertDialog turmaDialog(BuildContext context,
-      TurmasProvider turmasProvider, Turma? turma) {
+  AlertDialog turmaDialog(
+      BuildContext context, TurmasProvider turmasProvider, Turma? turma) {
     bool isEdit = false;
 
     if (turma != null) {
@@ -522,22 +525,76 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
     }
 
     return AlertDialog(
-      title: isEdit
-          ? const Text('Editar Turma')
-          : const Text('Nova Turma'),
+      title: isEdit ? const Text('Editar Turma') : const Text('Nova Turma'),
       content: SizedBox(
         width: 500,
-        height: 100,
+        height: 200,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
               key: _formKey,
-              child: TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  label: CampoObrigatorio(label: "Descrição"),
-                  border: OutlineInputBorder(),
-                ),
+              child: Column(
+                children: [
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      label: CampoObrigatorio(label: "Série"),
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _serieController.text.isEmpty
+                        ? null
+                        : _serieController.text,
+                    items: series.map((String serie) {
+                      return DropdownMenuItem<String>(
+                        value: (series.indexOf(serie) + 1).toString(),
+                        child: Text(serie),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      _serieController.text = newValue!;
+                      // _loadTurmas(int.parse(_serieController.text));
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Selecione a série";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10.0),
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      label: CampoObrigatorio(label: "Turno"),
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _turnoController.text.isEmpty
+                        ? null
+                        : _turnoController.text,
+                    items: turnos.map((String turno) {
+                      return DropdownMenuItem<String>(
+                        value: (turnos.indexOf(turno) + 1).toString(),
+                        child: Text(turno),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      _turnoController.text = newValue!;
+                      // _loadTurmas(int.parse(_turnoController.text));
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Selecione um turno";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10.0),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(
+                      label: CampoObrigatorio(label: "Descrição"),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
               )),
         ),
       ),
@@ -557,44 +614,43 @@ class _TurmasTablePageState extends State<TurmasTablePage> {
             child: const Text('Cancelar')),
 
         //Botão Salvar
-        // ElevatedButton(
-        //   onPressed: () {
-        //     if (isEdit) {
-        //       categoria!.descricao = _descriptionController.text;
-        //       turmasProvider.editCatgoria(categoria);
-        //       setState(() {
-        //         categorias
-        //             .firstWhere(
-        //                 (c) => c.idDaCategoria == categoria.idDaCategoria)
-        //             .descricao = _descriptionController.text;
-        //       });
-        //       Navigator.of(context).pop();
-        //     } else {
-        //       salvarCategoria(turmasProvider);
-        //       // turmasProvider.addCategoria(_descriptionController.text);
-
-        //       // setState(() {
-        //       //   categorias.add(Categoria(
-        //       //       idDaCategoria: 1, descricao: _descriptionController.text));
-        //       // });
-        //       Navigator.of(context).pop();
-        //     }
-        //   },
-        //   style: ElevatedButton.styleFrom(
-        //     backgroundColor: const Color.fromARGB(255, 38, 42, 79),
-        //     foregroundColor: Colors.white,
-        //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        //     shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.circular(5),
-        //     ),
-        //   ),
-        //   child: const Row(
-        //     mainAxisSize: MainAxisSize.min,
-        //     children: [
-        //       Text('Salvar', style: TextStyle(fontSize: 16)),
-        //     ],
-        //   ),
-        // ),
+        ElevatedButton(
+          onPressed: () {
+            if (isEdit) {
+              // turma!.descricao = _descriptionController.text;
+              // turmasProvider.editCatgoria(categoria);
+              // setState(() {
+              //   categorias
+              //       .firstWhere(
+              //           (c) => c.idDaCategoria == categoria.idDaCategoria)
+              //       .descricao = _descriptionController.text;
+              // });
+              // Navigator.of(context).pop();
+            } else {
+              
+              salvarTurma(turmasProvider);
+              // turmasProvider.addCategoria(_descriptionController.text);
+              // turmasProvider.addTurma(newTurma);
+              // setState(() {
+              // });
+              Navigator.of(context).pop();
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 38, 42, 79),
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Salvar', style: TextStyle(fontSize: 16)),
+            ],
+          ),
+        ),
       ],
     );
   }

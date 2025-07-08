@@ -38,10 +38,10 @@ class TurmasProvider extends ChangeNotifier {
   Future<void> addTurma(Turma turma) async {
     _isLoading = true;
     _error = null;
-    notifyListeners();
+    // notifyListeners();
 
     try {
-      final apiResponse = await _turmasService.addTurma();
+      final apiResponse = await _turmasService.addTurma(turma);
 
       if (apiResponse.responseCode > 299) {
         _error = apiResponse.body;
@@ -52,9 +52,7 @@ class TurmasProvider extends ChangeNotifier {
       _error = "Erro ao inserir nova Turma:\n$e";
     } finally {
       _isLoading = false;
-      notifyListeners();
+      // notifyListeners();
     }
   }
-
-  
 }

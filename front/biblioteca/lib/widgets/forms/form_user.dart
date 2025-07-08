@@ -442,7 +442,6 @@ class _FormUserState extends State<FormUser> {
               if (value == null || value.isEmpty) {
                 return "Selecione um turno";
               }
-
               return null;
             },
           ),

@@ -1,5 +1,6 @@
 
-SET search_path TO biblioteca;
+
+SET search_path TO biblioteca; -- Usado somente se você escolher criar um schema
 
 -- Tabela autor
 INSERT INTO autor (nome, nacionalidade, sexo) VALUES
@@ -242,9 +243,12 @@ INSERT INTO turma (descricao, serie, turno) VALUES
 ('user17', '18181818181', 'Renata Pires', 'renata.pires@biblioteca.com', '11918181818', '1997-07-04', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL),
 ('user18', '19191919191', 'Sandro Lopes', 'sandro.lopes@biblioteca.com', '11919191919', '1996-11-19', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL),
 ('user19', '20202020202', 'Tatiane Melo', 'tatiane.melo@biblioteca.com', '11920202020', '1995-09-07', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL),
-('user20', '21212121212', 'Victor Nogueira', 'victor.nogueira@biblioteca.com', '11921212121', '1994-02-02', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL);
-
+('user20', '21212121212', 'Victor Nogueira', 'victor.nogueira@biblioteca.com', '11921212121', '1994-02-02', 'ea4a6e5c2c9f8239b566c1dc4ef972514f159ebd61d046168688a2c8531a4bf3', 0, NULL),
  
+-- Usuários Desenvolvedores
+('kevin_machado','59484587097','Kevin Machado','kevinmachado@pallasys.com','98626286837','2004-04-30','9cf06842db77f8de3787395698f1a3d37d45620d265116e72df53f0414d7ab30',16383,NULL); --senha: kevin@123
+
+
  
  
 

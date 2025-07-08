@@ -26,8 +26,12 @@ class TurmasService {
         body: response.statusCode == 200 ? turmas : response.data);
   }
 
-  Future<ApiResponse> addTurma() async {
-    final Map<String, dynamic> body = {};
+  Future<ApiResponse> addTurma(Turma newTurma) async {
+    final Map<String, dynamic> body = {
+      "Descricao": newTurma.descricao,
+      "IdSerie": newTurma.serie,
+      "IdTurno": newTurma.turno
+    };
 
     final response = await _api.requisicao(apiRoute, 'POST', body);
 
@@ -42,15 +46,5 @@ class TurmasService {
     return ApiResponse(
         responseCode: response.statusCode!,
         body: response.statusCode == 200 ? turma : response.data);
-  }
-
-  Future<List<Turma>> addTurmas() async {
-    final response = await _api.requisicao(
-      apiRoute,
-      'POST',
-      {},
-    );
-    Map<String, dynamic> turmas = json.decode(response.data);
-    return List<Turma>.from(turmas["Turmas"].map((x) => Turma.fromJson(x)));
   }
 }
